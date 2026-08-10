@@ -238,15 +238,15 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
         {activeProjects.length === 0 ? (
           <div className="bg-white border border-calm-border rounded-3xl p-8 text-center max-w-xl mx-auto shadow-sm">
             <FolderOpen className="w-10 h-10 text-calm-muted mx-auto mb-3" />
-            <h3 className="font-semibold text-calm-text">No active projects</h3>
+            <h3 className="font-semibold text-calm-text">No active Tracks</h3>
             <p className="text-sm text-calm-muted mt-1 max-w-sm mx-auto">
-              You currently have 0 active items. Activate a parked project or start a new one to focus.
+              You currently have 0 active items. Activate a parked Track or start a new one to focus.
             </p>
             <button
               onClick={() => setIsCreateOpen(true)}
               className="mt-4 bg-accent-blue text-white text-xs font-semibold px-4 py-2 rounded-xl"
             >
-              Start New Project
+              Start New Track
             </button>
           </div>
         ) : (
@@ -360,7 +360,7 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
 
           {parkedProjects.length === 0 ? (
             <div className="bg-white border border-dashed border-calm-border rounded-3xl p-6 text-center text-calm-muted text-xs">
-              No parked projects.
+              No parked Tracks.
             </div>
           ) : (
             <div className="max-h-96 overflow-y-auto pr-2 custom-scrollbar space-y-3">

@@ -171,7 +171,7 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
     <div className="max-w-4xl mx-auto px-4 pb-24 md:pb-12 animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-xl font-bold text-calm-text tracking-tight">Project Catalog</h2>
+          <h2 className="text-xl font-bold text-calm-text tracking-tight">Track Catalog</h2>
           <p className="text-xs text-calm-muted mt-0.5">Explore, search, and manage your active and parked tracks.</p>
         </div>
         <button
@@ -179,7 +179,7 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
           className="flex items-center space-x-1.5 bg-calm-slate hover:bg-calm-slate/95 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm self-start md:self-auto transition-all duration-300"
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>New Project</span>
+          <span>New Track</span>
         </button>
       </div>
 
@@ -191,7 +191,7 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search projects..."
+            placeholder="Search Tracks..."
             className="w-full bg-slate-50 border border-calm-border pl-9 pr-4 py-2 rounded-xl text-xs outline-none focus:bg-white focus:border-accent-blue transition-all duration-300"
           />
         </div>
@@ -228,7 +228,7 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
       {/* Projects List catalog */}
       {filteredProjects.length === 0 ? (
         <div className="bg-white border border-calm-border rounded-3xl p-10 text-center text-xs text-calm-muted shadow-3xs">
-          No projects found matching the criteria.
+          No Tracks found matching the criteria.
         </div>
       ) : (
         <div className="bg-white border border-calm-border rounded-2xl divide-y divide-slate-100 overflow-hidden shadow-3xs">
@@ -274,7 +274,7 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="font-bold text-lg text-calm-text mb-4">Start New Project</h3>
+            <h3 className="font-bold text-lg text-calm-text mb-4">Start New Track</h3>
             {createError && (
               <div className="mb-4 text-xs bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-xl">
                 {createError}
@@ -361,7 +361,7 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
                   type="submit"
                   className="px-5 py-2 bg-calm-slate hover:bg-calm-slate/95 text-white text-sm font-medium rounded-xl shadow-sm transition-all duration-300"
                 >
-                  Create Project
+                  Create Track
                 </button>
               </div>
             </form>

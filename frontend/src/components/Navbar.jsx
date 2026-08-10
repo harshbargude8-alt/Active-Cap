@@ -10,7 +10,7 @@ export const Navbar = ({ currentView, onViewChange }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, hash: '#/dashboard' },
     { id: 'inbox', label: 'Inbox', icon: Inbox, hash: '#/inbox' },
-    { id: 'all-projects', label: 'Projects', icon: Folder, hash: '#/projects' },
+    { id: 'all-projects', label: 'Tracks', icon: Folder, hash: '#/projects' },
   ];
 
   return (
