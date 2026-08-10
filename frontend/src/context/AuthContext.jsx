@@ -9,7 +9,12 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('activecap_token'));
   const [loading, setLoading] = useState(true);
 
-  const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+  let API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000/api';
+  // Strip trailing slashes and ensure it ends with '/api'
+  API_BASE = API_BASE.replace(/\/+$/, '');
+  if (!API_BASE.endsWith('/api')) {
+    API_BASE = `${API_BASE}/api`;
+  }
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
