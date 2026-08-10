@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Outfit', sans-serif;
+  
+  --color-calm-bg: #f8fafc;
+  --color-calm-card: #ffffff;
+  --color-calm-sage: #6b8e23;
+  --color-calm-slate: #475569;
+  --color-calm-text: #0f172a;
+  --color-calm-muted: #64748b;
+  --color-calm-border: #e2e8f0;
+  
+  --color-accent-blue: #0284c7;
+  --color-accent-orange: #f97316;
+  --color-accent-green: #10b981;
+  --color-accent-amber: #d97706;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-calm-bg);
+    color: var(--color-calm-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom scrollbars for parked section */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Calm fade-in animation for dashboard */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
