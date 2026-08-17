@@ -12,7 +12,16 @@ export const TimerProvider = ({ children }) => {
 
   const [secondsElapsed, setSecondsElapsed] = useState(0);
   const [logSessionData, setLogSessionData] = useState(null);
+  const [reminderInterval, setReminderInterval] = useState(() => {
+    const saved = localStorage.getItem('activecap_reminder_interval');
+    return saved ? Number(saved) : 15;
+  });
   const timerIntervalRef = useRef(null);
+
+  // Sync reminderInterval to localStorage
+  useEffect(() => {
+    localStorage.setItem('activecap_reminder_interval', reminderInterval.toString());
+  }, [reminderInterval]);
 
   // Sync state to localStorage to persist across reloads
   useEffect(() => {
@@ -131,8 +140,9 @@ export const TimerProvider = ({ children }) => {
         setSecondsElapsed((prev) => {
           const next = prev + 1;
           
-          // 15-minute alert loop (temporarily set to 10 seconds for testing)
-          if (next > 0 && next % 10 === 0) {
+          // Configurable reminder alert loop
+          const intervalSeconds = reminderInterval * 60;
+          if (next > 0 && next % intervalSeconds === 0) {
             // 1. Play sound
             playAlertChime();
 
@@ -140,7 +150,7 @@ export const TimerProvider = ({ children }) => {
             if ('Notification' in window && Notification.permission === 'granted') {
               try {
                 new Notification('Still focusing?', {
-                  body: `You have been tracking "${activeTimer.projectTitle}" for ${next} seconds.`,
+                  body: `You have been tracking "${activeTimer.projectTitle}" for ${Math.floor(next / 60)} minutes.`,
                   icon: '/favicon.ico',
                 });
               } catch (err) {
@@ -150,7 +160,7 @@ export const TimerProvider = ({ children }) => {
 
             // 3. Trigger native blocking alert (runs deferred so it doesn't block state updates in the same render tick)
             setTimeout(() => {
-              alert(`Focus check! You have been tracking "${activeTimer.projectTitle}" for ${next} seconds. Are you still actively working?`);
+              alert(`Focus check! You have been tracking "${activeTimer.projectTitle}" for ${Math.floor(next / 60)} minutes. Are you still actively working?`);
             }, 50);
           }
 
@@ -209,6 +219,8 @@ export const TimerProvider = ({ children }) => {
     formatTime,
     logSessionData,
     setLogSessionData,
+    reminderInterval,
+    setReminderInterval,
   };
 
   return <TimerContext.Provider value={value}>{children}</TimerContext.Provider>;

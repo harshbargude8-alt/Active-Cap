@@ -1,9 +1,17 @@
 import React from 'react';
 import { useTimer } from '../context/TimerContext';
-import { Square, X, Play } from 'lucide-react';
+import { Square, X, Bell } from 'lucide-react';
 
 export const TimerBar = () => {
-  const { activeTimer, secondsElapsed, formatTime, stopTimer, cancelTimer } = useTimer();
+  const {
+    activeTimer,
+    secondsElapsed,
+    formatTime,
+    stopTimer,
+    cancelTimer,
+    reminderInterval,
+    setReminderInterval
+  } = useTimer();
 
   if (!activeTimer) return null;
 
@@ -14,7 +22,7 @@ export const TimerBar = () => {
   };
 
   return (
-    <div className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-96 z-40 animate-slide-up">
+    <div className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-auto md:max-w-md z-40 animate-slide-up">
       <div className="bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-3xl p-4 shadow-xl text-white flex items-center justify-between space-x-4">
         {/* Left: Indicator & Title */}
         <div className="flex items-center space-x-3 min-w-0 flex-1">
@@ -22,7 +30,7 @@ export const TimerBar = () => {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 pr-2">
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none mb-0.5">
               Focusing Track
             </p>
@@ -32,8 +40,25 @@ export const TimerBar = () => {
           </div>
         </div>
 
-        {/* Right: Time & Control Actions */}
+        {/* Right: Time, Config & Control Actions */}
         <div className="flex items-center space-x-3 flex-shrink-0">
+          {/* Bell & Alert Interval Dropdown */}
+          <div className="flex items-center space-x-1 border-r border-slate-850 pr-3 mr-0.5 text-slate-400">
+            <Bell className="w-3.5 h-3.5" />
+            <select
+              value={reminderInterval}
+              onChange={(e) => setReminderInterval(Number(e.target.value))}
+              className="bg-transparent text-slate-300 text-[10px] font-bold outline-none cursor-pointer hover:text-white transition-colors"
+              title="Alert Interval"
+            >
+              <option value="10" className="bg-slate-950 text-slate-100">10m</option>
+              <option value="15" className="bg-slate-950 text-slate-100">15m</option>
+              <option value="20" className="bg-slate-950 text-slate-100">20m</option>
+              <option value="30" className="bg-slate-950 text-slate-100">30m</option>
+              <option value="60" className="bg-slate-950 text-slate-100">1h</option>
+            </select>
+          </div>
+
           <span className="text-sm font-bold font-mono tracking-wider text-slate-200">
             {formatTime(secondsElapsed)}
           </span>
