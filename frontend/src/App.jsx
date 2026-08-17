@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { TimerProvider } from './context/TimerContext';
+import { TimerBar } from './components/TimerBar';
+import { LogFocusModal } from './components/LogFocusModal';
 import { Navbar } from './components/Navbar';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
@@ -88,6 +91,10 @@ function MainAppContent() {
           <ProjectDetail projectId={selectedProjectId} onViewChange={navigate} />
         )}
       </main>
+
+      {/* Global Timer Bar & Modal */}
+      <TimerBar />
+      <LogFocusModal />
     </div>
   );
 }
@@ -95,7 +102,9 @@ function MainAppContent() {
 function App() {
   return (
     <AuthProvider>
-      <MainAppContent />
+      <TimerProvider>
+        <MainAppContent />
+      </TimerProvider>
     </AuthProvider>
   );
 }

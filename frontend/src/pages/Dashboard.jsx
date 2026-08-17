@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTimer } from '../context/TimerContext';
 import { QuickCapture } from '../components/QuickCapture';
 import { CheckInModal } from '../components/CheckInModal';
 import { SwapModal } from '../components/SwapModal';
@@ -17,11 +18,14 @@ import {
   HelpCircle,
   Plus,
   RefreshCw,
-  FolderOpen
+  FolderOpen,
+  Play,
+  Square
 } from 'lucide-react';
 
 export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
   const { apiFetch } = useAuth();
+  const { activeTimer, secondsElapsed, formatTime, startTimer, stopTimer } = useTimer();
   const [projects, setProjects] = useState([]);
   const [reviewData, setReviewData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -79,6 +83,11 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
 
   useEffect(() => {
     loadData();
+    const handleCheckinLogged = () => {
+      loadData();
+    };
+    window.addEventListener('project-checkin-logged', handleCheckinLogged);
+    return () => window.removeEventListener('project-checkin-logged', handleCheckinLogged);
   }, []);
 
   const handleCheckInSuccess = () => {
@@ -294,16 +303,44 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
                   <span className="text-[10px] text-calm-muted font-medium">
                     Touched {project.lastTouchedAt ? new Date(project.lastTouchedAt).toLocaleDateString() : 'never'}
                   </span>
-                  <button
-                    onClick={() => {
-                      setSelectedProject(project);
-                      setIsCheckInOpen(true);
-                    }}
-                    className="bg-accent-blue hover:bg-accent-blue/90 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all duration-300 shadow-sm flex items-center space-x-1.5"
-                  >
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>Check in</span>
-                  </button>
+                  
+                  <div className="flex items-center space-x-2">
+                    {activeTimer && activeTimer.projectId === project._id ? (
+                      <button
+                        onClick={() => stopTimer()}
+                        className="bg-rose-50 border border-rose-200 hover:bg-rose-100 text-rose-600 text-xs font-semibold px-3 py-2 rounded-xl transition-all duration-300 flex items-center space-x-1 cursor-pointer animate-pulse"
+                        title="Stop Timer & Log Time"
+                      >
+                        <Square className="w-3.5 h-3.5 fill-current" />
+                        <span>Stop ({formatTime(secondsElapsed)})</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => startTimer(project._id, project.title)}
+                        disabled={activeTimer !== null}
+                        className={`text-xs font-semibold px-3 py-2 rounded-xl border transition-all duration-300 flex items-center space-x-1 cursor-pointer ${
+                          activeTimer
+                            ? 'bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed opacity-50'
+                            : 'bg-slate-50 hover:bg-accent-blue/10 border-calm-border hover:border-accent-blue/35 text-calm-text hover:text-accent-blue'
+                        }`}
+                        title={activeTimer ? 'A timer is already running' : 'Start Focus Timer'}
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        <span>Focus</span>
+                      </button>
+                    )}
+                    
+                    <button
+                      onClick={() => {
+                        setSelectedProject(project);
+                        setIsCheckInOpen(true);
+                      }}
+                      className="bg-accent-blue hover:bg-accent-blue/90 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all duration-300 shadow-sm flex items-center space-x-1.5 cursor-pointer"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Check in</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
