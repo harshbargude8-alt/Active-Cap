@@ -251,32 +251,32 @@ export const Timetable = () => {
       </div>
 
       {/* Desktop Timetable Grid */}
-      <div className="hidden lg:block bg-white border border-calm-border/80 rounded-3xl shadow-2xs overflow-hidden mb-8">
+      <div className="hidden lg:block bg-white dark:bg-slate-900 border border-calm-border/80 dark:border-slate-800/80 rounded-3xl shadow-2xs overflow-hidden mb-8 transition-colors duration-200">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50/80 border-b border-calm-border/80 text-[11px] font-bold text-calm-muted uppercase tracking-wider">
+            <tr className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-calm-border/80 dark:border-slate-800 text-[11px] font-bold text-calm-muted dark:text-slate-400 uppercase tracking-wider">
               <th className="py-4 px-6 w-28">Day</th>
               <th className="py-4 px-6">
-                <div className="flex items-center space-x-1.5 text-amber-700">
+                <div className="flex items-center space-x-1.5 text-amber-700 dark:text-amber-400">
                   <Sunrise className="w-4 h-4" />
                   <span>Morning</span>
                 </div>
               </th>
               <th className="py-4 px-6">
-                <div className="flex items-center space-x-1.5 text-sky-700">
+                <div className="flex items-center space-x-1.5 text-sky-700 dark:text-sky-400">
                   <Sun className="w-4 h-4" />
                   <span>Afternoon</span>
                 </div>
               </th>
               <th className="py-4 px-6">
-                <div className="flex items-center space-x-1.5 text-indigo-700">
+                <div className="flex items-center space-x-1.5 text-indigo-700 dark:text-indigo-400">
                   <Sunset className="w-4 h-4" />
                   <span>Evening</span>
                 </div>
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-calm-border/60 text-xs">
+          <tbody className="divide-y divide-calm-border/60 dark:divide-slate-800/60 text-xs">
             {currentSchedule.map((row, idx) => {
               const isToday = row.day.toLowerCase() === todayAbbr.toLowerCase();
               return (
@@ -284,12 +284,12 @@ export const Timetable = () => {
                   key={row.day || idx}
                   className={`transition-colors duration-200 ${
                     isToday
-                      ? 'bg-accent-blue/5 hover:bg-accent-blue/8 font-medium'
-                      : 'hover:bg-slate-50/60'
+                      ? 'bg-accent-blue/5 dark:bg-accent-blue/15 hover:bg-accent-blue/8 dark:hover:bg-accent-blue/20 font-medium'
+                      : 'hover:bg-slate-50/60 dark:hover:bg-slate-800/40'
                   }`}
                 >
                   {/* Day Column */}
-                  <td className="py-4 px-6 font-bold text-calm-text align-top">
+                  <td className="py-4 px-6 font-bold text-calm-text dark:text-slate-200 align-top">
                     <div className="flex items-center space-x-2">
                       <span className={`text-sm ${isToday ? 'text-accent-blue font-extrabold' : ''}`}>
                         {row.day}
@@ -309,13 +309,13 @@ export const Timetable = () => {
                         type="text"
                         value={row.morning}
                         onChange={(e) => handleScheduleCellChange(idx, 'morning', e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-50 border border-calm-border rounded-xl text-xs text-calm-text outline-none focus:bg-white focus:border-accent-blue transition-all"
+                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all"
                         placeholder="Morning task..."
                       />
                     ) : (
-                      <div className="text-calm-text leading-relaxed">
+                      <div className="text-calm-text dark:text-slate-200 leading-relaxed">
                         {row.morning === '—' || !row.morning ? (
-                          <span className="text-calm-muted/60">—</span>
+                          <span className="text-calm-muted/60 dark:text-slate-500">—</span>
                         ) : (
                           <span>{row.morning}</span>
                         )}
@@ -330,13 +330,13 @@ export const Timetable = () => {
                         type="text"
                         value={row.afternoon}
                         onChange={(e) => handleScheduleCellChange(idx, 'afternoon', e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-50 border border-calm-border rounded-xl text-xs text-calm-text outline-none focus:bg-white focus:border-accent-blue transition-all"
+                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all"
                         placeholder="Afternoon task..."
                       />
                     ) : (
-                      <div className="text-calm-text leading-relaxed">
+                      <div className="text-calm-text dark:text-slate-200 leading-relaxed">
                         {row.afternoon === '—' || !row.afternoon ? (
-                          <span className="text-calm-muted/60">—</span>
+                          <span className="text-calm-muted/60 dark:text-slate-500">—</span>
                         ) : (
                           <span>{row.afternoon}</span>
                         )}
@@ -351,13 +351,13 @@ export const Timetable = () => {
                         type="text"
                         value={row.evening}
                         onChange={(e) => handleScheduleCellChange(idx, 'evening', e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-50 border border-calm-border rounded-xl text-xs text-calm-text outline-none focus:bg-white focus:border-accent-blue transition-all"
+                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all"
                         placeholder="Evening task..."
                       />
                     ) : (
-                      <div className="text-calm-text leading-relaxed">
+                      <div className="text-calm-text dark:text-slate-200 leading-relaxed">
                         {row.evening === '—' || !row.evening ? (
-                          <span className="text-calm-muted/60">—</span>
+                          <span className="text-calm-muted/60 dark:text-slate-500">—</span>
                         ) : (
                           <span>{row.evening}</span>
                         )}
@@ -378,16 +378,16 @@ export const Timetable = () => {
           return (
             <div
               key={row.day || idx}
-              className={`bg-white border rounded-3xl p-5 shadow-2xs transition-all duration-300 ${
+              className={`bg-white dark:bg-slate-900 border rounded-3xl p-5 shadow-2xs transition-all duration-300 ${
                 isToday
-                  ? 'border-accent-blue/40 bg-gradient-to-br from-white to-accent-blue/5 shadow-sm'
-                  : 'border-calm-border'
+                  ? 'border-accent-blue/40 bg-gradient-to-br from-white to-accent-blue/5 dark:from-slate-900 dark:to-accent-blue/15 shadow-sm'
+                  : 'border-calm-border dark:border-slate-800'
               }`}
             >
               {/* Day Header */}
-              <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-100">
+              <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center space-x-2">
-                  <h3 className={`text-base font-bold ${isToday ? 'text-accent-blue' : 'text-calm-text'}`}>
+                  <h3 className={`text-base font-bold ${isToday ? 'text-accent-blue' : 'text-calm-text dark:text-slate-100'}`}>
                     {row.day}
                   </h3>
                   {isToday && (
@@ -401,9 +401,9 @@ export const Timetable = () => {
               {/* Day Slots */}
               <div className="space-y-3 text-xs">
                 {/* Morning */}
-                <div className="p-3 bg-amber-50/50 border border-amber-100/80 rounded-2xl">
-                  <div className="flex items-center space-x-1.5 text-amber-800 text-[10px] font-bold uppercase tracking-wider mb-1">
-                    <Sunrise className="w-3.5 h-3.5 text-amber-600" />
+                <div className="p-3 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100/80 dark:border-amber-900/40 rounded-2xl">
+                  <div className="flex items-center space-x-1.5 text-amber-800 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                    <Sunrise className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                     <span>Morning</span>
                   </div>
                   {isEditing ? (
@@ -411,17 +411,17 @@ export const Timetable = () => {
                       type="text"
                       value={row.morning}
                       onChange={(e) => handleScheduleCellChange(idx, 'morning', e.target.value)}
-                      className="w-full mt-1 px-2.5 py-1.5 bg-white border border-calm-border rounded-xl text-xs text-calm-text outline-none focus:border-accent-blue"
+                      className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
                     />
                   ) : (
-                    <p className="text-calm-text font-medium">{row.morning || '—'}</p>
+                    <p className="text-calm-text dark:text-slate-200 font-medium">{row.morning || '—'}</p>
                   )}
                 </div>
 
                 {/* Afternoon */}
-                <div className="p-3 bg-sky-50/50 border border-sky-100/80 rounded-2xl">
-                  <div className="flex items-center space-x-1.5 text-sky-800 text-[10px] font-bold uppercase tracking-wider mb-1">
-                    <Sun className="w-3.5 h-3.5 text-sky-600" />
+                <div className="p-3 bg-sky-50/50 dark:bg-sky-950/20 border border-sky-100/80 dark:border-sky-900/40 rounded-2xl">
+                  <div className="flex items-center space-x-1.5 text-sky-800 dark:text-sky-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                    <Sun className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
                     <span>Afternoon</span>
                   </div>
                   {isEditing ? (
@@ -429,17 +429,17 @@ export const Timetable = () => {
                       type="text"
                       value={row.afternoon}
                       onChange={(e) => handleScheduleCellChange(idx, 'afternoon', e.target.value)}
-                      className="w-full mt-1 px-2.5 py-1.5 bg-white border border-calm-border rounded-xl text-xs text-calm-text outline-none focus:border-accent-blue"
+                      className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
                     />
                   ) : (
-                    <p className="text-calm-text font-medium">{row.afternoon || '—'}</p>
+                    <p className="text-calm-text dark:text-slate-200 font-medium">{row.afternoon || '—'}</p>
                   )}
                 </div>
 
                 {/* Evening */}
-                <div className="p-3 bg-indigo-50/50 border border-indigo-100/80 rounded-2xl">
-                  <div className="flex items-center space-x-1.5 text-indigo-800 text-[10px] font-bold uppercase tracking-wider mb-1">
-                    <Sunset className="w-3.5 h-3.5 text-indigo-600" />
+                <div className="p-3 bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100/80 dark:border-indigo-900/40 rounded-2xl">
+                  <div className="flex items-center space-x-1.5 text-indigo-800 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                    <Sunset className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                     <span>Evening</span>
                   </div>
                   {isEditing ? (
@@ -447,10 +447,10 @@ export const Timetable = () => {
                       type="text"
                       value={row.evening}
                       onChange={(e) => handleScheduleCellChange(idx, 'evening', e.target.value)}
-                      className="w-full mt-1 px-2.5 py-1.5 bg-white border border-calm-border rounded-xl text-xs text-calm-text outline-none focus:border-accent-blue"
+                      className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
                     />
                   ) : (
-                    <p className="text-calm-text font-medium">{row.evening || '—'}</p>
+                    <p className="text-calm-text dark:text-slate-200 font-medium">{row.evening || '—'}</p>
                   )}
                 </div>
               </div>
@@ -462,9 +462,9 @@ export const Timetable = () => {
       {/* Guidelines & Strategy Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Strategy Notes */}
-        <div className="bg-white border border-calm-border/80 rounded-3xl p-6 shadow-2xs flex flex-col justify-between">
+        <div className="bg-white dark:bg-slate-900 border border-calm-border/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-2xs flex flex-col justify-between transition-colors duration-200">
           <div>
-            <div className="flex items-center space-x-2 text-calm-text mb-4">
+            <div className="flex items-center space-x-2 text-calm-text dark:text-slate-100 mb-4">
               <Sparkles className="w-4 h-4 text-accent-blue" />
               <h3 className="text-sm font-bold uppercase tracking-wider">Strategy & Rationale</h3>
             </div>
@@ -477,12 +477,12 @@ export const Timetable = () => {
                       rows="2"
                       value={note}
                       onChange={(e) => handleNoteChange(nIdx, e.target.value)}
-                      className="flex-1 p-2.5 bg-slate-50 border border-calm-border rounded-xl text-xs text-calm-text outline-none focus:bg-white focus:border-accent-blue resize-none"
+                      className="flex-1 p-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue resize-none"
                     />
                     <button
                       type="button"
                       onClick={() => handleRemoveNote(nIdx)}
-                      className="p-2 text-calm-muted hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+                      className="p-2 text-calm-muted hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -500,7 +500,7 @@ export const Timetable = () => {
             ) : (
               <ul className="space-y-3">
                 {currentNotes.map((note, nIdx) => (
-                  <li key={nIdx} className="flex items-start space-x-2.5 text-xs text-calm-muted leading-relaxed">
+                  <li key={nIdx} className="flex items-start space-x-2.5 text-xs text-calm-muted dark:text-slate-400 leading-relaxed">
                     <span className="w-1.5 h-1.5 rounded-full bg-accent-blue mt-1.5 flex-shrink-0" />
                     <span>{note}</span>
                   </li>
@@ -511,11 +511,11 @@ export const Timetable = () => {
         </div>
 
         {/* Golden Rule Card */}
-        <div className="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-200/80 rounded-3xl p-6 shadow-2xs flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent dark:from-amber-950/30 dark:via-amber-950/15 border border-amber-200/80 dark:border-amber-700/40 rounded-3xl p-6 shadow-2xs flex flex-col justify-between relative overflow-hidden transition-colors duration-200">
           <div className="absolute top-0 right-0 w-24 h-24 bg-accent-amber/5 rounded-full blur-xl"></div>
           
           <div>
-            <div className="flex items-center space-x-2 text-amber-900 mb-3">
+            <div className="flex items-center space-x-2 text-amber-900 dark:text-amber-300 mb-3">
               <ShieldCheck className="w-5 h-5 text-accent-amber" />
               <h3 className="text-sm font-bold uppercase tracking-wider">The Rule That Makes This Stick</h3>
             </div>
@@ -525,17 +525,17 @@ export const Timetable = () => {
                 rows="4"
                 value={editedGoldenRule}
                 onChange={(e) => setEditedGoldenRule(e.target.value)}
-                className="w-full p-3 bg-white/90 border border-amber-200 rounded-2xl text-xs text-calm-text outline-none focus:border-accent-amber resize-none"
+                className="w-full p-3 bg-white/90 dark:bg-slate-800/90 border border-amber-200 dark:border-amber-700/60 rounded-2xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-amber resize-none"
                 placeholder="Golden rule text..."
               />
             ) : (
-              <blockquote className="text-xs text-amber-950 font-medium leading-relaxed italic border-l-2 border-accent-amber/60 pl-3 my-2">
+              <blockquote className="text-xs text-amber-950 dark:text-amber-200 font-medium leading-relaxed italic border-l-2 border-accent-amber/60 pl-3 my-2">
                 "{currentGoldenRule}"
               </blockquote>
             )}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-amber-200/50 flex items-center space-x-1.5 text-[11px] text-amber-800">
+          <div className="mt-4 pt-3 border-t border-amber-200/50 dark:border-amber-800/40 flex items-center space-x-1.5 text-[11px] text-amber-800 dark:text-amber-400">
             <Info className="w-3.5 h-3.5 text-accent-amber" />
             <span>Consistency over compensation — never let missed blocks induce guilt.</span>
           </div>

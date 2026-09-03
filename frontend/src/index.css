@@ -2,6 +2,8 @@
 
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Outfit', sans-serif;
   
@@ -19,6 +21,15 @@
   --color-accent-amber: #d97706;
 }
 
+.dark {
+  --color-calm-bg: #090d16;
+  --color-calm-card: #111827;
+  --color-calm-text: #f8fafc;
+  --color-calm-muted: #94a3b8;
+  --color-calm-border: #1e293b;
+  color-scheme: dark;
+}
+
 @layer base {
   body {
     background-color: var(--color-calm-bg);
@@ -26,6 +37,7 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 }
 
@@ -41,8 +53,14 @@
   background: #cbd5e1;
   border-radius: 4px;
 }
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #334155;
+}
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
 
 /* Calm fade-in animation for dashboard */
