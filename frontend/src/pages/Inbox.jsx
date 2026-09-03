@@ -31,7 +31,7 @@ export const Inbox = ({ onViewChange, onSelectProjectId }) => {
   const [swapTargetProject, setSwapTargetProject] = useState(null);
   const [activeProjectsList, setActiveProjectsList] = useState([]);
 
-  const categories = ["Code", "Content", "Music", "Animation", "Writing", "Research", "Other"];
+  const categories = ["Code", "Content", "Reading", "Music", "Animation", "Writing", "Research", "Other"];
 
   const loadInboxItems = async () => {
     setLoading(true);
