@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Inbox, Folder, LogOut, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Inbox, Folder, LogOut, Sparkles, Calendar } from 'lucide-react';
 
 export const Navbar = ({ currentView, onViewChange }) => {
   const { user, logout } = useAuth();
@@ -11,6 +11,7 @@ export const Navbar = ({ currentView, onViewChange }) => {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, hash: '#/dashboard' },
     { id: 'inbox', label: 'Inbox', icon: Inbox, hash: '#/inbox' },
     { id: 'all-projects', label: 'Tracks', icon: Folder, hash: '#/projects' },
+    { id: 'timetable', label: 'Schedule', icon: Calendar, hash: '#/schedule' },
   ];
 
   return (

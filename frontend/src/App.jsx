@@ -9,6 +9,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Inbox } from './pages/Inbox';
 import { AllProjects } from './pages/AllProjects';
 import { ProjectDetail } from './pages/ProjectDetail';
+import { Timetable } from './pages/Timetable';
 import { RefreshCw } from 'lucide-react';
 import './App.css';
 import './index.css';
@@ -30,6 +31,9 @@ function MainAppContent() {
         setSelectedProjectId(null);
       } else if (hash === '#/projects') {
         setView('all-projects');
+        setSelectedProjectId(null);
+      } else if (hash === '#/schedule' || hash === '#/timetable') {
+        setView('timetable');
         setSelectedProjectId(null);
       } else if (hash.startsWith('#/project/')) {
         const id = hash.replace('#/project/', '');
@@ -55,6 +59,8 @@ function MainAppContent() {
       window.location.hash = `#/inbox`;
     } else if (viewName === 'all-projects') {
       window.location.hash = `#/projects`;
+    } else if (viewName === 'timetable' || viewName === 'schedule') {
+      window.location.hash = `#/schedule`;
     } else {
       window.location.hash = `#/dashboard`;
     }
@@ -89,6 +95,9 @@ function MainAppContent() {
         )}
         {view === 'project-detail' && (
           <ProjectDetail projectId={selectedProjectId} onViewChange={navigate} />
+        )}
+        {view === 'timetable' && (
+          <Timetable />
         )}
       </main>
 
