@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { SwapModal } from '../components/SwapModal';
 import {
@@ -11,7 +12,8 @@ import {
   Trash2,
   AlertTriangle,
   RefreshCw,
-  Sparkles
+  Sparkles,
+  X
 } from 'lucide-react';
 
 export const ProjectDetail = ({ projectId, onViewChange }) => {
@@ -33,6 +35,10 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
   // Active Cap Swap State
   const [isSwapOpen, setIsSwapOpen] = useState(false);
   const [activeProjectsList, setActiveProjectsList] = useState([]);
+
+  // Delete Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const categories = ["Code", "Content", "Music", "Animation", "Writing", "Research", "Other"];
 
@@ -101,12 +107,14 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
         } else {
           setEditError(data.error || 'Failed to update project details.');
         }
-      } else {
-        setProject(data);
-        setIsEditing(false);
-        setIsSwapOpen(false);
-        loadProjectData();
+        setIsSaving(false);
+        return;
       }
+
+      setProject(data);
+      setIsEditing(false);
+      setIsSwapOpen(false);
+      loadProjectData();
     } catch (err) {
       setEditError('Connection error. Please try again.');
     } finally {
@@ -118,20 +126,25 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
     handleUpdateProject(null, activeIdToPark);
   };
 
-  const handleDeleteProject = async () => {
-
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
     try {
       const res = await apiFetch(`/projects/${projectId}`, {
         method: 'DELETE',
       });
 
       if (res.ok) {
+        setIsDeleteModalOpen(false);
         onViewChange('dashboard');
       } else {
-        alert('Failed to delete project.');
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Failed to delete track.');
       }
     } catch (err) {
       console.error('Error deleting project:', err);
+      alert('Network error while deleting track.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -210,8 +223,8 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
                   <Edit2 className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={handleDeleteProject}
-                  className="p-2 border border-calm-border dark:border-slate-700 rounded-xl text-calm-muted dark:text-slate-400 hover:text-amber-700 dark:hover:text-amber-400 hover:border-amber-200 dark:hover:border-amber-700/50 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-all duration-300"
+                  onClick={() => setIsDeleteModalOpen(true)}
+                  className="p-2 border border-calm-border dark:border-slate-700 rounded-xl text-calm-muted dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-all duration-300 cursor-pointer"
                   title="Delete Track"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -402,6 +415,76 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
           </div>
         )}
       </section>
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && createPortal(
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl relative animate-scale-up">
+            <button
+              onClick={() => !isDeleting && setIsDeleteModalOpen(false)}
+              disabled={isDeleting}
+              className="absolute top-5 right-5 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-calm-muted dark:text-slate-400 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-start space-x-3.5 mb-4">
+              <div className="p-3 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40 rounded-2xl flex-shrink-0">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <div className="pr-4">
+                <h3 className="font-bold text-lg text-calm-text dark:text-slate-100 leading-tight">
+                  Delete Track?
+                </h3>
+                <p className="text-xs text-rose-600 dark:text-rose-400 font-semibold mt-0.5 uppercase tracking-wider">
+                  Permanent Action
+                </p>
+              </div>
+            </div>
+
+            <p className="text-sm text-calm-muted dark:text-slate-400 leading-relaxed mb-4">
+              Are you sure you want to delete <span className="font-semibold text-calm-text dark:text-slate-200">"{project.title}"</span>?
+            </p>
+
+            <div className="p-3.5 bg-rose-50/60 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/40 rounded-2xl mb-6 space-y-1 text-xs text-rose-800 dark:text-rose-300">
+              <p className="font-medium flex items-center space-x-1.5">
+                <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>This will permanently delete this track and its <strong>{checkIns.length} check-in log{checkIns.length === 1 ? '' : 's'}</strong> and streak history.</span>
+              </p>
+            </div>
+
+            <div className="flex space-x-3 justify-end">
+              <button
+                type="button"
+                onClick={() => setIsDeleteModalOpen(false)}
+                disabled={isDeleting}
+                className="px-4 py-2.5 text-xs font-semibold text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                className="px-5 py-2.5 text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white rounded-xl shadow-xs transition-all flex items-center justify-center space-x-1.5 disabled:opacity-50 cursor-pointer"
+              >
+                {isDeleting ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete Track & Logs</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
       <SwapModal
         isOpen={isSwapOpen}
