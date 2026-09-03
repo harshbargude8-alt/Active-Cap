@@ -15,7 +15,11 @@ import {
   Plus,
   Trash2,
   RefreshCw,
-  Info
+  Info,
+  ChevronLeft,
+  ChevronRight,
+  Zap,
+  CalendarDays
 } from 'lucide-react';
 
 const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -38,6 +42,19 @@ export const Timetable = () => {
   const todayIndex = new Date().getDay(); // 0 = Sun, 1 = Mon ...
   const dayMap = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const todayAbbr = dayMap[todayIndex];
+
+  // Mobile selected day view state (Defaults to today)
+  const [selectedDay, setSelectedDay] = useState(todayAbbr);
+
+  // Live time of day calculation
+  const getCurrentTimeSlot = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'morning';
+    if (hour >= 12 && hour < 17) return 'afternoon';
+    if (hour >= 17 && hour < 24) return 'evening';
+    return 'morning';
+  };
+  const currentTimeSlot = getCurrentTimeSlot();
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -164,6 +181,24 @@ export const Timetable = () => {
     }
   };
 
+  const handlePrevDay = () => {
+    const currentIndex = DAYS_OF_WEEK.indexOf(selectedDay);
+    if (currentIndex > 0) {
+      setSelectedDay(DAYS_OF_WEEK[currentIndex - 1]);
+    } else {
+      setSelectedDay(DAYS_OF_WEEK[DAYS_OF_WEEK.length - 1]);
+    }
+  };
+
+  const handleNextDay = () => {
+    const currentIndex = DAYS_OF_WEEK.indexOf(selectedDay);
+    if (currentIndex < DAYS_OF_WEEK.length - 1) {
+      setSelectedDay(DAYS_OF_WEEK[currentIndex + 1]);
+    } else {
+      setSelectedDay(DAYS_OF_WEEK[0]);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-3">
@@ -176,6 +211,13 @@ export const Timetable = () => {
   const currentSchedule = isEditing ? editedSchedule : timetable?.schedule || [];
   const currentNotes = isEditing ? editedNotes : timetable?.notes || [];
   const currentGoldenRule = isEditing ? editedGoldenRule : timetable?.goldenRule || '';
+
+  // Get active day data for mobile view
+  const activeDayRowIndex = currentSchedule.findIndex(
+    (row) => row.day.toLowerCase() === selectedDay.toLowerCase()
+  );
+  const activeDayRow = activeDayRowIndex !== -1 ? currentSchedule[activeDayRowIndex] : currentSchedule[0];
+  const isSelectedDayToday = selectedDay.toLowerCase() === todayAbbr.toLowerCase();
 
   return (
     <div className="max-w-6xl mx-auto px-4 pb-24 md:pb-12 animate-fade-in">
@@ -194,15 +236,15 @@ export const Timetable = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center space-x-2.5">
             <div className="p-2 rounded-xl bg-accent-blue/10 text-accent-blue">
               <Calendar className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold text-calm-text tracking-tight">Weekly Rhythm</h2>
+            <h2 className="text-2xl font-bold text-calm-text dark:text-slate-100 tracking-tight">Weekly Rhythm</h2>
           </div>
-          <p className="text-xs text-calm-muted mt-1">
+          <p className="text-xs text-calm-muted dark:text-slate-400 mt-1">
             Protected focus blocks, energy management, and built-in slack buffers.
           </p>
         </div>
@@ -214,7 +256,7 @@ export const Timetable = () => {
               <button
                 onClick={handleCancelEdit}
                 disabled={saving}
-                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-calm-border text-calm-muted hover:text-calm-text hover:bg-slate-100 text-xs font-medium transition-all duration-300"
+                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-calm-border dark:border-slate-700 text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-medium transition-all duration-300"
               >
                 <X className="w-3.5 h-3.5" />
                 <span>Cancel</span>
@@ -232,7 +274,7 @@ export const Timetable = () => {
             <>
               <button
                 onClick={handleReset}
-                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-calm-border text-calm-muted hover:text-calm-text hover:bg-slate-100 text-xs font-medium transition-all duration-300"
+                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-calm-border dark:border-slate-700 text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-medium transition-all duration-300"
                 title="Reset to default template"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -250,7 +292,289 @@ export const Timetable = () => {
         </div>
       </div>
 
-      {/* Desktop Timetable Grid */}
+      {/* MOBILE DAY SELECTOR RIBBON (Zero-scroll day switcher) */}
+      <div className="lg:hidden mb-5">
+        <div className="flex items-center justify-between space-x-1.5 p-1.5 bg-slate-100/90 dark:bg-slate-900 border border-calm-border/60 dark:border-slate-800 rounded-2xl overflow-x-auto custom-scrollbar">
+          {DAYS_OF_WEEK.map((day) => {
+            const isToday = day.toLowerCase() === todayAbbr.toLowerCase();
+            const isCurrentSelected = selectedDay.toLowerCase() === day.toLowerCase();
+
+            return (
+              <button
+                key={day}
+                onClick={() => setSelectedDay(day)}
+                className={`relative flex-1 py-2 px-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex flex-col items-center justify-center min-w-[42px] cursor-pointer ${
+                  isCurrentSelected
+                    ? 'bg-accent-blue text-white shadow-sm scale-102'
+                    : 'text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-800'
+                }`}
+              >
+                <span>{day}</span>
+                {isToday && (
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
+                      isCurrentSelected ? 'bg-white animate-pulse' : 'bg-accent-blue'
+                    }`}
+                    title="Today"
+                  />
+                )}
+              </button>
+            );
+          })}
+
+          {/* All Week Toggle Button */}
+          <button
+            onClick={() => setSelectedDay('ALL')}
+            className={`py-2 px-2.5 rounded-xl text-[11px] font-bold transition-all duration-200 flex items-center justify-center cursor-pointer flex-shrink-0 ${
+              selectedDay === 'ALL'
+                ? 'bg-calm-slate text-white shadow-sm'
+                : 'text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-800'
+            }`}
+          >
+            <CalendarDays className="w-3.5 h-3.5 mr-1" />
+            <span>All</span>
+          </button>
+        </div>
+      </div>
+
+      {/* MOBILE TODAY-FIRST SMART HERO VIEW (When single day is selected) */}
+      <div className="lg:hidden mb-8">
+        {selectedDay !== 'ALL' && activeDayRow ? (
+          <div className="bg-white dark:bg-slate-900 border border-calm-border/80 dark:border-slate-800 rounded-3xl p-5 shadow-xs transition-colors duration-200 animate-scale-up">
+            {/* Day Header Bar with Quick Previous/Next & Today Jump */}
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center space-x-2.5">
+                <h3 className="text-xl font-bold text-calm-text dark:text-slate-100 tracking-tight">
+                  {activeDayRow.day} Schedule
+                </h3>
+                {isSelectedDayToday && (
+                  <span className="bg-accent-blue text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs">
+                    Today
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-1.5">
+                {!isSelectedDayToday && (
+                  <button
+                    onClick={() => setSelectedDay(todayAbbr)}
+                    className="text-[10px] font-bold text-accent-blue dark:text-sky-400 bg-accent-blue/10 dark:bg-accent-blue/20 px-2.5 py-1 rounded-lg hover:bg-accent-blue hover:text-white transition-all mr-1"
+                  >
+                    Today
+                  </button>
+                )}
+                <button
+                  onClick={handlePrevDay}
+                  className="p-1.5 rounded-xl border border-calm-border dark:border-slate-800 text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  title="Previous Day"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleNextDay}
+                  className="p-1.5 rounded-xl border border-calm-border dark:border-slate-800 text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  title="Next Day"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Time Slot Cards */}
+            <div className="space-y-3.5">
+              {/* Morning Block */}
+              <div
+                className={`p-4 rounded-2xl border transition-all duration-300 ${
+                  isSelectedDayToday && currentTimeSlot === 'morning'
+                    ? 'bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent dark:from-amber-950/40 dark:via-amber-950/20 border-amber-300 dark:border-amber-700/60 shadow-xs'
+                    : 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-100/80 dark:border-amber-900/40'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center space-x-1.5 text-amber-800 dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
+                    <Sunrise className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                    <span>Morning Focus</span>
+                  </div>
+                  {isSelectedDayToday && currentTimeSlot === 'morning' && (
+                    <span className="flex items-center text-[10px] font-extrabold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/60 px-2 py-0.5 rounded-md animate-pulse">
+                      <Zap className="w-3 h-3 mr-1 fill-current" /> Active Now
+                    </span>
+                  )}
+                </div>
+
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={activeDayRow.morning}
+                    onChange={(e) => handleScheduleCellChange(activeDayRowIndex, 'morning', e.target.value)}
+                    className="w-full mt-1 px-3 py-2 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                    placeholder="Morning focus tasks..."
+                  />
+                ) : (
+                  <p className="text-sm text-calm-text dark:text-slate-100 font-semibold leading-relaxed">
+                    {activeDayRow.morning || '—'}
+                  </p>
+                )}
+              </div>
+
+              {/* Afternoon Block */}
+              <div
+                className={`p-4 rounded-2xl border transition-all duration-300 ${
+                  isSelectedDayToday && currentTimeSlot === 'afternoon'
+                    ? 'bg-gradient-to-r from-sky-500/15 via-sky-500/5 to-transparent dark:from-sky-950/40 dark:via-sky-950/20 border-sky-300 dark:border-sky-700/60 shadow-xs'
+                    : 'bg-sky-50/50 dark:bg-sky-950/20 border-sky-100/80 dark:border-sky-900/40'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center space-x-1.5 text-sky-800 dark:text-sky-400 text-xs font-bold uppercase tracking-wider">
+                    <Sun className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                    <span>Afternoon Block</span>
+                  </div>
+                  {isSelectedDayToday && currentTimeSlot === 'afternoon' && (
+                    <span className="flex items-center text-[10px] font-extrabold text-sky-700 dark:text-sky-300 bg-sky-100 dark:bg-sky-900/60 px-2 py-0.5 rounded-md animate-pulse">
+                      <Zap className="w-3 h-3 mr-1 fill-current" /> Active Now
+                    </span>
+                  )}
+                </div>
+
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={activeDayRow.afternoon}
+                    onChange={(e) => handleScheduleCellChange(activeDayRowIndex, 'afternoon', e.target.value)}
+                    className="w-full mt-1 px-3 py-2 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                    placeholder="Afternoon tasks..."
+                  />
+                ) : (
+                  <p className="text-sm text-calm-text dark:text-slate-100 font-semibold leading-relaxed">
+                    {activeDayRow.afternoon || '—'}
+                  </p>
+                )}
+              </div>
+
+              {/* Evening Block */}
+              <div
+                className={`p-4 rounded-2xl border transition-all duration-300 ${
+                  isSelectedDayToday && currentTimeSlot === 'evening'
+                    ? 'bg-gradient-to-r from-indigo-500/15 via-indigo-500/5 to-transparent dark:from-indigo-950/40 dark:via-indigo-950/20 border-indigo-300 dark:border-indigo-700/60 shadow-xs'
+                    : 'bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-100/80 dark:border-indigo-900/40'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center space-x-1.5 text-indigo-800 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
+                    <Sunset className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    <span>Evening Rhythm</span>
+                  </div>
+                  {isSelectedDayToday && currentTimeSlot === 'evening' && (
+                    <span className="flex items-center text-[10px] font-extrabold text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/60 px-2 py-0.5 rounded-md animate-pulse">
+                      <Zap className="w-3 h-3 mr-1 fill-current" /> Active Now
+                    </span>
+                  )}
+                </div>
+
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={activeDayRow.evening}
+                    onChange={(e) => handleScheduleCellChange(activeDayRowIndex, 'evening', e.target.value)}
+                    className="w-full mt-1 px-3 py-2 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                    placeholder="Evening tasks..."
+                  />
+                ) : (
+                  <p className="text-sm text-calm-text dark:text-slate-100 font-semibold leading-relaxed">
+                    {activeDayRow.evening || '—'}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Mobile Stacked All-Days View (When 'ALL' is selected in the ribbon) */
+          <div className="space-y-4">
+            {currentSchedule.map((row, idx) => {
+              const isToday = row.day.toLowerCase() === todayAbbr.toLowerCase();
+              return (
+                <div
+                  key={row.day || idx}
+                  className={`bg-white dark:bg-slate-900 border rounded-3xl p-5 shadow-2xs transition-all duration-300 ${
+                    isToday
+                      ? 'border-accent-blue/40 bg-gradient-to-br from-white to-accent-blue/5 dark:from-slate-900 dark:to-accent-blue/15 shadow-sm'
+                      : 'border-calm-border dark:border-slate-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center space-x-2">
+                      <h3 className={`text-base font-bold ${isToday ? 'text-accent-blue' : 'text-calm-text dark:text-slate-100'}`}>
+                        {row.day}
+                      </h3>
+                      {isToday && (
+                        <span className="bg-accent-blue text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest">
+                          Today
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 text-xs">
+                    <div className="p-3 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100/80 dark:border-amber-900/40 rounded-2xl">
+                      <div className="flex items-center space-x-1.5 text-amber-800 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                        <Sunrise className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                        <span>Morning</span>
+                      </div>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={row.morning}
+                          onChange={(e) => handleScheduleCellChange(idx, 'morning', e.target.value)}
+                          className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                        />
+                      ) : (
+                        <p className="text-calm-text dark:text-slate-200 font-medium">{row.morning || '—'}</p>
+                      )}
+                    </div>
+
+                    <div className="p-3 bg-sky-50/50 dark:bg-sky-950/20 border border-sky-100/80 dark:border-sky-900/40 rounded-2xl">
+                      <div className="flex items-center space-x-1.5 text-sky-800 dark:text-sky-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                        <Sun className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+                        <span>Afternoon</span>
+                      </div>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={row.afternoon}
+                          onChange={(e) => handleScheduleCellChange(idx, 'afternoon', e.target.value)}
+                          className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                        />
+                      ) : (
+                        <p className="text-calm-text dark:text-slate-200 font-medium">{row.afternoon || '—'}</p>
+                      )}
+                    </div>
+
+                    <div className="p-3 bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100/80 dark:border-indigo-900/40 rounded-2xl">
+                      <div className="flex items-center space-x-1.5 text-indigo-800 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                        <Sunset className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                        <span>Evening</span>
+                      </div>
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={row.evening}
+                          onChange={(e) => handleScheduleCellChange(idx, 'evening', e.target.value)}
+                          className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                        />
+                      ) : (
+                        <p className="text-calm-text dark:text-slate-200 font-medium">{row.evening || '—'}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* DESKTOP TIMETABLE GRID */}
       <div className="hidden lg:block bg-white dark:bg-slate-900 border border-calm-border/80 dark:border-slate-800/80 rounded-3xl shadow-2xs overflow-hidden mb-8 transition-colors duration-200">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -369,94 +693,6 @@ export const Timetable = () => {
             })}
           </tbody>
         </table>
-      </div>
-
-      {/* Mobile/Tablet Stacked Day Cards View */}
-      <div className="lg:hidden space-y-4 mb-8">
-        {currentSchedule.map((row, idx) => {
-          const isToday = row.day.toLowerCase() === todayAbbr.toLowerCase();
-          return (
-            <div
-              key={row.day || idx}
-              className={`bg-white dark:bg-slate-900 border rounded-3xl p-5 shadow-2xs transition-all duration-300 ${
-                isToday
-                  ? 'border-accent-blue/40 bg-gradient-to-br from-white to-accent-blue/5 dark:from-slate-900 dark:to-accent-blue/15 shadow-sm'
-                  : 'border-calm-border dark:border-slate-800'
-              }`}
-            >
-              {/* Day Header */}
-              <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center space-x-2">
-                  <h3 className={`text-base font-bold ${isToday ? 'text-accent-blue' : 'text-calm-text dark:text-slate-100'}`}>
-                    {row.day}
-                  </h3>
-                  {isToday && (
-                    <span className="bg-accent-blue text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest">
-                      Today
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Day Slots */}
-              <div className="space-y-3 text-xs">
-                {/* Morning */}
-                <div className="p-3 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100/80 dark:border-amber-900/40 rounded-2xl">
-                  <div className="flex items-center space-x-1.5 text-amber-800 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-1">
-                    <Sunrise className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                    <span>Morning</span>
-                  </div>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={row.morning}
-                      onChange={(e) => handleScheduleCellChange(idx, 'morning', e.target.value)}
-                      className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
-                    />
-                  ) : (
-                    <p className="text-calm-text dark:text-slate-200 font-medium">{row.morning || '—'}</p>
-                  )}
-                </div>
-
-                {/* Afternoon */}
-                <div className="p-3 bg-sky-50/50 dark:bg-sky-950/20 border border-sky-100/80 dark:border-sky-900/40 rounded-2xl">
-                  <div className="flex items-center space-x-1.5 text-sky-800 dark:text-sky-400 text-[10px] font-bold uppercase tracking-wider mb-1">
-                    <Sun className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                    <span>Afternoon</span>
-                  </div>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={row.afternoon}
-                      onChange={(e) => handleScheduleCellChange(idx, 'afternoon', e.target.value)}
-                      className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
-                    />
-                  ) : (
-                    <p className="text-calm-text dark:text-slate-200 font-medium">{row.afternoon || '—'}</p>
-                  )}
-                </div>
-
-                {/* Evening */}
-                <div className="p-3 bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100/80 dark:border-indigo-900/40 rounded-2xl">
-                  <div className="flex items-center space-x-1.5 text-indigo-800 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider mb-1">
-                    <Sunset className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                    <span>Evening</span>
-                  </div>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={row.evening}
-                      onChange={(e) => handleScheduleCellChange(idx, 'evening', e.target.value)}
-                      className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
-                    />
-                  ) : (
-                    <p className="text-calm-text dark:text-slate-200 font-medium">{row.evening || '—'}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
       </div>
 
       {/* Guidelines & Strategy Section */}
