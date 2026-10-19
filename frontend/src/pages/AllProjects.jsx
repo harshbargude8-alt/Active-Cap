@@ -34,7 +34,7 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
   const [swapTargetProject, setSwapTargetProject] = useState(null);
   const [activeProjectsList, setActiveProjectsList] = useState([]);
 
-  const categories = ["Code", "Content", "Reading", "Music", "Animation", "Writing", "Research", "Other"];
+  const categories = ["Code", "Content", "Reading", "Music", "Animation", "Writing", "Research", "Course", "Other"];
   const statuses = ["Active", "Parked", "Someday", "Done", "Abandoned"];
 
   const loadProjects = async () => {

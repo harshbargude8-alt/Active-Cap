@@ -46,7 +46,7 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
   const [newStatus, setNewStatus] = useState('Parked');
   const [createError, setCreateError] = useState('');
 
-  const categories = ["Code", "Content", "Reading", "Music", "Animation", "Writing", "Research", "Other"];
+  const categories = ["Code", "Content", "Reading", "Music", "Animation", "Writing", "Research", "Course", "Other"];
 
   const getCategoryColor = (cat) => {
     switch (cat) {
@@ -57,6 +57,7 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
       case 'Animation': return 'bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 border-indigo-100 dark:border-indigo-900/40';
       case 'Writing': return 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-100 dark:border-amber-900/40';
       case 'Research': return 'bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-300 border-teal-100 dark:border-teal-900/40';
+      case 'Course': return 'bg-cyan-50 dark:bg-cyan-950/30 text-cyan-700 dark:text-cyan-300 border-cyan-100 dark:border-cyan-900/40';
       default: return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
     }
   };
