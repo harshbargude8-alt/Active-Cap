@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTimer } from '../context/TimerContext';
@@ -10,18 +10,18 @@ import {
   X,
   Flame,
   CheckCircle2,
-  Calendar,
-  Layers,
   ChevronRight,
   TrendingUp,
-  Inbox,
-  AlertCircle,
-  HelpCircle,
   Plus,
   RefreshCw,
   FolderOpen,
   Play,
-  Square
+  Square,
+  CheckSquare,
+  Check,
+  Clock,
+  ArrowRight,
+  Repeat
 } from 'lucide-react';
 
 export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
@@ -32,6 +32,12 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
   const [loading, setLoading] = useState(true);
   const [isCheckInOpen, setIsCheckInOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+
+  // Today's Agenda State
+  const [todayTasks, setTodayTasks] = useState([]);
+  const [todaySummary, setTodaySummary] = useState({ total: 0, completed: 0, pending: 0 });
+  const [agendaNewTitle, setAgendaNewTitle] = useState('');
+  const [isAddingAgendaTask, setIsAddingAgendaTask] = useState(false);
 
   // Swap State
   const [isSwapOpen, setIsSwapOpen] = useState(false);
@@ -47,7 +53,15 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
   const [newStatus, setNewStatus] = useState('Parked');
   const [createError, setCreateError] = useState('');
 
-  const loadData = async () => {
+  const getTodayISO = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const projRes = await apiFetch('/projects');
@@ -61,10 +75,88 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
         const revData = await revRes.json();
         setReviewData(revData);
       }
+
+      const todayStr = getTodayISO();
+      const taskRes = await apiFetch(`/daily-tasks?date=${todayStr}`);
+      if (taskRes.ok) {
+        const taskData = await taskRes.json();
+        setTodayTasks(taskData.tasks || []);
+        setTodaySummary(taskData.summary || { total: 0, completed: 0, pending: 0 });
+      }
     } catch (err) {
       console.error('Error loading dashboard data:', err);
     } finally {
       setLoading(false);
+    }
+  }, [apiFetch]);
+
+  const handleToggleAgendaTask = async (task) => {
+    const nextStatus = task.status === 'completed' ? 'pending' : 'completed';
+    setTodayTasks((prev) =>
+      prev.map((t) => (t._id === task._id ? { ...t, status: nextStatus } : t))
+    );
+    setTodaySummary((prev) => {
+      const isCompleted = nextStatus === 'completed';
+      return {
+        ...prev,
+        completed: isCompleted ? prev.completed + 1 : Math.max(0, prev.completed - 1),
+        pending: isCompleted ? Math.max(0, prev.pending - 1) : prev.pending + 1,
+      };
+    });
+
+    try {
+      const res = await apiFetch(`/daily-tasks/${task._id}/toggle`, { method: 'PATCH' });
+      if (!res.ok) throw new Error('Failed to toggle');
+      const updated = await res.json();
+      setTodayTasks((prev) => prev.map((t) => (t._id === task._id ? updated : t)));
+    } catch (err) {
+      console.error('Toggle agenda task error:', err);
+      loadData();
+    }
+  };
+
+  const handleQuickAddAgendaTask = async (e) => {
+    e.preventDefault();
+    if (!agendaNewTitle.trim()) return;
+
+    setIsAddingAgendaTask(true);
+    try {
+      const todayStr = getTodayISO();
+      const res = await apiFetch('/daily-tasks', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: agendaNewTitle.trim(),
+          date: todayStr,
+        }),
+      });
+
+      if (res.ok) {
+        const created = await res.json();
+        setTodayTasks((prev) => [...prev, created]);
+        setTodaySummary((prev) => ({
+          ...prev,
+          total: prev.total + 1,
+          pending: prev.pending + 1,
+        }));
+        setAgendaNewTitle('');
+      }
+    } catch (err) {
+      console.error('Quick add agenda task error:', err);
+    } finally {
+      setIsAddingAgendaTask(false);
+    }
+  };
+
+  const handleSyncTodayRoutines = async () => {
+    try {
+      const todayStr = getTodayISO();
+      await apiFetch('/routines/sync-to-date', {
+        method: 'POST',
+        body: JSON.stringify({ date: todayStr }),
+      });
+      loadData();
+    } catch (err) {
+      console.error('Failed to sync today routines:', err);
     }
   };
 
@@ -75,7 +167,7 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
     };
     window.addEventListener('project-checkin-logged', handleCheckinLogged);
     return () => window.removeEventListener('project-checkin-logged', handleCheckinLogged);
-  }, []);
+  }, [loadData]);
 
   const handleCheckInSuccess = () => {
     loadData();
@@ -176,7 +268,7 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
       setIsCreateOpen(false);
       resetCreateForm();
       loadData();
-    } catch (err) {
+    } catch {
       setCreateError('Connection error. Please try again.');
     }
   };
@@ -209,6 +301,141 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
       
       {/* Quick capture input at the top */}
       <QuickCapture onSuccess={loadData} />
+
+      {/* Today's Agenda Widget */}
+      <section className="mb-10 bg-graphite-800 border border-border-default rounded-2xl p-5 shadow-sm transition-colors duration-200">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-lime-accent/10 border border-lime-accent/20 flex items-center justify-center text-lime-accent">
+              <CheckSquare className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h2 className="font-heading text-lg font-bold text-text-primary tracking-tight">
+                  Today's Agenda
+                </h2>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-lime-accent/15 text-lime-accent border border-lime-accent/25">
+                  {todaySummary.completed}/{todaySummary.total} Completed
+                </span>
+              </div>
+              <p className="text-xs text-text-muted mt-0.5">
+                Routines and daily micro-deliverables for today
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onViewChange('daily-tasks')}
+            className="flex items-center space-x-1 text-xs font-semibold text-lime-accent hover:text-lime-accent-hover transition-colors cursor-pointer group"
+          >
+            <span>View All ({todayTasks.length})</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </button>
+        </div>
+
+        {/* Completion Progress Bar */}
+        <div className="w-full h-2 bg-graphite-700 rounded-full overflow-hidden mb-4 border border-border-subtle">
+          <div
+            className="h-full bg-lime-accent transition-all duration-500 rounded-full shadow-[0_0_8px_rgba(132,204,22,0.4)]"
+            style={{
+              width: `${todaySummary.total > 0 ? Math.round((todaySummary.completed / todaySummary.total) * 100) : 0}%`,
+            }}
+          />
+        </div>
+
+        {/* Top 4 Priority Tasks */}
+        {todayTasks.length === 0 ? (
+          <div className="p-4 bg-graphite-700/50 rounded-xl border border-dashed border-border-default text-center text-xs text-text-muted mb-3 flex flex-col items-center justify-center space-y-2">
+            <span>No daily tasks scheduled for today yet.</span>
+            <div className="flex items-center space-x-2 pt-1">
+              <button
+                type="button"
+                onClick={handleSyncTodayRoutines}
+                className="px-3 py-1 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 font-bold rounded-lg transition-colors cursor-pointer flex items-center space-x-1"
+              >
+                <Repeat className="w-3 h-3" />
+                <span>Load Today's Routines</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onViewChange('daily-tasks')}
+                className="px-3 py-1 bg-graphite-700 hover:bg-graphite-600 text-text-primary rounded-lg transition-colors cursor-pointer"
+              >
+                Open Daily Planner
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 mb-3">
+            {todayTasks.slice(0, 4).map((task) => {
+              const isDone = task.status === 'completed';
+              return (
+                <div
+                  key={task._id}
+                  onClick={() => handleToggleAgendaTask(task)}
+                  className={`flex items-center space-x-3 p-3 rounded-xl border transition-all cursor-pointer ${
+                    isDone
+                      ? 'bg-graphite-900/40 border-border-default/40 opacity-70'
+                      : 'bg-graphite-700/60 border-border-default hover:border-lime-accent/30 hover:bg-graphite-700'
+                  }`}
+                >
+                  <button
+                    type="button"
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                      isDone
+                        ? 'bg-lime-accent border-lime-accent text-graphite-950 shadow-xs'
+                        : 'border-border-default hover:border-lime-accent bg-graphite-800 text-transparent'
+                    }`}
+                  >
+                    <Check className={`w-3 h-3 stroke-[3] ${isDone ? 'block' : 'hidden'}`} />
+                  </button>
+
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={`text-xs font-medium truncate ${
+                        isDone ? 'line-through text-text-muted' : 'text-text-primary'
+                      }`}
+                    >
+                      {task.title}
+                    </p>
+                    <div className="flex items-center space-x-2 mt-0.5 text-[10px] text-text-muted">
+                      {task.projectId?.title && (
+                        <span className="truncate max-w-[120px] text-lime-accent">
+                          {task.projectId.title}
+                        </span>
+                      )}
+                      {task.estimatedMinutes > 0 && (
+                        <span className="font-mono flex items-center gap-0.5">
+                          <Clock className="w-2.5 h-2.5" /> {task.estimatedMinutes}m
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Quick Add Agenda Task Form */}
+        <form onSubmit={handleQuickAddAgendaTask} className="flex items-center space-x-2 pt-2 border-t border-border-subtle">
+          <input
+            type="text"
+            value={agendaNewTitle}
+            onChange={(e) => setAgendaNewTitle(e.target.value)}
+            placeholder="Add a quick daily task for today..."
+            className="flex-1 px-3 py-1.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary placeholder-text-muted text-xs outline-none focus:border-lime-accent transition-all"
+          />
+          <button
+            type="submit"
+            disabled={isAddingAgendaTask || !agendaNewTitle.trim()}
+            className="px-3 py-1.5 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-xs font-bold rounded-xl transition-all flex items-center space-x-1 cursor-pointer disabled:opacity-50"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Add</span>
+          </button>
+        </form>
+      </section>
 
       {/* Main Grid: Active Focus & Review Banner */}
       <section className="mb-12">

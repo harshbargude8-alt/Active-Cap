@@ -27,20 +27,40 @@ export const LogFocusModal = () => {
     setError(null);
 
     try {
-      const res = await apiFetch(`/projects/${logSessionData.projectId}/checkin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          note,
-          minutesSpent: Number(minutesSpent),
-        }),
-      });
+      // If attached to a project track, log check-in
+      if (logSessionData.projectId && logSessionData.projectId !== 'general' && logSessionData.projectId !== 'none') {
+        const res = await apiFetch(`/projects/${logSessionData.projectId}/checkin`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            note,
+            minutesSpent: Number(minutesSpent),
+          }),
+        });
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Failed to submit focus session.');
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || 'Failed to submit focus session.');
+        }
+      }
+
+      // If attached to a daily task, update task's logged minutes
+      if (logSessionData.taskId) {
+        try {
+          const getRes = await apiFetch(`/daily-tasks/${logSessionData.taskId}`);
+          if (getRes.ok) {
+            const taskObj = await getRes.json();
+            const newActual = (taskObj.actualMinutes || 0) + Number(minutesSpent);
+            await apiFetch(`/daily-tasks/${logSessionData.taskId}`, {
+              method: 'PUT',
+              body: JSON.stringify({ actualMinutes: newActual }),
+            });
+          }
+        } catch (taskErr) {
+          console.error('Failed to update task minutes:', taskErr);
+        }
       }
 
       // Success confetti!
@@ -51,7 +71,7 @@ export const LogFocusModal = () => {
         colors: ['#C7F36B', '#67E8D2', '#75D99A'],
       });
 
-      // Notify all active views to reload project data
+      // Notify all active views to reload data
       window.dispatchEvent(new Event('project-checkin-logged'));
       
       // Close modal

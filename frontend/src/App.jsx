@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { TimerProvider } from './context/TimerContext';
@@ -11,6 +11,7 @@ import { Inbox } from './pages/Inbox';
 import { AllProjects } from './pages/AllProjects';
 import { ProjectDetail } from './pages/ProjectDetail';
 import { Timetable } from './pages/Timetable';
+import { DailyTasks } from './pages/DailyTasks';
 import { RefreshCw } from 'lucide-react';
 import './App.css';
 import './index.css';
@@ -35,6 +36,9 @@ function MainAppContent() {
         setSelectedProjectId(null);
       } else if (hash === '#/schedule' || hash === '#/timetable') {
         setView('timetable');
+        setSelectedProjectId(null);
+      } else if (hash === '#/tasks' || hash === '#/daily-tasks') {
+        setView('daily-tasks');
         setSelectedProjectId(null);
       } else if (hash.startsWith('#/project/')) {
         const id = hash.replace('#/project/', '');
@@ -62,6 +66,8 @@ function MainAppContent() {
       window.location.hash = `#/projects`;
     } else if (viewName === 'timetable' || viewName === 'schedule') {
       window.location.hash = `#/schedule`;
+    } else if (viewName === 'daily-tasks' || viewName === 'tasks') {
+      window.location.hash = `#/tasks`;
     } else {
       window.location.hash = `#/dashboard`;
     }
@@ -101,6 +107,9 @@ function MainAppContent() {
         )}
         {view === 'timetable' && (
           <Timetable />
+        )}
+        {view === 'daily-tasks' && (
+          <DailyTasks onViewChange={navigate} />
         )}
       </main>
 

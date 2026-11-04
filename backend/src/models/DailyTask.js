@@ -67,6 +67,11 @@ const dailyTaskSchema = new mongoose.Schema({
     enum: ['manual', 'project_next_step', 'routine', 'rollover'],
     default: 'manual',
   },
+  routineId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Routine',
+    default: null,
+  },
 }, {
   timestamps: true,
 });

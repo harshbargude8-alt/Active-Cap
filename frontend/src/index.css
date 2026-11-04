@@ -156,19 +156,13 @@
 /* ==========================================================================
    BUTTON CONTRAST RULES:
    Ensures neon acid-lime buttons always have dark text (#101211)
-   in both Dark and Light themes.
+   in both Dark and Light themes without overriding translucent or hover variants.
    ========================================================================== */
 .text-graphite-950 {
   color: #101211 !important;
 }
 
-button[class*="bg-lime-accent"],
-a[class*="bg-lime-accent"] {
-  color: #101211 !important;
-}
-
-button[class*="bg-lime-accent"] svg,
-a[class*="bg-lime-accent"] svg {
+.text-graphite-950 svg {
   color: #101211 !important;
   stroke: #101211 !important;
 }

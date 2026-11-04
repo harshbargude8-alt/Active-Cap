@@ -85,13 +85,14 @@ export const TimerProvider = ({ children }) => {
   };
 
   // Timer actions
-  const startTimer = (projectId, projectTitle) => {
+  const startTimer = (projectId, projectTitle, taskId = null) => {
     requestNotificationPermission();
     const startTimeStamp = Date.now();
     localStorage.setItem('activecap_timer_start', startTimeStamp.toString());
     setActiveTimer({
       projectId,
       projectTitle,
+      taskId,
       startTime: startTimeStamp,
     });
     setSecondsElapsed(0);
@@ -99,8 +100,9 @@ export const TimerProvider = ({ children }) => {
 
   const stopTimer = () => {
     const finalSeconds = secondsElapsed;
-    const projId = activeTimer.projectId;
-    const projTitle = activeTimer.projectTitle;
+    const projId = activeTimer?.projectId;
+    const projTitle = activeTimer?.projectTitle;
+    const taskId = activeTimer?.taskId;
 
     setActiveTimer(null);
     setSecondsElapsed(0);
@@ -109,7 +111,7 @@ export const TimerProvider = ({ children }) => {
       timerIntervalRef.current = null;
     }
     const minutes = Math.max(1, Math.round(finalSeconds / 60));
-    setLogSessionData({ projectId: projId, projectTitle: projTitle, minutes });
+    setLogSessionData({ projectId: projId, projectTitle: projTitle, taskId, minutes });
     return minutes;
   };
 

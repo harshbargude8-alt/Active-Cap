@@ -12,6 +12,8 @@ import projectsRouter from './routes/projects.js';
 import inboxRouter from './routes/inbox.js';
 import reviewRouter from './routes/review.js';
 import timetableRouter from './routes/timetable.js';
+import dailyTasksRouter from './routes/dailyTasks.js';
+import routinesRouter from './routes/routines.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -27,7 +29,7 @@ if (process.env.CORS_ORIGIN) {
 
 app.use(cors({
   origin: allowedOrigins,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 })); // Connects to Vite app
 app.use(express.json());
@@ -38,6 +40,8 @@ app.use('/api/projects', projectsRouter);
 app.use('/api/inbox', inboxRouter);
 app.use('/api/review', reviewRouter);
 app.use('/api/timetable', timetableRouter);
+app.use('/api/daily-tasks', dailyTasksRouter);
+app.use('/api/routines', routinesRouter);
 
 // Health Check
 app.get('/api/health', (req, res) => {
