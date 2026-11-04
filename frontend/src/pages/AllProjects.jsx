@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { SwapModal } from '../components/SwapModal';
+import { PROJECT_CATEGORIES, PROJECT_STATUSES, getCategoryColor, getStatusColor } from '../constants/project';
 import {
   Search,
   Filter,
@@ -33,9 +34,6 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
   const [isSwapOpen, setIsSwapOpen] = useState(false);
   const [swapTargetProject, setSwapTargetProject] = useState(null);
   const [activeProjectsList, setActiveProjectsList] = useState([]);
-
-  const categories = ["Code", "Content", "Reading", "Music", "Animation", "Writing", "Research", "Course", "Other"];
-  const statuses = ["Active", "Parked", "Someday", "Done", "Abandoned"];
 
   const loadProjects = async () => {
     setLoading(true);
@@ -140,17 +138,6 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
     handleCreateProject(null, activeIdToPark);
   };
 
-  const getStatusColor = (st) => {
-    switch (st) {
-      case 'Active': return 'bg-sky-50 dark:bg-sky-950/30 text-accent-blue dark:text-sky-300 border-sky-200 dark:border-sky-800/40';
-      case 'Parked': return 'bg-amber-50 dark:bg-amber-950/30 text-accent-amber dark:text-amber-300 border-amber-200 dark:border-amber-800/40';
-      case 'Someday': return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
-      case 'Done': return 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40';
-      case 'Abandoned': return 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/40';
-      default: return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
-    }
-  };
-
   const filteredProjects = projects.filter((p) => {
     const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) ||
                           p.description?.toLowerCase().includes(search.toLowerCase());
@@ -205,7 +192,7 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
               className="bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 px-3 py-2 pr-8 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300 appearance-none"
             >
               <option value="All" className="bg-white dark:bg-slate-900">All Statuses</option>
-              {statuses.map((s) => (
+              {PROJECT_STATUSES.map((s) => (
                 <option key={s} value={s} className="bg-white dark:bg-slate-900">{s}</option>
               ))}
             </select>
@@ -218,7 +205,7 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
               className="bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 px-3 py-2 pr-8 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300 appearance-none"
             >
               <option value="All" className="bg-white dark:bg-slate-900">All Categories</option>
-              {categories.map((c) => (
+              {PROJECT_CATEGORIES.map((c) => (
                 <option key={c} value={c} className="bg-white dark:bg-slate-900">{c}</option>
               ))}
             </select>
@@ -302,7 +289,7 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
                   onChange={(e) => setNewCategory(e.target.value)}
                   className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
                 >
-                  {categories.map((cat) => (
+                  {PROJECT_CATEGORIES.map((cat) => (
                     <option key={cat} value={cat} className="bg-white dark:bg-slate-900">{cat}</option>
                   ))}
                 </select>

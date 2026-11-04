@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { SwapModal } from '../components/SwapModal';
+import { PROJECT_CATEGORIES, getCategoryColor } from '../constants/project';
 import {
   ArrowLeft,
   Calendar,
@@ -39,8 +40,6 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
   // Delete Modal State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const categories = ["Code", "Content", "Reading", "Music", "Animation", "Writing", "Research", "Course", "Other"];
 
   const loadProjectData = async () => {
     setLoading(true);
@@ -145,20 +144,6 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
       alert('Network error while deleting track.');
     } finally {
       setIsDeleting(false);
-    }
-  };
-
-  const getCategoryColor = (cat) => {
-    switch (cat) {
-      case 'Code': return 'bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-900/40';
-      case 'Content': return 'bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 border-purple-100 dark:border-purple-900/40';
-      case 'Reading': return 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900/40';
-      case 'Music': return 'bg-pink-50 dark:bg-pink-950/30 text-pink-700 dark:text-pink-300 border-pink-100 dark:border-pink-900/40';
-      case 'Animation': return 'bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 border-indigo-100 dark:border-indigo-900/40';
-      case 'Writing': return 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-100 dark:border-amber-900/40';
-      case 'Research': return 'bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-300 border-teal-100 dark:border-teal-900/40';
-      case 'Course': return 'bg-cyan-50 dark:bg-cyan-950/30 text-cyan-700 dark:text-cyan-300 border-cyan-100 dark:border-cyan-900/40';
-      default: return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
     }
   };
 
@@ -280,7 +265,7 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
                 >
-                  {categories.map((cat) => (
+                  {PROJECT_CATEGORIES.map((cat) => (
                     <option key={cat} value={cat} className="bg-white dark:bg-slate-900">{cat}</option>
                   ))}
                 </select>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { SwapModal } from '../components/SwapModal';
+import { PROJECT_CATEGORIES } from '../constants/project';
 import {
   Lightbulb,
   ArrowUpRight,
@@ -30,8 +31,6 @@ export const Inbox = ({ onViewChange, onSelectProjectId }) => {
   const [isSwapOpen, setIsSwapOpen] = useState(false);
   const [swapTargetProject, setSwapTargetProject] = useState(null);
   const [activeProjectsList, setActiveProjectsList] = useState([]);
-
-  const categories = ["Code", "Content", "Reading", "Music", "Animation", "Writing", "Research", "Course", "Other"];
 
   const loadInboxItems = async () => {
     setLoading(true);
@@ -289,7 +288,7 @@ export const Inbox = ({ onViewChange, onSelectProjectId }) => {
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
                 >
-                  {categories.map((cat) => (
+                  {PROJECT_CATEGORIES.map((cat) => (
                     <option key={cat} value={cat} className="bg-white dark:bg-slate-900">{cat}</option>
                   ))}
                 </select>
