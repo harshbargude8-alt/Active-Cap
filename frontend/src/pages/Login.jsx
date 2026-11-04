@@ -34,37 +34,37 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 transition-colors duration-200">
-      <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-3xl shadow-xl overflow-hidden p-8 relative transition-colors duration-200">
+    <div className="min-h-screen bg-app-bg flex items-center justify-center p-4 transition-colors duration-200">
+      <div className="w-full max-w-md bg-graphite-800 border border-border-default rounded-2xl shadow-xl overflow-hidden p-8 relative transition-colors duration-200">
         
         {/* Decorative subtle ambient spots */}
-        <div className="absolute -top-16 -right-16 w-32 h-32 bg-accent-blue/5 dark:bg-accent-blue/10 rounded-full blur-xl"></div>
-        <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-accent-green/5 dark:bg-accent-green/10 rounded-full blur-xl"></div>
+        <div className="absolute -top-16 -right-16 w-32 h-32 bg-lime-accent/5 rounded-full blur-xl"></div>
+        <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-mint-accent/5 rounded-full blur-xl"></div>
 
         <div className="flex flex-col items-center mb-8 relative z-10">
-          <div className="bg-gradient-to-tr from-accent-blue to-accent-green p-3 rounded-2xl text-white shadow-md mb-4">
+          <div className="bg-gradient-to-tr from-lime-accent to-mint-accent p-3 rounded-2xl text-graphite-950 shadow-md mb-4">
             <Sparkles className="w-6 h-6 animate-pulse" />
           </div>
-          <h1 className="text-2xl font-bold text-calm-text dark:text-slate-100">Active Cap</h1>
-          <p className="text-sm text-calm-muted dark:text-slate-400 mt-1">
+          <h1 className="text-2xl font-bold font-heading text-text-primary">Active Cap</h1>
+          <p className="text-sm text-text-muted mt-1">
             {isLogin ? 'Focus on max 2 active projects.' : 'Set up your single-user account.'}
           </p>
         </div>
 
         {error && (
-          <div className="mb-6 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-sm p-3 rounded-xl flex items-start space-x-2">
-            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="mb-6 bg-error/10 border border-error/20 text-error text-sm p-3 rounded-xl flex items-start space-x-2">
+            <AlertCircle className="w-5 h-5 text-error flex-shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
           <div>
-            <label className="block text-xs font-medium text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">
               Username
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-calm-muted dark:text-slate-400">
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-text-muted">
                 <User className="w-4 h-4" />
               </span>
               <input
@@ -73,17 +73,17 @@ export const Login = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="e.g. demo"
                 required
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 placeholder-calm-muted dark:placeholder-slate-500 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                className="w-full pl-10 pr-4 py-3 bg-graphite-700 border border-border-default rounded-xl text-text-primary placeholder-text-muted text-sm outline-none focus:border-lime-accent transition-all duration-300"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-medium text-text-muted uppercase tracking-wider mb-2">
               Password
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-calm-muted dark:text-slate-400">
+              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-text-muted">
                 <Lock className="w-4 h-4" />
               </span>
               <input
@@ -92,7 +92,7 @@ export const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 placeholder-calm-muted dark:placeholder-slate-500 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                className="w-full pl-10 pr-4 py-3 bg-graphite-700 border border-border-default rounded-xl text-text-primary placeholder-text-muted text-sm outline-none focus:border-lime-accent transition-all duration-300"
               />
             </div>
           </div>
@@ -100,14 +100,14 @@ export const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-calm-slate hover:bg-calm-slate/95 text-white rounded-xl font-medium text-sm shadow-sm transition-all duration-300 transform active:scale-98 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 rounded-xl font-medium text-sm shadow-sm transition-all duration-300 transform active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Create Account'}
           </button>
         </form>
 
         <div className="mt-8 text-center text-sm relative z-10">
-          <span className="text-calm-muted dark:text-slate-400">
+          <span className="text-text-muted">
             {isLogin ? "First time using Active Cap?" : "Already have an account?"}
           </span>{' '}
           <button
@@ -115,7 +115,7 @@ export const Login = () => {
               setIsLogin(!isLogin);
               setError('');
             }}
-            className="text-accent-blue dark:text-sky-400 hover:underline font-medium"
+            className="text-lime-accent hover:underline font-medium"
           >
             {isLogin ? 'Register here' : 'Sign in here'}
           </button>

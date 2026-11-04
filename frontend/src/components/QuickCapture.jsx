@@ -41,30 +41,30 @@ export const QuickCapture = ({ onSuccess }) => {
       {/* Desktop Capture Bar */}
       <div className="hidden md:block max-w-2xl mx-auto my-6 px-4">
         <form onSubmit={handleSubmit} className="relative group">
-          <div className="flex items-center bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl shadow-sm hover:shadow-md focus-within:shadow-md focus-within:border-accent-blue/50 dark:focus-within:border-accent-blue/50 transition-all duration-300 px-4 py-3">
-            <Lightbulb className="w-5 h-5 text-calm-muted dark:text-slate-400 mr-3 group-focus-within:text-accent-blue transition-colors duration-300" />
+          <div className="flex items-center bg-graphite-700 border border-border-default rounded-xl shadow-sm hover:shadow-md focus-within:shadow-md focus-within:border-lime-accent/50 transition-all duration-300 px-4 py-3">
+            <Lightbulb className="w-5 h-5 text-text-muted mr-3 group-focus-within:text-lime-accent transition-colors duration-300" />
             <input
               type="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="Got a quick idea? Dump it here..."
               disabled={isSubmitting}
-              className="flex-1 bg-transparent border-none outline-none text-calm-text dark:text-slate-100 placeholder-calm-muted dark:placeholder-slate-500 text-sm"
+              className="flex-1 bg-transparent border-none outline-none text-text-primary placeholder-text-muted text-sm"
             />
             <button
               type="submit"
               disabled={!text.trim() || isSubmitting}
               className={`p-1.5 rounded-xl transition-all duration-300 ${
                 text.trim()
-                  ? 'bg-accent-blue text-white hover:bg-accent-blue/90 cursor-pointer'
-                  : 'text-calm-muted dark:text-slate-600 cursor-not-allowed'
+                  ? 'bg-lime-accent text-graphite-950 hover:brightness-110 cursor-pointer'
+                  : 'text-text-muted cursor-not-allowed'
               }`}
             >
               <Send className="w-4 h-4" />
             </button>
           </div>
           {success && (
-            <span className="absolute -bottom-6 left-4 text-xs font-medium text-accent-green animate-fade-in">
+            <span className="absolute -bottom-6 left-4 text-xs font-medium text-success animate-fade-in">
               ✨ Captured to Inbox!
             </span>
           )}
@@ -75,23 +75,23 @@ export const QuickCapture = ({ onSuccess }) => {
       <div className="md:hidden">
         <button
           onClick={() => setIsMobileOpen(true)}
-          className="fixed bottom-20 right-6 z-40 bg-accent-blue text-white p-4 rounded-full shadow-lg hover:shadow-xl active:scale-95 hover:bg-accent-blue/95 transition-all duration-300"
+          className="fixed bottom-20 right-6 z-40 bg-lime-accent text-graphite-950 p-4 rounded-full shadow-lg hover:shadow-xl active:scale-95 hover:brightness-110 transition-all duration-300"
           aria-label="Quick capture idea"
         >
           <Plus className="w-6 h-6" />
         </button>
 
         {isMobileOpen && (
-          <div className="fixed inset-0 z-55 bg-black/50 backdrop-blur-sm flex items-end justify-center p-4">
-            <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 w-full max-w-md rounded-t-3xl p-6 shadow-2xl animate-fade-in">
+          <div className="fixed inset-0 z-55 bg-black/60 backdrop-blur-sm flex items-end justify-center p-4">
+            <div className="bg-graphite-800 border border-border-default w-full max-w-md rounded-t-3xl p-6 shadow-2xl animate-fade-in">
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center space-x-2">
-                  <Lightbulb className="w-5 h-5 text-accent-blue" />
-                  <h3 className="font-semibold text-calm-text dark:text-slate-100">Quick Capture Idea</h3>
+                  <Lightbulb className="w-5 h-5 text-lime-accent" />
+                  <h3 className="font-semibold text-text-primary">Quick Capture Idea</h3>
                 </div>
                 <button
                   onClick={() => setIsMobileOpen(false)}
-                  className="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-calm-muted dark:text-slate-400"
+                  className="p-1 rounded-full hover:bg-graphite-700 text-text-muted hover:text-text-secondary"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -104,21 +104,21 @@ export const QuickCapture = ({ onSuccess }) => {
                   placeholder="Draft your raw idea... (decide details later)"
                   disabled={isSubmitting}
                   rows="3"
-                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-calm-border dark:border-slate-700 rounded-xl p-3 text-calm-text dark:text-slate-100 text-sm placeholder-calm-muted dark:placeholder-slate-500 outline-none focus:border-accent-blue focus:bg-white dark:focus:bg-slate-800 transition-all duration-300 mb-4 resize-none"
+                  className="w-full bg-graphite-700 border border-border-default rounded-xl p-3 text-text-primary text-sm placeholder-text-muted outline-none focus:border-lime-accent transition-all duration-300 mb-4 resize-none"
                   autoFocus
                 />
                 <div className="flex justify-end space-x-2">
                   <button
                     type="button"
                     onClick={() => setIsMobileOpen(false)}
-                    className="px-4 py-2 text-sm font-medium text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text-secondary transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={!text.trim() || isSubmitting}
-                    className="px-5 py-2 text-sm font-medium bg-accent-blue text-white rounded-xl shadow-sm hover:bg-accent-blue/90 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-calm-muted transition-all duration-300"
+                    className="px-5 py-2 text-sm font-medium bg-lime-accent text-graphite-950 rounded-xl shadow-sm hover:brightness-110 disabled:opacity-40 disabled:pointer-events-none transition-all duration-300"
                   >
                     {isSubmitting ? 'Saving...' : 'Capture'}
                   </button>

@@ -41,7 +41,7 @@ export const CheckInModal = ({ project, isOpen, onClose, onSuccess }) => {
         particleCount: 60,
         spread: 50,
         origin: { y: 0.75 },
-        colors: ['#0284c7', '#10b981', '#f59e0b'],
+        colors: ['#C7F36B', '#67E8D2', '#75D99A'],
       });
 
       setNote('');
@@ -56,32 +56,32 @@ export const CheckInModal = ({ project, isOpen, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl animate-fade-in relative">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-graphite-800 border border-border-default w-full max-w-md rounded-2xl p-6 shadow-2xl animate-fade-in relative">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-calm-muted dark:text-slate-400 transition-colors"
+          className="absolute top-5 right-5 p-1 rounded-full hover:bg-graphite-700 text-text-muted hover:text-text-secondary transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="flex items-center space-x-2 mb-4">
-          <div className="bg-amber-50 dark:bg-amber-950/30 p-2 rounded-xl text-accent-amber">
+          <div className="bg-warning/10 p-2 rounded-xl text-warning">
             <Flame className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-accent-amber uppercase tracking-wider">
+            <span className="text-xs font-semibold text-warning uppercase tracking-wider">
               Log Progress
             </span>
-            <h3 className="font-bold text-lg text-calm-text dark:text-slate-100 leading-tight">{project.title}</h3>
+            <h3 className="font-bold text-lg text-text-primary leading-tight">{project.title}</h3>
           </div>
         </div>
 
-        {error && <div className="mb-4 text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-3 rounded-xl">{error}</div>}
+        {error && <div className="mb-4 text-sm text-error bg-error/10 border border-error/20 p-3 rounded-xl">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">
               What did you accomplish today?
             </label>
             <input
@@ -91,13 +91,13 @@ export const CheckInModal = ({ project, isOpen, onClose, onSuccess }) => {
               placeholder="e.g. Scaffolding backend routes and models"
               required
               disabled={isSubmitting}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 placeholder-calm-muted dark:placeholder-slate-500 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+              className="w-full px-4 py-3 bg-graphite-700 border border-border-default rounded-xl text-text-primary placeholder-text-muted text-sm outline-none focus:border-lime-accent transition-all duration-300"
               autoFocus
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center">
+            <label className="block text-xs font-semibold text-text-muted uppercase tracking-wider mb-2 flex items-center">
               <Clock className="w-3.5 h-3.5 mr-1" /> Estimated Minutes (optional)
             </label>
             <input
@@ -107,7 +107,7 @@ export const CheckInModal = ({ project, isOpen, onClose, onSuccess }) => {
               placeholder="e.g. 45"
               min="1"
               disabled={isSubmitting}
-              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 placeholder-calm-muted dark:placeholder-slate-500 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+              className="w-full px-4 py-3 bg-graphite-700 border border-border-default rounded-xl text-text-primary placeholder-text-muted text-sm outline-none focus:border-lime-accent transition-all duration-300"
             />
           </div>
 
@@ -116,14 +116,14 @@ export const CheckInModal = ({ project, isOpen, onClose, onSuccess }) => {
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-5 py-2.5 text-sm font-medium text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 transition-colors"
+              className="px-5 py-2.5 text-sm font-medium text-text-muted hover:text-text-secondary transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 text-sm font-medium bg-calm-slate hover:bg-calm-slate/95 text-white rounded-xl shadow-sm transition-all duration-300 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-calm-muted"
+              className="px-5 py-2.5 text-sm font-medium bg-lime-accent hover:brightness-110 text-graphite-950 rounded-xl shadow-sm transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
             >
               {isSubmitting ? 'Saving...' : 'Complete Check-in'}
             </button>

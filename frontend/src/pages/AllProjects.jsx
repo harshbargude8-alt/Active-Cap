@@ -149,8 +149,8 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
   if (loading && projects.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-3">
-        <RefreshCw className="w-8 h-8 animate-spin text-accent-blue" />
-        <span className="text-sm text-calm-muted dark:text-slate-400">Opening project archives...</span>
+        <RefreshCw className="w-8 h-8 animate-spin text-lime-accent" />
+        <span className="text-sm text-text-muted">Opening project archives...</span>
       </div>
     );
   }
@@ -159,12 +159,12 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
     <div className="max-w-4xl mx-auto px-4 pb-24 md:pb-12 animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-xl font-bold text-calm-text dark:text-slate-100 tracking-tight">Track Catalog</h2>
-          <p className="text-xs text-calm-muted dark:text-slate-400 mt-0.5">Explore, search, and manage your active and parked tracks.</p>
+          <h2 className="font-heading text-xl font-bold text-text-primary tracking-tight">Track Catalog</h2>
+          <p className="text-xs text-text-muted mt-0.5">Explore, search, and manage your active and parked tracks.</p>
         </div>
         <button
           onClick={() => setIsCreateOpen(true)}
-          className="flex items-center space-x-1.5 bg-calm-slate hover:bg-calm-slate/95 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm self-start md:self-auto transition-all duration-300"
+          className="flex items-center space-x-1.5 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm self-start md:self-auto transition-all duration-300 cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>New Track</span>
@@ -172,15 +172,15 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
       </div>
 
       {/* Filter and Search Bar Panel */}
-      <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl p-4 shadow-3xs mb-6 flex flex-col md:flex-row gap-3 transition-colors duration-200">
+      <div className="bg-graphite-800 border border-border-default rounded-2xl p-4 shadow-3xs mb-6 flex flex-col md:flex-row gap-3 transition-colors duration-200">
         <div className="flex-1 relative">
-          <Search className="w-4 h-4 text-calm-muted dark:text-slate-400 absolute left-3 top-3" />
+          <Search className="w-4 h-4 text-text-muted absolute left-3 top-3" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search Tracks..."
-            className="w-full bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 pl-9 pr-4 py-2 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+            className="w-full bg-graphite-700 border border-border-default pl-9 pr-4 py-2 rounded-xl text-xs text-text-primary placeholder-text-muted outline-none focus:border-lime-accent transition-all duration-300"
           />
         </div>
 
@@ -189,11 +189,11 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 px-3 py-2 pr-8 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300 appearance-none"
+              className="bg-graphite-700 border border-border-default px-3 py-2 pr-8 rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent transition-all duration-300 appearance-none cursor-pointer"
             >
-              <option value="All" className="bg-white dark:bg-slate-900">All Statuses</option>
+              <option value="All" className="bg-graphite-800">All Statuses</option>
               {PROJECT_STATUSES.map((s) => (
-                <option key={s} value={s} className="bg-white dark:bg-slate-900">{s}</option>
+                <option key={s} value={s} className="bg-graphite-800">{s}</option>
               ))}
             </select>
           </div>
@@ -202,11 +202,11 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 px-3 py-2 pr-8 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300 appearance-none"
+              className="bg-graphite-700 border border-border-default px-3 py-2 pr-8 rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent transition-all duration-300 appearance-none cursor-pointer"
             >
-              <option value="All" className="bg-white dark:bg-slate-900">All Categories</option>
+              <option value="All" className="bg-graphite-800">All Categories</option>
               {PROJECT_CATEGORIES.map((c) => (
-                <option key={c} value={c} className="bg-white dark:bg-slate-900">{c}</option>
+                <option key={c} value={c} className="bg-graphite-800">{c}</option>
               ))}
             </select>
           </div>
@@ -215,11 +215,11 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
 
       {/* Projects List catalog */}
       {filteredProjects.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-3xl p-10 text-center text-xs text-calm-muted dark:text-slate-400 shadow-3xs">
+        <div className="bg-graphite-800 border border-border-default rounded-2xl p-10 text-center text-xs text-text-muted shadow-3xs">
           No Tracks found matching the criteria.
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden shadow-3xs transition-colors duration-200">
+        <div className="bg-graphite-800 border border-border-default rounded-2xl divide-y divide-border-subtle overflow-hidden shadow-3xs transition-colors duration-200">
           {filteredProjects.map((project) => (
             <div
               key={project._id}
@@ -227,22 +227,22 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
                 onSelectProjectId(project._id);
                 onViewChange('project-detail', project._id);
               }}
-              className="p-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/40 cursor-pointer flex justify-between items-center transition-all duration-300"
+              className="p-4 hover:bg-graphite-700 cursor-pointer flex justify-between items-center transition-all duration-300"
             >
               <div className="min-w-0 pr-4">
                 <div className="flex items-center space-x-2 mb-1.5">
-                  <span className="text-[9px] font-bold bg-slate-100 dark:bg-slate-800 text-calm-slate dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded">
+                  <span className="text-[9px] font-bold bg-graphite-700 text-text-secondary border border-border-default px-2 py-0.5 rounded">
                     {project.category}
                   </span>
                   <span className={`text-[9px] font-bold border px-2 py-0.5 rounded-full ${getStatusColor(project.status)}`}>
                     {project.status}
                   </span>
                 </div>
-                <h4 className="font-semibold text-sm text-calm-text dark:text-slate-100 truncate">{project.title}</h4>
-                <p className="text-xs text-calm-muted dark:text-slate-400 truncate mt-0.5">{project.description || 'No description.'}</p>
+                <h4 className="font-semibold text-sm text-text-primary truncate">{project.title}</h4>
+                <p className="text-xs text-text-muted truncate mt-0.5">{project.description || 'No description.'}</p>
               </div>
 
-              <ChevronRight className="w-4 h-4 text-calm-muted dark:text-slate-500 flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-text-muted flex-shrink-0" />
             </div>
           ))}
         </div>
@@ -250,85 +250,85 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
 
       {/* New Project Form Drawer */}
       {isCreateOpen && createPortal(
-        <div className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl animate-fade-in relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-graphite-800 border border-border-default w-full max-w-md rounded-2xl p-6 shadow-2xl animate-fade-in relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             <button
               onClick={() => {
                 setIsCreateOpen(false);
                 resetCreateForm();
               }}
-              className="absolute top-5 right-5 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-calm-muted dark:text-slate-400 transition-colors"
+              className="absolute top-5 right-5 p-1 rounded-full hover:bg-graphite-700 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="font-bold text-lg text-calm-text dark:text-slate-100 mb-4">Start New Track</h3>
+            <h3 className="font-heading font-bold text-lg text-text-primary mb-4">Start New Track</h3>
             {createError && (
-              <div className="mb-4 text-xs bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 p-3 rounded-xl">
+              <div className="mb-4 text-xs bg-warning/10 border border-warning/20 text-warning p-3 rounded-xl">
                 {createError}
               </div>
             )}
 
             <form onSubmit={handleCreateProject} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Title</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Title</label>
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. OutboxSyncService"
                   required
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Category</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Category</label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 >
                   {PROJECT_CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat} className="bg-white dark:bg-slate-900">{cat}</option>
+                    <option key={cat} value={cat} className="bg-graphite-800">{cat}</option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Description</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Description</label>
                 <textarea
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder="Goals, target outcome..."
                   rows="3"
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300 resize-none"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300 resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Status</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Status</label>
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 >
-                  <option value="Parked" className="bg-white dark:bg-slate-900">Parked</option>
-                  <option value="Active" className="bg-white dark:bg-slate-900">Active (Bring to focus immediately)</option>
-                  <option value="Someday" className="bg-white dark:bg-slate-900">Someday</option>
+                  <option value="Parked" className="bg-graphite-800">Parked</option>
+                  <option value="Active" className="bg-graphite-800">Active (Bring to focus immediately)</option>
+                  <option value="Someday" className="bg-graphite-800">Someday</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">
-                  Next Step {newStatus === 'Active' && <span className="text-accent-orange font-bold">*</span>}
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">
+                  Next Step {newStatus === 'Active' && <span className="text-warning font-bold">*</span>}
                 </label>
                 <input
                   type="text"
                   value={newNextStep}
                   onChange={(e) => setNewNextStep(e.target.value)}
                   placeholder="What is the single next concrete action?"
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 />
               </div>
 
@@ -339,13 +339,13 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
                     setIsCreateOpen(false);
                     resetCreateForm();
                   }}
-                  className="px-4 py-2 text-sm font-medium text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200"
+                  className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-calm-slate hover:bg-calm-slate/95 text-white text-sm font-medium rounded-xl shadow-sm transition-all duration-300"
+                  className="px-5 py-2 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-sm font-medium rounded-xl shadow-sm transition-all duration-300 cursor-pointer"
                 >
                   Create Track
                 </button>

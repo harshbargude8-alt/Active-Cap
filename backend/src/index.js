@@ -1,3 +1,6 @@
+import dns from 'dns';
+dns.setServers(['8.8.8.8', '1.1.1.1']);
+
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -12,7 +15,8 @@ import timetableRouter from './routes/timetable.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/activecap';
+// const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/activecap';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 // Middleware
 const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];

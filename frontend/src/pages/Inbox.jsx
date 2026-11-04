@@ -173,13 +173,11 @@ export const Inbox = ({ onViewChange, onSelectProjectId }) => {
     handleSubmitPromotion(null, activeIdToPark);
   };
 
-  const handleSwap = handleSwapAndPromote;
-
   if (loading && items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-3">
-        <RefreshCw className="w-8 h-8 animate-spin text-accent-blue" />
-        <span className="text-sm text-calm-muted">Opening your inbox folder...</span>
+        <RefreshCw className="w-8 h-8 animate-spin text-lime-accent" />
+        <span className="text-sm text-text-muted">Opening your inbox folder...</span>
       </div>
     );
   }
@@ -187,22 +185,22 @@ export const Inbox = ({ onViewChange, onSelectProjectId }) => {
   return (
     <div className="max-w-3xl mx-auto px-4 pb-24 md:pb-12 animate-fade-in">
       <div className="mb-8">
-        <h2 className="text-xl font-bold text-calm-text tracking-tight flex items-center">
+        <h2 className="font-heading text-xl font-bold text-text-primary tracking-tight flex items-center">
           Quick Capture Inbox
-          <span className="ml-2 text-xs font-semibold px-2 py-0.5 bg-accent-blue/10 text-accent-blue border border-accent-blue/20 rounded-full">
+          <span className="ml-2 text-xs font-semibold px-2 py-0.5 bg-lime-accent/10 text-lime-accent border border-lime-accent/20 rounded-full">
             {items.length} Ideas
           </span>
         </h2>
-        <p className="text-xs text-calm-muted dark:text-slate-400 mt-0.5">
+        <p className="text-xs text-text-muted mt-0.5">
           Zero-friction dump zone. Turn these into projects when you do your reviews.
         </p>
       </div>
 
       {items.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-3xl p-12 text-center shadow-xs transition-colors duration-200">
-          <Lightbulb className="w-12 h-12 text-calm-muted dark:text-slate-500 mx-auto mb-4" />
-          <h3 className="font-bold text-calm-text dark:text-slate-100">Your inbox is clear</h3>
-          <p className="text-sm text-calm-muted dark:text-slate-400 mt-1 max-w-sm mx-auto">
+        <div className="bg-graphite-800 border border-border-default rounded-2xl p-12 text-center shadow-xs transition-colors duration-200">
+          <Lightbulb className="w-12 h-12 text-text-muted mx-auto mb-4" />
+          <h3 className="font-heading font-bold text-text-primary">Your inbox is clear</h3>
+          <p className="text-sm text-text-muted mt-1 max-w-sm mx-auto">
             Got an idea mid-work? Use the quick capture bar at the top or the FAB on mobile to capture it immediately.
           </p>
         </div>
@@ -211,13 +209,13 @@ export const Inbox = ({ onViewChange, onSelectProjectId }) => {
           {items.map((item) => (
             <div
               key={item._id}
-              className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl p-5 shadow-2xs hover:shadow-xs transition-all duration-300 flex justify-between items-center"
+              className="bg-graphite-800 border border-border-default rounded-2xl p-5 shadow-2xs hover:bg-graphite-700 hover:border-border-default transition-all duration-300 flex justify-between items-center"
             >
               <div className="min-w-0 pr-4">
-                <h4 className="font-medium text-sm text-calm-text dark:text-slate-100 leading-relaxed whitespace-pre-wrap">
+                <h4 className="font-medium text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
                   {item.text}
                 </h4>
-                <div className="flex items-center space-x-1 mt-2 text-[10px] text-calm-muted dark:text-slate-400">
+                <div className="flex items-center space-x-1 mt-2 text-[10px] text-text-muted">
                   <Calendar className="w-3.5 h-3.5" />
                   <span>
                     Captured {new Date(item.createdAt).toLocaleDateString(undefined, {
@@ -233,14 +231,14 @@ export const Inbox = ({ onViewChange, onSelectProjectId }) => {
               <div className="flex items-center space-x-2 flex-shrink-0">
                 <button
                   onClick={() => handlePromoteClick(item)}
-                  className="flex items-center space-x-1 bg-slate-50 dark:bg-slate-800 hover:bg-accent-blue/10 dark:hover:bg-accent-blue/20 border border-calm-border dark:border-slate-700 hover:border-accent-blue/35 text-calm-text dark:text-slate-200 hover:text-accent-blue dark:hover:text-accent-blue text-xs font-semibold px-3.5 py-2 rounded-xl transition-all duration-300"
+                  className="flex items-center space-x-1.5 bg-lime-accent/15 hover:bg-lime-accent text-lime-accent hover:text-graphite-950 border border-lime-accent/30 hover:border-lime-accent text-xs font-semibold px-3.5 py-2 rounded-xl transition-all duration-200 cursor-pointer shadow-xs active:scale-95"
                 >
                   <ArrowUpRight className="w-4 h-4" />
-                  <span className="hidden sm:inline">Promote</span>
+                  <span>Promote</span>
                 </button>
                 <button
                   onClick={() => handleDiscard(item._id)}
-                  className="p-2 border border-calm-border dark:border-slate-700 text-calm-muted dark:text-slate-400 hover:text-amber-700 dark:hover:text-amber-400 hover:border-amber-250 dark:hover:border-amber-700/50 hover:bg-amber-50 dark:hover:bg-amber-950/20 rounded-xl transition-all duration-300"
+                  className="p-2 border border-border-default text-text-muted hover:text-error hover:border-error/40 hover:bg-error/10 rounded-xl transition-all duration-300 cursor-pointer"
                   title="Discard Idea"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -253,81 +251,81 @@ export const Inbox = ({ onViewChange, onSelectProjectId }) => {
 
       {/* Promotion Form Dialog */}
       {promotingItem && createPortal(
-        <div className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl animate-fade-in relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-graphite-800 border border-border-default w-full max-w-md rounded-2xl p-6 shadow-2xl animate-fade-in relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             <button
               onClick={() => setPromotingItem(null)}
-              className="absolute top-5 right-5 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-calm-muted dark:text-slate-400 transition-colors"
+              className="absolute top-5 right-5 p-1 rounded-full hover:bg-graphite-700 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="font-bold text-lg text-calm-text dark:text-slate-100 mb-4">Promote to Track</h3>
+            <h3 className="font-heading font-bold text-lg text-text-primary mb-4">Promote to Track</h3>
             {promoError && (
-              <div className="mb-4 text-xs bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 p-3 rounded-xl">
+              <div className="mb-4 text-xs bg-warning/10 border border-warning/20 text-warning p-3 rounded-xl">
                 {promoError}
               </div>
             )}
 
             <form onSubmit={handleSubmitPromotion} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Track Title</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Track Title</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Category</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Category</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 >
                   {PROJECT_CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat} className="bg-white dark:bg-slate-900">{cat}</option>
+                    <option key={cat} value={cat} className="bg-graphite-800">{cat}</option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Description</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Description</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Context, notes, ideas..."
                   rows="3"
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300 resize-none"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300 resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Status</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Status</label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 >
-                  <option value="Parked" className="bg-white dark:bg-slate-900">Parked</option>
-                  <option value="Active" className="bg-white dark:bg-slate-900">Active (Bring to focus immediately)</option>
-                  <option value="Someday" className="bg-white dark:bg-slate-900">Someday</option>
+                  <option value="Parked" className="bg-graphite-800">Parked</option>
+                  <option value="Active" className="bg-graphite-800">Active (Bring to focus immediately)</option>
+                  <option value="Someday" className="bg-graphite-800">Someday</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">
-                  Next Step {status === 'Active' && <span className="text-accent-orange font-bold">*</span>}
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">
+                  Next Step {status === 'Active' && <span className="text-warning font-bold">*</span>}
                 </label>
                 <input
                   type="text"
                   value={nextStep}
                   onChange={(e) => setNextStep(e.target.value)}
                   placeholder="What is the single next concrete action?"
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 />
               </div>
 
@@ -335,14 +333,14 @@ export const Inbox = ({ onViewChange, onSelectProjectId }) => {
                 <button
                   type="button"
                   onClick={() => setPromotingItem(null)}
-                  className="px-4 py-2 text-sm font-medium text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200"
+                  className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 bg-calm-slate hover:bg-calm-slate/95 text-white text-sm font-medium rounded-xl shadow-sm transition-all duration-300 disabled:opacity-50"
+                  className="px-5 py-2 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-sm font-medium rounded-xl shadow-sm transition-all duration-300 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? 'Creating...' : 'Promote Track'}
                 </button>

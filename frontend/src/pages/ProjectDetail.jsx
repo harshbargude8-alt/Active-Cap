@@ -150,8 +150,8 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-3">
-        <RefreshCw className="w-8 h-8 animate-spin text-accent-blue" />
-        <span className="text-sm text-calm-muted dark:text-slate-400">Loading Track details...</span>
+        <RefreshCw className="w-8 h-8 animate-spin text-lime-accent" />
+        <span className="text-sm text-text-muted">Loading Track details...</span>
       </div>
     );
   }
@@ -159,11 +159,11 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
   if (!project) {
     return (
       <div className="text-center p-8 max-w-md mx-auto">
-        <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-calm-text dark:text-slate-100">Track not found</h3>
+        <AlertTriangle className="w-12 h-12 text-warning mx-auto mb-4" />
+        <h3 className="font-heading text-lg font-bold text-text-primary">Track not found</h3>
         <button
           onClick={() => onViewChange('dashboard')}
-          className="mt-4 px-4 py-2 bg-calm-slate hover:bg-calm-slate/95 text-white text-xs font-semibold rounded-xl"
+          className="mt-4 px-4 py-2 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-xs font-semibold rounded-xl cursor-pointer transition-colors"
         >
           Return to Dashboard
         </button>
@@ -177,14 +177,14 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
     <div className="max-w-4xl mx-auto px-4 pb-24 md:pb-12 animate-fade-in">
       <button
         onClick={() => onViewChange('dashboard')}
-        className="flex items-center space-x-1.5 text-xs font-semibold text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 mb-6 transition-colors"
+        className="flex items-center space-x-1.5 text-xs font-semibold text-text-muted hover:text-text-primary mb-6 transition-colors cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Dashboard</span>
       </button>
 
       {/* Main Project Card Summary / Edit Mode */}
-      <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-xs mb-8 transition-colors duration-200">
+      <div className="bg-graphite-800 border border-border-default rounded-2xl p-6 md:p-8 shadow-xs mb-8 transition-colors duration-200">
         {!isEditing ? (
           <div>
             <div className="flex justify-between items-start mb-4">
@@ -193,9 +193,9 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
                   {project.category}
                 </span>
                 <span className={`text-[10px] font-bold border px-2.5 py-1 rounded-full ${
-                  project.status === 'Active' ? 'bg-sky-50 dark:bg-sky-950/30 text-accent-blue dark:text-sky-300 border-sky-200 dark:border-sky-800/40' :
-                  project.status === 'Parked' ? 'bg-amber-50 dark:bg-amber-950/30 text-accent-amber dark:text-amber-300 border-amber-200 dark:border-amber-800/40' :
-                  'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                  project.status === 'Active' ? 'bg-lime-accent/10 text-lime-accent border-lime-accent/20' :
+                  project.status === 'Parked' ? 'bg-warning/10 text-warning border-warning/20' :
+                  'bg-graphite-700 text-text-secondary border-border-default'
                 }`}>
                   {project.status}
                 </span>
@@ -204,14 +204,14 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="p-2 border border-calm-border dark:border-slate-700 rounded-xl text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300"
+                  className="p-2 border border-border-default rounded-xl text-text-muted hover:text-text-primary hover:bg-graphite-700 transition-all duration-300 cursor-pointer"
                   title="Edit Track"
                 >
                   <Edit2 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setIsDeleteModalOpen(true)}
-                  className="p-2 border border-calm-border dark:border-slate-700 rounded-xl text-calm-muted dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-200 dark:hover:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-all duration-300 cursor-pointer"
+                  className="p-2 border border-border-default rounded-xl text-text-muted hover:text-error hover:border-error/40 hover:bg-error/10 transition-all duration-300 cursor-pointer"
                   title="Delete Track"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -219,94 +219,94 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
               </div>
             </div>
 
-            <h2 className="text-2xl font-bold text-calm-text dark:text-slate-100 tracking-tight leading-tight">
+            <h2 className="font-heading text-2xl font-bold text-text-primary tracking-tight leading-tight">
               {project.title}
             </h2>
-            <p className="text-sm text-calm-muted dark:text-slate-400 mt-2 whitespace-pre-line leading-relaxed">
+            <p className="text-sm text-text-secondary mt-2 whitespace-pre-line leading-relaxed">
               {project.description || 'No description provided.'}
             </p>
 
             {project.status === 'Active' && (
-              <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-800/80 border border-calm-border/60 dark:border-slate-700/60 rounded-2xl">
-                <span className="block text-[10px] font-bold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-1">
+              <div className="mt-6 p-4 bg-graphite-700 border border-border-subtle rounded-xl">
+                <span className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">
                   Concrete Next Action
                 </span>
-                <p className="text-sm font-semibold text-calm-text dark:text-slate-200">{project.nextStep}</p>
+                <p className="text-sm font-semibold text-text-primary">{project.nextStep}</p>
               </div>
             )}
           </div>
         ) : (
           /* Edit Form */
           <form onSubmit={handleUpdateProject} className="space-y-4">
-            <h3 className="font-bold text-lg text-calm-text dark:text-slate-100">Edit Track Details</h3>
+            <h3 className="font-heading font-bold text-lg text-text-primary">Edit Track Details</h3>
             
             {editError && (
-              <div className="text-xs bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 p-3 rounded-xl">
+              <div className="text-xs bg-warning/10 border border-warning/20 text-warning p-3 rounded-xl">
                 {editError}
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Title</label>
+              <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Title</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Category</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Category</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300 cursor-pointer"
                 >
                   {PROJECT_CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat} className="bg-white dark:bg-slate-900">{cat}</option>
+                    <option key={cat} value={cat} className="bg-graphite-800">{cat}</option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Status</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Status</label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300 cursor-pointer"
                 >
-                  <option value="Active" className="bg-white dark:bg-slate-900">Active</option>
-                  <option value="Parked" className="bg-white dark:bg-slate-900">Parked</option>
-                  <option value="Someday" className="bg-white dark:bg-slate-900">Someday</option>
-                  <option value="Done" className="bg-white dark:bg-slate-900">Done</option>
-                  <option value="Abandoned" className="bg-white dark:bg-slate-900">Abandoned</option>
+                  <option value="Active" className="bg-graphite-800">Active</option>
+                  <option value="Parked" className="bg-graphite-800">Parked</option>
+                  <option value="Someday" className="bg-graphite-800">Someday</option>
+                  <option value="Done" className="bg-graphite-800">Done</option>
+                  <option value="Abandoned" className="bg-graphite-800">Abandoned</option>
                 </select>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Description</label>
+              <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Description</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows="3"
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300 resize-none"
+                className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300 resize-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">
-                Next Step {status === 'Active' && <span className="text-accent-orange font-bold">*</span>}
+              <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">
+                Next Step {status === 'Active' && <span className="text-warning font-bold">*</span>}
               </label>
               <input
                 type="text"
                 value={nextStep}
                 onChange={(e) => setNextStep(e.target.value)}
                 placeholder="The single next concrete action"
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
               />
             </div>
 
@@ -317,14 +317,14 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
                   setIsEditing(false);
                   setEditError('');
                 }}
-                className="px-4 py-2 text-sm font-medium text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200"
+                className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text-primary transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
-                className="px-5 py-2 bg-calm-slate hover:bg-calm-slate/95 text-white text-sm font-medium rounded-xl shadow-sm transition-all duration-300"
+                className="px-5 py-2 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-sm font-medium rounded-xl shadow-sm transition-all duration-300 cursor-pointer"
               >
                 {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -335,51 +335,51 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
 
       {/* Stats Block Dashboard */}
       <section className="mb-10">
-        <h3 className="text-sm font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-4">Focus Statistics</h3>
+        <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">Focus Statistics</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-colors duration-200">
-            <Calendar className="w-5 h-5 text-calm-muted dark:text-slate-400 mb-1" />
-            <span className="text-[10px] text-calm-muted dark:text-slate-400 uppercase font-bold tracking-wider">Days Active</span>
-            <span className="text-lg font-bold text-calm-text dark:text-slate-100 mt-0.5">{daysSinceStart}d</span>
+          <div className="bg-graphite-800 border border-border-default rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-colors duration-200">
+            <Calendar className="w-5 h-5 text-text-muted mb-1" />
+            <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Days Active</span>
+            <span className="text-lg font-bold text-text-primary mt-0.5">{daysSinceStart}d</span>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-colors duration-200">
-            <CheckCircle className="w-5 h-5 text-accent-blue mb-1" />
-            <span className="text-[10px] text-calm-muted dark:text-slate-400 uppercase font-bold tracking-wider">Check-ins</span>
-            <span className="text-lg font-bold text-calm-text dark:text-slate-100 mt-0.5">{project.totalCheckIns || 0}</span>
+          <div className="bg-graphite-800 border border-border-default rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-colors duration-200">
+            <CheckCircle className="w-5 h-5 text-lime-accent mb-1" />
+            <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Check-ins</span>
+            <span className="text-lg font-bold text-text-primary mt-0.5">{project.totalCheckIns || 0}</span>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-colors duration-200">
-            <Flame className="w-5 h-5 text-accent-amber mb-1" />
-            <span className="text-[10px] text-calm-muted dark:text-slate-400 uppercase font-bold tracking-wider">Current Streak</span>
-            <span className="text-lg font-bold text-calm-text dark:text-slate-100 mt-0.5">{project.streakCount || 0}d</span>
+          <div className="bg-graphite-800 border border-border-default rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-colors duration-200">
+            <Flame className="w-5 h-5 text-warning mb-1" />
+            <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Current Streak</span>
+            <span className="text-lg font-bold text-text-primary mt-0.5">{project.streakCount || 0}d</span>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-colors duration-200">
-            <Sparkles className="w-5 h-5 text-accent-green mb-1" />
-            <span className="text-[10px] text-calm-muted dark:text-slate-400 uppercase font-bold tracking-wider">Longest Streak</span>
-            <span className="text-lg font-bold text-calm-text dark:text-slate-100 mt-0.5">{project.longestStreak || 0}d</span>
+          <div className="bg-graphite-800 border border-border-default rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-colors duration-200">
+            <Sparkles className="w-5 h-5 text-mint-accent mb-1" />
+            <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Longest Streak</span>
+            <span className="text-lg font-bold text-text-primary mt-0.5">{project.longestStreak || 0}d</span>
           </div>
         </div>
       </section>
 
       {/* Check-In History Timeline */}
       <section>
-        <h3 className="text-sm font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-4">Check-in Logs</h3>
+        <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-4">Check-in Logs</h3>
         {checkIns.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl p-6 text-center text-xs text-calm-muted dark:text-slate-400">
+          <div className="bg-graphite-800 border border-border-default rounded-2xl p-6 text-center text-xs text-text-muted">
             No check-in logs recorded yet. Start working and track your first step!
           </div>
         ) : (
-          <div className="relative border-l border-slate-200 dark:border-slate-800 ml-4 space-y-6">
+          <div className="relative border-l border-border-default ml-4 space-y-6">
             {checkIns.map((log) => (
               <div key={log._id} className="relative pl-6">
                 {/* Dots indicator */}
-                <div className="absolute -left-1.5 top-1.5 w-3 h-3 bg-white dark:bg-slate-900 border-2 border-accent-blue rounded-full"></div>
+                <div className="absolute -left-1.5 top-1.5 w-3 h-3 bg-graphite-950 border-2 border-lime-accent rounded-full"></div>
                 
-                <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl p-4 shadow-3xs transition-colors duration-200">
+                <div className="bg-graphite-800 border border-border-default rounded-2xl p-4 shadow-3xs transition-colors duration-200">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs text-calm-muted dark:text-slate-400 font-medium">
+                    <span className="text-xs text-text-muted font-medium">
                       {new Date(log.date).toLocaleDateString(undefined, {
                         weekday: 'short',
                         year: 'numeric',
@@ -388,12 +388,12 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
                       })}
                     </span>
                     {log.minutesSpent && (
-                      <span className="inline-flex items-center text-[10px] font-semibold text-calm-muted dark:text-slate-300 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded">
+                      <span className="inline-flex items-center text-[10px] font-semibold text-text-secondary bg-graphite-700 border border-border-default px-2 py-0.5 rounded">
                         <Clock className="w-3 h-3 mr-1" /> {log.minutesSpent}m
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-calm-text dark:text-slate-100 leading-relaxed font-medium">
+                  <p className="text-sm text-text-primary leading-relaxed font-medium">
                     {log.note}
                   </p>
                 </div>
@@ -406,34 +406,34 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && createPortal(
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl relative animate-scale-up">
+          <div className="bg-graphite-800 border border-border-default w-full max-w-md rounded-2xl p-6 shadow-2xl relative animate-scale-up">
             <button
               onClick={() => !isDeleting && setIsDeleteModalOpen(false)}
               disabled={isDeleting}
-              className="absolute top-5 right-5 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-calm-muted dark:text-slate-400 transition-colors"
+              className="absolute top-5 right-5 p-1 rounded-full hover:bg-graphite-700 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="flex items-start space-x-3.5 mb-4">
-              <div className="p-3 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40 rounded-2xl flex-shrink-0">
+              <div className="p-3 bg-error/10 text-error border border-error/20 rounded-xl flex-shrink-0">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div className="pr-4">
-                <h3 className="font-bold text-lg text-calm-text dark:text-slate-100 leading-tight">
+                <h3 className="font-heading font-bold text-lg text-text-primary leading-tight">
                   Delete Track?
                 </h3>
-                <p className="text-xs text-rose-600 dark:text-rose-400 font-semibold mt-0.5 uppercase tracking-wider">
+                <p className="text-xs text-error font-semibold mt-0.5 uppercase tracking-wider">
                   Permanent Action
                 </p>
               </div>
             </div>
 
-            <p className="text-sm text-calm-muted dark:text-slate-400 leading-relaxed mb-4">
-              Are you sure you want to delete <span className="font-semibold text-calm-text dark:text-slate-200">"{project.title}"</span>?
+            <p className="text-sm text-text-secondary leading-relaxed mb-4">
+              Are you sure you want to delete <span className="font-semibold text-text-primary">"{project.title}"</span>?
             </p>
 
-            <div className="p-3.5 bg-rose-50/60 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/40 rounded-2xl mb-6 space-y-1 text-xs text-rose-800 dark:text-rose-300">
+            <div className="p-3.5 bg-error/10 border border-error/20 rounded-xl mb-6 space-y-1 text-xs text-error">
               <p className="font-medium flex items-center space-x-1.5">
                 <Trash2 className="w-3.5 h-3.5 flex-shrink-0" />
                 <span>This will permanently delete this track and its <strong>{checkIns.length} check-in log{checkIns.length === 1 ? '' : 's'}</strong> and streak history.</span>
@@ -445,7 +445,7 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
                 type="button"
                 onClick={() => setIsDeleteModalOpen(false)}
                 disabled={isDeleting}
-                className="px-4 py-2.5 text-xs font-semibold text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"
+                className="px-4 py-2.5 text-xs font-semibold text-text-muted hover:text-text-primary hover:bg-graphite-700 rounded-xl transition-all cursor-pointer"
               >
                 Cancel
               </button>
@@ -453,7 +453,7 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
                 type="button"
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
-                className="px-5 py-2.5 text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white rounded-xl shadow-xs transition-all flex items-center justify-center space-x-1.5 disabled:opacity-50 cursor-pointer"
+                className="px-5 py-2.5 text-xs font-semibold bg-error hover:brightness-110 text-graphite-950 rounded-xl shadow-xs transition-all flex items-center justify-center space-x-1.5 disabled:opacity-50 cursor-pointer"
               >
                 {isDeleting ? (
                   <>

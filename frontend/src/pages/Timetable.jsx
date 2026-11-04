@@ -202,8 +202,8 @@ export const Timetable = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-3">
-        <RefreshCw className="w-8 h-8 animate-spin text-accent-blue" />
-        <span className="text-sm text-calm-muted font-medium">Loading weekly timetable...</span>
+        <RefreshCw className="w-8 h-8 animate-spin text-lime-accent" />
+        <span className="text-sm text-text-muted font-medium">Loading weekly timetable...</span>
       </div>
     );
   }
@@ -226,8 +226,8 @@ export const Timetable = () => {
         <div
           className={`fixed top-20 right-6 z-50 px-4 py-3 rounded-2xl shadow-lg border text-xs font-semibold animate-slide-up flex items-center space-x-2 ${
             toast.type === 'error'
-              ? 'bg-rose-50 text-rose-700 border-rose-200'
-              : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+              ? 'bg-error/10 text-error border-error/20'
+              : 'bg-success/10 text-success border-success/20'
           }`}
         >
           <Sparkles className="w-4 h-4" />
@@ -239,12 +239,12 @@ export const Timetable = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-accent-blue/10 text-accent-blue">
+            <div className="p-2 rounded-xl bg-lime-accent/10 text-lime-accent">
               <Calendar className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold text-calm-text dark:text-slate-100 tracking-tight">Weekly Rhythm</h2>
+            <h2 className="font-heading text-2xl font-bold text-text-primary tracking-tight">Weekly Rhythm</h2>
           </div>
-          <p className="text-xs text-calm-muted dark:text-slate-400 mt-1">
+          <p className="text-xs text-text-muted mt-1">
             Protected focus blocks, energy management, and built-in slack buffers.
           </p>
         </div>
@@ -256,7 +256,7 @@ export const Timetable = () => {
               <button
                 onClick={handleCancelEdit}
                 disabled={saving}
-                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-calm-border dark:border-slate-700 text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-medium transition-all duration-300"
+                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-border-default text-text-muted hover:text-text-primary hover:bg-graphite-700 text-xs font-medium transition-all duration-300 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
                 <span>Cancel</span>
@@ -264,7 +264,7 @@ export const Timetable = () => {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center space-x-1.5 bg-accent-blue hover:bg-accent-blue/90 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all duration-300 disabled:opacity-50"
+                className="flex items-center space-x-1.5 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all duration-300 disabled:opacity-50 cursor-pointer"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>{saving ? 'Saving...' : 'Save Changes'}</span>
@@ -274,7 +274,7 @@ export const Timetable = () => {
             <>
               <button
                 onClick={handleReset}
-                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-calm-border dark:border-slate-700 text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-medium transition-all duration-300"
+                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border border-border-default text-text-muted hover:text-text-primary hover:bg-graphite-700 text-xs font-medium transition-all duration-300 cursor-pointer"
                 title="Reset to default template"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -282,7 +282,7 @@ export const Timetable = () => {
               </button>
               <button
                 onClick={handleStartEdit}
-                className="flex items-center space-x-1.5 bg-calm-slate hover:bg-calm-slate/95 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all duration-300"
+                className="flex items-center space-x-1.5 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition-all duration-300 cursor-pointer"
               >
                 <Edit3 className="w-3.5 h-3.5" />
                 <span>Edit Schedule</span>
@@ -294,7 +294,7 @@ export const Timetable = () => {
 
       {/* MOBILE DAY SELECTOR RIBBON (Zero-scroll day switcher) */}
       <div className="lg:hidden mb-5">
-        <div className="flex items-center justify-between space-x-1.5 p-1.5 bg-slate-100/90 dark:bg-slate-900 border border-calm-border/60 dark:border-slate-800 rounded-2xl overflow-x-auto custom-scrollbar">
+        <div className="flex items-center justify-between space-x-1.5 p-1.5 bg-graphite-800 border border-border-default rounded-2xl overflow-x-auto custom-scrollbar">
           {DAYS_OF_WEEK.map((day) => {
             const isToday = day.toLowerCase() === todayAbbr.toLowerCase();
             const isCurrentSelected = selectedDay.toLowerCase() === day.toLowerCase();
@@ -305,15 +305,15 @@ export const Timetable = () => {
                 onClick={() => setSelectedDay(day)}
                 className={`relative flex-1 py-2 px-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex flex-col items-center justify-center min-w-[42px] cursor-pointer ${
                   isCurrentSelected
-                    ? 'bg-accent-blue text-white shadow-sm scale-102'
-                    : 'text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-800'
+                    ? 'bg-lime-accent text-graphite-950 shadow-sm scale-102'
+                    : 'text-text-muted hover:text-text-primary hover:bg-graphite-700'
                 }`}
               >
                 <span>{day}</span>
                 {isToday && (
                   <span
                     className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
-                      isCurrentSelected ? 'bg-white animate-pulse' : 'bg-accent-blue'
+                      isCurrentSelected ? 'bg-graphite-950 animate-pulse' : 'bg-lime-accent'
                     }`}
                     title="Today"
                   />
@@ -327,8 +327,8 @@ export const Timetable = () => {
             onClick={() => setSelectedDay('ALL')}
             className={`py-2 px-2.5 rounded-xl text-[11px] font-bold transition-all duration-200 flex items-center justify-center cursor-pointer flex-shrink-0 ${
               selectedDay === 'ALL'
-                ? 'bg-calm-slate text-white shadow-sm'
-                : 'text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-white/60 dark:hover:bg-slate-800'
+                ? 'bg-graphite-700 text-text-primary shadow-sm'
+                : 'text-text-muted hover:text-text-primary hover:bg-graphite-700'
             }`}
           >
             <CalendarDays className="w-3.5 h-3.5 mr-1" />
@@ -340,15 +340,15 @@ export const Timetable = () => {
       {/* MOBILE TODAY-FIRST SMART HERO VIEW (When single day is selected) */}
       <div className="lg:hidden mb-8">
         {selectedDay !== 'ALL' && activeDayRow ? (
-          <div className="bg-white dark:bg-slate-900 border border-calm-border/80 dark:border-slate-800 rounded-3xl p-5 shadow-xs transition-colors duration-200 animate-scale-up">
+          <div className="bg-graphite-800 border border-border-default rounded-2xl p-5 shadow-xs transition-colors duration-200 animate-scale-up">
             {/* Day Header Bar with Quick Previous/Next & Today Jump */}
-            <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-border-subtle">
               <div className="flex items-center space-x-2.5">
-                <h3 className="text-xl font-bold text-calm-text dark:text-slate-100 tracking-tight">
+                <h3 className="font-heading text-xl font-bold text-text-primary tracking-tight">
                   {activeDayRow.day} Schedule
                 </h3>
                 {isSelectedDayToday && (
-                  <span className="bg-accent-blue text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs">
+                  <span className="bg-lime-accent text-graphite-950 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs">
                     Today
                   </span>
                 )}
@@ -358,21 +358,21 @@ export const Timetable = () => {
                 {!isSelectedDayToday && (
                   <button
                     onClick={() => setSelectedDay(todayAbbr)}
-                    className="text-[10px] font-bold text-accent-blue dark:text-sky-400 bg-accent-blue/10 dark:bg-accent-blue/20 px-2.5 py-1 rounded-lg hover:bg-accent-blue hover:text-white transition-all mr-1"
+                    className="text-[10px] font-bold text-lime-accent bg-lime-accent/10 px-2.5 py-1 rounded-lg hover:bg-lime-accent hover:text-graphite-950 transition-all mr-1 cursor-pointer"
                   >
                     Today
                   </button>
                 )}
                 <button
                   onClick={handlePrevDay}
-                  className="p-1.5 rounded-xl border border-calm-border dark:border-slate-800 text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  className="p-1.5 rounded-xl border border-border-default text-text-muted hover:text-text-primary hover:bg-graphite-700 transition-colors cursor-pointer"
                   title="Previous Day"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={handleNextDay}
-                  className="p-1.5 rounded-xl border border-calm-border dark:border-slate-800 text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  className="p-1.5 rounded-xl border border-border-default text-text-muted hover:text-text-primary hover:bg-graphite-700 transition-colors cursor-pointer"
                   title="Next Day"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -386,17 +386,17 @@ export const Timetable = () => {
               <div
                 className={`p-4 rounded-2xl border transition-all duration-300 ${
                   isSelectedDayToday && currentTimeSlot === 'morning'
-                    ? 'bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent dark:from-amber-950/40 dark:via-amber-950/20 border-amber-300 dark:border-amber-700/60 shadow-xs'
-                    : 'bg-amber-50/50 dark:bg-amber-950/20 border-amber-100/80 dark:border-amber-900/40'
+                    ? 'bg-lime-accent/5 border-lime-accent/30 shadow-xs'
+                    : 'bg-graphite-700/60 border-border-subtle'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center space-x-1.5 text-amber-800 dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
-                    <Sunrise className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <div className="flex items-center space-x-1.5 text-warning text-xs font-bold uppercase tracking-wider">
+                    <Sunrise className="w-4 h-4 text-warning" />
                     <span>Morning Focus</span>
                   </div>
                   {isSelectedDayToday && currentTimeSlot === 'morning' && (
-                    <span className="flex items-center text-[10px] font-extrabold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/60 px-2 py-0.5 rounded-md animate-pulse">
+                    <span className="flex items-center text-[10px] font-extrabold text-lime-accent bg-lime-accent/10 px-2 py-0.5 rounded-md animate-pulse">
                       <Zap className="w-3 h-3 mr-1 fill-current" /> Active Now
                     </span>
                   )}
@@ -407,11 +407,11 @@ export const Timetable = () => {
                     type="text"
                     value={activeDayRow.morning}
                     onChange={(e) => handleScheduleCellChange(activeDayRowIndex, 'morning', e.target.value)}
-                    className="w-full mt-1 px-3 py-2 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                    className="w-full mt-1 px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent"
                     placeholder="Morning focus tasks..."
                   />
                 ) : (
-                  <p className="text-sm text-calm-text dark:text-slate-100 font-semibold leading-relaxed">
+                  <p className="text-sm text-text-primary font-semibold leading-relaxed">
                     {activeDayRow.morning || '—'}
                   </p>
                 )}
@@ -421,17 +421,17 @@ export const Timetable = () => {
               <div
                 className={`p-4 rounded-2xl border transition-all duration-300 ${
                   isSelectedDayToday && currentTimeSlot === 'afternoon'
-                    ? 'bg-gradient-to-r from-sky-500/15 via-sky-500/5 to-transparent dark:from-sky-950/40 dark:via-sky-950/20 border-sky-300 dark:border-sky-700/60 shadow-xs'
-                    : 'bg-sky-50/50 dark:bg-sky-950/20 border-sky-100/80 dark:border-sky-900/40'
+                    ? 'bg-lime-accent/5 border-lime-accent/30 shadow-xs'
+                    : 'bg-graphite-700/60 border-border-subtle'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center space-x-1.5 text-sky-800 dark:text-sky-400 text-xs font-bold uppercase tracking-wider">
-                    <Sun className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+                  <div className="flex items-center space-x-1.5 text-info text-xs font-bold uppercase tracking-wider">
+                    <Sun className="w-4 h-4 text-info" />
                     <span>Afternoon Block</span>
                   </div>
                   {isSelectedDayToday && currentTimeSlot === 'afternoon' && (
-                    <span className="flex items-center text-[10px] font-extrabold text-sky-700 dark:text-sky-300 bg-sky-100 dark:bg-sky-900/60 px-2 py-0.5 rounded-md animate-pulse">
+                    <span className="flex items-center text-[10px] font-extrabold text-lime-accent bg-lime-accent/10 px-2 py-0.5 rounded-md animate-pulse">
                       <Zap className="w-3 h-3 mr-1 fill-current" /> Active Now
                     </span>
                   )}
@@ -442,11 +442,11 @@ export const Timetable = () => {
                     type="text"
                     value={activeDayRow.afternoon}
                     onChange={(e) => handleScheduleCellChange(activeDayRowIndex, 'afternoon', e.target.value)}
-                    className="w-full mt-1 px-3 py-2 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                    className="w-full mt-1 px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent"
                     placeholder="Afternoon tasks..."
                   />
                 ) : (
-                  <p className="text-sm text-calm-text dark:text-slate-100 font-semibold leading-relaxed">
+                  <p className="text-sm text-text-primary font-semibold leading-relaxed">
                     {activeDayRow.afternoon || '—'}
                   </p>
                 )}
@@ -456,17 +456,17 @@ export const Timetable = () => {
               <div
                 className={`p-4 rounded-2xl border transition-all duration-300 ${
                   isSelectedDayToday && currentTimeSlot === 'evening'
-                    ? 'bg-gradient-to-r from-indigo-500/15 via-indigo-500/5 to-transparent dark:from-indigo-950/40 dark:via-indigo-950/20 border-indigo-300 dark:border-indigo-700/60 shadow-xs'
-                    : 'bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-100/80 dark:border-indigo-900/40'
+                    ? 'bg-lime-accent/5 border-lime-accent/30 shadow-xs'
+                    : 'bg-graphite-700/60 border-border-subtle'
                 }`}
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center space-x-1.5 text-indigo-800 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
-                    <Sunset className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <div className="flex items-center space-x-1.5 text-purple-400 text-xs font-bold uppercase tracking-wider">
+                    <Sunset className="w-4 h-4 text-purple-400" />
                     <span>Evening Rhythm</span>
                   </div>
                   {isSelectedDayToday && currentTimeSlot === 'evening' && (
-                    <span className="flex items-center text-[10px] font-extrabold text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/60 px-2 py-0.5 rounded-md animate-pulse">
+                    <span className="flex items-center text-[10px] font-extrabold text-lime-accent bg-lime-accent/10 px-2 py-0.5 rounded-md animate-pulse">
                       <Zap className="w-3 h-3 mr-1 fill-current" /> Active Now
                     </span>
                   )}
@@ -477,11 +477,11 @@ export const Timetable = () => {
                     type="text"
                     value={activeDayRow.evening}
                     onChange={(e) => handleScheduleCellChange(activeDayRowIndex, 'evening', e.target.value)}
-                    className="w-full mt-1 px-3 py-2 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                    className="w-full mt-1 px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent"
                     placeholder="Evening tasks..."
                   />
                 ) : (
-                  <p className="text-sm text-calm-text dark:text-slate-100 font-semibold leading-relaxed">
+                  <p className="text-sm text-text-primary font-semibold leading-relaxed">
                     {activeDayRow.evening || '—'}
                   </p>
                 )}
@@ -496,19 +496,19 @@ export const Timetable = () => {
               return (
                 <div
                   key={row.day || idx}
-                  className={`bg-white dark:bg-slate-900 border rounded-3xl p-5 shadow-2xs transition-all duration-300 ${
+                  className={`bg-graphite-800 border rounded-2xl p-5 shadow-2xs transition-all duration-300 ${
                     isToday
-                      ? 'border-accent-blue/40 bg-gradient-to-br from-white to-accent-blue/5 dark:from-slate-900 dark:to-accent-blue/15 shadow-sm'
-                      : 'border-calm-border dark:border-slate-800'
+                      ? 'border-lime-accent/40 bg-gradient-to-br from-graphite-800 to-lime-accent/5 shadow-sm'
+                      : 'border-border-default'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-border-subtle">
                     <div className="flex items-center space-x-2">
-                      <h3 className={`text-base font-bold ${isToday ? 'text-accent-blue' : 'text-calm-text dark:text-slate-100'}`}>
+                      <h3 className={`font-heading text-base font-bold ${isToday ? 'text-lime-accent' : 'text-text-primary'}`}>
                         {row.day}
                       </h3>
                       {isToday && (
-                        <span className="bg-accent-blue text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest">
+                        <span className="bg-lime-accent text-graphite-950 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest">
                           Today
                         </span>
                       )}
@@ -516,9 +516,9 @@ export const Timetable = () => {
                   </div>
 
                   <div className="space-y-3 text-xs">
-                    <div className="p-3 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100/80 dark:border-amber-900/40 rounded-2xl">
-                      <div className="flex items-center space-x-1.5 text-amber-800 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-1">
-                        <Sunrise className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    <div className="p-3 bg-graphite-700/60 border border-border-subtle rounded-xl">
+                      <div className="flex items-center space-x-1.5 text-warning text-[10px] font-bold uppercase tracking-wider mb-1">
+                        <Sunrise className="w-3.5 h-3.5 text-warning" />
                         <span>Morning</span>
                       </div>
                       {isEditing ? (
@@ -526,16 +526,16 @@ export const Timetable = () => {
                           type="text"
                           value={row.morning}
                           onChange={(e) => handleScheduleCellChange(idx, 'morning', e.target.value)}
-                          className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                          className="w-full mt-1 px-2.5 py-1.5 bg-graphite-700 border border-border-default rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent"
                         />
                       ) : (
-                        <p className="text-calm-text dark:text-slate-200 font-medium">{row.morning || '—'}</p>
+                        <p className="text-text-primary font-medium">{row.morning || '—'}</p>
                       )}
                     </div>
 
-                    <div className="p-3 bg-sky-50/50 dark:bg-sky-950/20 border border-sky-100/80 dark:border-sky-900/40 rounded-2xl">
-                      <div className="flex items-center space-x-1.5 text-sky-800 dark:text-sky-400 text-[10px] font-bold uppercase tracking-wider mb-1">
-                        <Sun className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+                    <div className="p-3 bg-graphite-700/60 border border-border-subtle rounded-xl">
+                      <div className="flex items-center space-x-1.5 text-info text-[10px] font-bold uppercase tracking-wider mb-1">
+                        <Sun className="w-3.5 h-3.5 text-info" />
                         <span>Afternoon</span>
                       </div>
                       {isEditing ? (
@@ -543,16 +543,16 @@ export const Timetable = () => {
                           type="text"
                           value={row.afternoon}
                           onChange={(e) => handleScheduleCellChange(idx, 'afternoon', e.target.value)}
-                          className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                          className="w-full mt-1 px-2.5 py-1.5 bg-graphite-700 border border-border-default rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent"
                         />
                       ) : (
-                        <p className="text-calm-text dark:text-slate-200 font-medium">{row.afternoon || '—'}</p>
+                        <p className="text-text-primary font-medium">{row.afternoon || '—'}</p>
                       )}
                     </div>
 
-                    <div className="p-3 bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100/80 dark:border-indigo-900/40 rounded-2xl">
-                      <div className="flex items-center space-x-1.5 text-indigo-800 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider mb-1">
-                        <Sunset className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                    <div className="p-3 bg-graphite-700/60 border border-border-subtle rounded-xl">
+                      <div className="flex items-center space-x-1.5 text-purple-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                        <Sunset className="w-3.5 h-3.5 text-purple-400" />
                         <span>Evening</span>
                       </div>
                       {isEditing ? (
@@ -560,10 +560,10 @@ export const Timetable = () => {
                           type="text"
                           value={row.evening}
                           onChange={(e) => handleScheduleCellChange(idx, 'evening', e.target.value)}
-                          className="w-full mt-1 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-blue"
+                          className="w-full mt-1 px-2.5 py-1.5 bg-graphite-700 border border-border-default rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent"
                         />
                       ) : (
-                        <p className="text-calm-text dark:text-slate-200 font-medium">{row.evening || '—'}</p>
+                        <p className="text-text-primary font-medium">{row.evening || '—'}</p>
                       )}
                     </div>
                   </div>
@@ -575,32 +575,32 @@ export const Timetable = () => {
       </div>
 
       {/* DESKTOP TIMETABLE GRID */}
-      <div className="hidden lg:block bg-white dark:bg-slate-900 border border-calm-border/80 dark:border-slate-800/80 rounded-3xl shadow-2xs overflow-hidden mb-8 transition-colors duration-200">
+      <div className="hidden lg:block bg-graphite-800 border border-border-default rounded-2xl shadow-2xs overflow-hidden mb-8 transition-colors duration-200">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-calm-border/80 dark:border-slate-800 text-[11px] font-bold text-calm-muted dark:text-slate-400 uppercase tracking-wider">
+            <tr className="bg-graphite-700/80 border-b border-border-default text-[11px] font-bold text-text-muted uppercase tracking-wider">
               <th className="py-4 px-6 w-28">Day</th>
               <th className="py-4 px-6">
-                <div className="flex items-center space-x-1.5 text-amber-700 dark:text-amber-400">
+                <div className="flex items-center space-x-1.5 text-warning">
                   <Sunrise className="w-4 h-4" />
                   <span>Morning</span>
                 </div>
               </th>
               <th className="py-4 px-6">
-                <div className="flex items-center space-x-1.5 text-sky-700 dark:text-sky-400">
+                <div className="flex items-center space-x-1.5 text-info">
                   <Sun className="w-4 h-4" />
                   <span>Afternoon</span>
                 </div>
               </th>
               <th className="py-4 px-6">
-                <div className="flex items-center space-x-1.5 text-indigo-700 dark:text-indigo-400">
+                <div className="flex items-center space-x-1.5 text-purple-400">
                   <Sunset className="w-4 h-4" />
                   <span>Evening</span>
                 </div>
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-calm-border/60 dark:divide-slate-800/60 text-xs">
+          <tbody className="divide-y divide-border-subtle text-xs">
             {currentSchedule.map((row, idx) => {
               const isToday = row.day.toLowerCase() === todayAbbr.toLowerCase();
               return (
@@ -608,18 +608,18 @@ export const Timetable = () => {
                   key={row.day || idx}
                   className={`transition-colors duration-200 ${
                     isToday
-                      ? 'bg-accent-blue/5 dark:bg-accent-blue/15 hover:bg-accent-blue/8 dark:hover:bg-accent-blue/20 font-medium'
-                      : 'hover:bg-slate-50/60 dark:hover:bg-slate-800/40'
+                      ? 'bg-lime-accent/5 hover:bg-lime-accent/10 font-medium'
+                      : 'hover:bg-graphite-700/60'
                   }`}
                 >
                   {/* Day Column */}
-                  <td className="py-4 px-6 font-bold text-calm-text dark:text-slate-200 align-top">
+                  <td className="py-4 px-6 font-bold text-text-primary align-top">
                     <div className="flex items-center space-x-2">
-                      <span className={`text-sm ${isToday ? 'text-accent-blue font-extrabold' : ''}`}>
+                      <span className={`text-sm ${isToday ? 'text-lime-accent font-extrabold' : ''}`}>
                         {row.day}
                       </span>
                       {isToday && (
-                        <span className="bg-accent-blue text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-widest shadow-2xs">
+                        <span className="bg-lime-accent/10 text-lime-accent border border-lime-accent/20 text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-widest shadow-2xs">
                           Today
                         </span>
                       )}
@@ -633,13 +633,13 @@ export const Timetable = () => {
                         type="text"
                         value={row.morning}
                         onChange={(e) => handleScheduleCellChange(idx, 'morning', e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all"
+                        className="w-full px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent transition-all"
                         placeholder="Morning task..."
                       />
                     ) : (
-                      <div className="text-calm-text dark:text-slate-200 leading-relaxed">
+                      <div className="text-text-primary leading-relaxed">
                         {row.morning === '—' || !row.morning ? (
-                          <span className="text-calm-muted/60 dark:text-slate-500">—</span>
+                          <span className="text-text-muted/60">—</span>
                         ) : (
                           <span>{row.morning}</span>
                         )}
@@ -654,13 +654,13 @@ export const Timetable = () => {
                         type="text"
                         value={row.afternoon}
                         onChange={(e) => handleScheduleCellChange(idx, 'afternoon', e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all"
+                        className="w-full px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent transition-all"
                         placeholder="Afternoon task..."
                       />
                     ) : (
-                      <div className="text-calm-text dark:text-slate-200 leading-relaxed">
+                      <div className="text-text-primary leading-relaxed">
                         {row.afternoon === '—' || !row.afternoon ? (
-                          <span className="text-calm-muted/60 dark:text-slate-500">—</span>
+                          <span className="text-text-muted/60">—</span>
                         ) : (
                           <span>{row.afternoon}</span>
                         )}
@@ -675,13 +675,13 @@ export const Timetable = () => {
                         type="text"
                         value={row.evening}
                         onChange={(e) => handleScheduleCellChange(idx, 'evening', e.target.value)}
-                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all"
+                        className="w-full px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent transition-all"
                         placeholder="Evening task..."
                       />
                     ) : (
-                      <div className="text-calm-text dark:text-slate-200 leading-relaxed">
+                      <div className="text-text-primary leading-relaxed">
                         {row.evening === '—' || !row.evening ? (
-                          <span className="text-calm-muted/60 dark:text-slate-500">—</span>
+                          <span className="text-text-muted/60">—</span>
                         ) : (
                           <span>{row.evening}</span>
                         )}
@@ -698,11 +698,11 @@ export const Timetable = () => {
       {/* Guidelines & Strategy Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Strategy Notes */}
-        <div className="bg-white dark:bg-slate-900 border border-calm-border/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-2xs flex flex-col justify-between transition-colors duration-200">
+        <div className="bg-graphite-800 border border-border-default rounded-2xl p-6 shadow-2xs flex flex-col justify-between transition-colors duration-200">
           <div>
-            <div className="flex items-center space-x-2 text-calm-text dark:text-slate-100 mb-4">
-              <Sparkles className="w-4 h-4 text-accent-blue" />
-              <h3 className="text-sm font-bold uppercase tracking-wider">Strategy & Rationale</h3>
+            <div className="flex items-center space-x-2 text-text-primary mb-4">
+              <Sparkles className="w-4 h-4 text-lime-accent" />
+              <h3 className="font-heading text-sm font-bold uppercase tracking-wider">Strategy & Rationale</h3>
             </div>
 
             {isEditing ? (
@@ -713,12 +713,12 @@ export const Timetable = () => {
                       rows="2"
                       value={note}
                       onChange={(e) => handleNoteChange(nIdx, e.target.value)}
-                      className="flex-1 p-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-xs text-calm-text dark:text-slate-100 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue resize-none"
+                      className="flex-1 p-2.5 bg-graphite-700 border border-border-default rounded-xl text-xs text-text-primary outline-none focus:border-lime-accent resize-none"
                     />
                     <button
                       type="button"
                       onClick={() => handleRemoveNote(nIdx)}
-                      className="p-2 text-calm-muted hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors"
+                      className="p-2 text-text-muted hover:text-error hover:bg-error/10 rounded-xl transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -727,7 +727,7 @@ export const Timetable = () => {
                 <button
                   type="button"
                   onClick={handleAddNote}
-                  className="flex items-center space-x-1.5 text-xs text-accent-blue font-semibold hover:underline pt-1"
+                  className="flex items-center space-x-1.5 text-xs text-lime-accent font-semibold hover:underline pt-1 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add note point</span>
@@ -736,8 +736,8 @@ export const Timetable = () => {
             ) : (
               <ul className="space-y-3">
                 {currentNotes.map((note, nIdx) => (
-                  <li key={nIdx} className="flex items-start space-x-2.5 text-xs text-calm-muted dark:text-slate-400 leading-relaxed">
-                    <span className="w-1.5 h-1.5 rounded-full bg-accent-blue mt-1.5 flex-shrink-0" />
+                  <li key={nIdx} className="flex items-start space-x-2.5 text-xs text-text-secondary leading-relaxed">
+                    <span className="w-1.5 h-1.5 rounded-full bg-lime-accent mt-1.5 flex-shrink-0" />
                     <span>{note}</span>
                   </li>
                 ))}
@@ -747,13 +747,13 @@ export const Timetable = () => {
         </div>
 
         {/* Golden Rule Card */}
-        <div className="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent dark:from-amber-950/30 dark:via-amber-950/15 border border-amber-200/80 dark:border-amber-700/40 rounded-3xl p-6 shadow-2xs flex flex-col justify-between relative overflow-hidden transition-colors duration-200">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-accent-amber/5 rounded-full blur-xl"></div>
+        <div className="bg-warning/5 border border-warning/20 rounded-2xl p-6 shadow-2xs flex flex-col justify-between relative overflow-hidden transition-colors duration-200">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-warning/5 rounded-full blur-xl"></div>
           
           <div>
-            <div className="flex items-center space-x-2 text-amber-900 dark:text-amber-300 mb-3">
-              <ShieldCheck className="w-5 h-5 text-accent-amber" />
-              <h3 className="text-sm font-bold uppercase tracking-wider">The Rule That Makes This Stick</h3>
+            <div className="flex items-center space-x-2 text-warning mb-3">
+              <ShieldCheck className="w-5 h-5 text-warning" />
+              <h3 className="font-heading text-sm font-bold uppercase tracking-wider">The Rule That Makes This Stick</h3>
             </div>
 
             {isEditing ? (
@@ -761,18 +761,18 @@ export const Timetable = () => {
                 rows="4"
                 value={editedGoldenRule}
                 onChange={(e) => setEditedGoldenRule(e.target.value)}
-                className="w-full p-3 bg-white/90 dark:bg-slate-800/90 border border-amber-200 dark:border-amber-700/60 rounded-2xl text-xs text-calm-text dark:text-slate-100 outline-none focus:border-accent-amber resize-none"
+                className="w-full p-3 bg-graphite-700 border border-warning/40 rounded-xl text-xs text-text-primary outline-none focus:border-warning resize-none"
                 placeholder="Golden rule text..."
               />
             ) : (
-              <blockquote className="text-xs text-amber-950 dark:text-amber-200 font-medium leading-relaxed italic border-l-2 border-accent-amber/60 pl-3 my-2">
+              <blockquote className="text-xs text-text-primary font-medium leading-relaxed italic border-l-2 border-warning/60 pl-3 my-2">
                 "{currentGoldenRule}"
               </blockquote>
             )}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-amber-200/50 dark:border-amber-800/40 flex items-center space-x-1.5 text-[11px] text-amber-800 dark:text-amber-400">
-            <Info className="w-3.5 h-3.5 text-accent-amber" />
+          <div className="mt-4 pt-3 border-t border-border-subtle flex items-center space-x-1.5 text-[11px] text-text-muted">
+            <Info className="w-3.5 h-3.5 text-warning" />
             <span>Consistency over compensation — never let missed blocks induce guilt.</span>
           </div>
         </div>

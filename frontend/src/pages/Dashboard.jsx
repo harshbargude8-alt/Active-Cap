@@ -198,8 +198,8 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
   if (loading && projects.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-3">
-        <RefreshCw className="w-8 h-8 animate-spin text-accent-blue" />
-        <span className="text-sm text-calm-muted">Gathering your tracks...</span>
+        <RefreshCw className="w-8 h-8 animate-spin text-lime-accent" />
+        <span className="text-sm text-text-muted">Gathering your tracks...</span>
       </div>
     );
   }
@@ -214,17 +214,17 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
       <section className="mb-12">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-xl font-bold text-calm-text dark:text-slate-100 tracking-tight flex items-center">
+            <h2 className="font-heading text-xl font-bold text-text-primary tracking-tight flex items-center">
               Active Focus
-              <span className="ml-2 text-xs font-semibold px-2 py-0.5 bg-accent-blue/10 text-accent-blue border border-accent-blue/20 rounded-full">
+              <span className="ml-2 text-xs font-semibold px-2 py-0.5 bg-lime-accent/10 text-lime-accent border border-lime-accent/20 rounded-full">
                 {activeProjects.length}/2 Active
               </span>
             </h2>
-            <p className="text-xs text-calm-muted dark:text-slate-400 mt-0.5">The hard cap. No extra pile-on.</p>
+            <p className="text-xs text-text-muted mt-0.5">The hard cap. No extra pile-on.</p>
           </div>
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="flex items-center space-x-1.5 bg-calm-slate hover:bg-calm-slate/95 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-sm transition-all duration-300"
+            className="flex items-center space-x-1.5 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-xs font-medium px-4 py-2.5 rounded-xl shadow-sm transition-all duration-300 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Track</span>
@@ -232,15 +232,15 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
         </div>
 
         {activeProjects.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-3xl p-8 text-center max-w-xl mx-auto shadow-sm transition-colors duration-200">
-            <FolderOpen className="w-10 h-10 text-calm-muted dark:text-slate-500 mx-auto mb-3" />
-            <h3 className="font-semibold text-calm-text dark:text-slate-100">No active Tracks</h3>
-            <p className="text-sm text-calm-muted dark:text-slate-400 mt-1 max-w-sm mx-auto">
+          <div className="bg-graphite-800 border border-border-default rounded-2xl p-8 text-center max-w-xl mx-auto shadow-sm transition-colors duration-200">
+            <FolderOpen className="w-10 h-10 text-text-muted mx-auto mb-3" />
+            <h3 className="font-heading font-semibold text-text-primary">No active Tracks</h3>
+            <p className="text-sm text-text-muted mt-1 max-w-sm mx-auto">
               You currently have 0 active items. Activate a parked Track or start a new one to focus.
             </p>
             <button
               onClick={() => setIsCreateOpen(true)}
-              className="mt-4 bg-accent-blue text-white text-xs font-semibold px-4 py-2 rounded-xl"
+              className="mt-4 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-xs font-semibold px-4 py-2 rounded-xl cursor-pointer transition-colors duration-200"
             >
               Start New Track
             </button>
@@ -250,7 +250,7 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
             {activeProjects.map((project) => (
               <div
                 key={project._id}
-                className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                className="bg-graphite-800 border border-border-default rounded-2xl p-6 shadow-sm hover:bg-graphite-700 transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex justify-between items-start mb-4">
@@ -258,8 +258,8 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
                       {project.category}
                     </span>
                     {project.streakCount > 0 && (
-                      <div className="flex items-center space-x-1 text-accent-amber bg-amber-50/50 dark:bg-amber-950/20 px-2 py-1 rounded-lg border border-amber-100 dark:border-amber-900/40">
-                        <Flame className="w-4 h-4 fill-accent-amber" />
+                      <div className="flex items-center space-x-1 text-warning bg-warning/10 px-2 py-1 rounded-lg border border-warning/20">
+                        <Flame className="w-4 h-4 fill-warning" />
                         <span className="text-xs font-bold">{project.streakCount}d streak</span>
                       </div>
                     )}
@@ -270,24 +270,24 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
                       onSelectProjectId(project._id);
                       onViewChange('project-detail', project._id);
                     }}
-                    className="font-bold text-lg text-calm-text dark:text-slate-100 hover:text-accent-blue dark:hover:text-accent-blue cursor-pointer transition-colors leading-tight"
+                    className="font-heading font-bold text-lg text-text-primary hover:text-lime-accent cursor-pointer transition-colors leading-tight"
                   >
                     {project.title}
                   </h3>
-                  <p className="text-sm text-calm-muted dark:text-slate-400 mt-2 line-clamp-2">{project.description || 'No description provided.'}</p>
+                  <p className="text-sm text-text-secondary mt-2 line-clamp-2">{project.description || 'No description provided.'}</p>
 
-                  <div className="mt-5 p-3.5 bg-slate-50 dark:bg-slate-800/80 border border-calm-border/60 dark:border-slate-700/60 rounded-2xl">
-                    <span className="block text-[10px] font-bold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-1">
+                  <div className="mt-5 p-3.5 bg-graphite-700 border border-border-subtle rounded-xl">
+                    <span className="block text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1">
                       Next Step
                     </span>
-                    <p className="text-xs font-medium text-calm-text dark:text-slate-200 leading-relaxed">
+                    <p className="text-xs font-medium text-text-primary leading-relaxed">
                       {project.nextStep}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <span className="text-[10px] text-calm-muted dark:text-slate-400 font-medium">
+                <div className="mt-6 flex items-center justify-between pt-4 border-t border-border-subtle">
+                  <span className="text-[10px] text-text-muted font-medium">
                     Touched {project.lastTouchedAt ? new Date(project.lastTouchedAt).toLocaleDateString() : 'never'}
                   </span>
                   
@@ -295,7 +295,7 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
                     {activeTimer && activeTimer.projectId === project._id ? (
                       <button
                         onClick={() => stopTimer()}
-                        className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-300 text-xs font-semibold px-3 py-2 rounded-xl transition-all duration-300 flex items-center space-x-1 cursor-pointer animate-pulse"
+                        className="bg-error/10 border border-error/20 hover:bg-error/20 text-error text-xs font-semibold px-3 py-2 rounded-xl transition-all duration-300 flex items-center space-x-1 cursor-pointer animate-pulse"
                         title="Stop Timer & Log Time"
                       >
                         <Square className="w-3.5 h-3.5 fill-current" />
@@ -307,8 +307,8 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
                         disabled={activeTimer !== null}
                         className={`text-xs font-semibold px-3 py-2 rounded-xl border transition-all duration-300 flex items-center space-x-1 cursor-pointer ${
                           activeTimer
-                            ? 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-50'
-                            : 'bg-slate-50 dark:bg-slate-800 hover:bg-accent-blue/10 dark:hover:bg-accent-blue/20 border-calm-border dark:border-slate-700 hover:border-accent-blue/35 dark:hover:border-accent-blue/40 text-calm-text dark:text-slate-100 hover:text-accent-blue dark:hover:text-sky-300'
+                            ? 'bg-graphite-800 border-border-default text-text-muted cursor-not-allowed opacity-50'
+                            : 'bg-graphite-700 hover:bg-graphite-700/80 border-border-default hover:border-lime-accent/40 text-text-primary hover:text-lime-accent'
                         }`}
                         title={activeTimer ? 'A timer is already running' : 'Start Focus Timer'}
                       >
@@ -322,7 +322,7 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
                         setSelectedProject(project);
                         setIsCheckInOpen(true);
                       }}
-                      className="bg-accent-blue hover:bg-accent-blue/90 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all duration-300 shadow-sm flex items-center space-x-1.5 cursor-pointer"
+                      className="bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-xs font-semibold px-4 py-2 rounded-xl transition-all duration-300 shadow-sm flex items-center space-x-1.5 cursor-pointer"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Check in</span>
@@ -337,33 +337,33 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
 
       {/* Weekly review prompt banner */}
       {reviewData && (reviewData.checkInsThisWeek.length > 0 || reviewData.longestParked.length > 0) && (
-        <section className="mb-12 bg-gradient-to-tr from-slate-100 to-slate-50 dark:from-slate-900 dark:to-slate-800/70 border border-calm-border dark:border-slate-800 rounded-3xl p-6 relative overflow-hidden transition-colors duration-200">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-accent-blue/5 rounded-full blur-lg"></div>
+        <section className="mb-12 bg-gradient-to-tr from-graphite-800 to-graphite-800/70 border border-border-default rounded-2xl p-6 relative overflow-hidden transition-colors duration-200">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-lime-accent/5 rounded-full blur-lg"></div>
           
-          <h3 className="font-bold text-sm text-calm-text dark:text-slate-100 uppercase tracking-wider flex items-center mb-3">
-            <TrendingUp className="w-4 h-4 mr-1.5 text-accent-blue animate-bounce" /> Weekly review helper
+          <h3 className="font-heading font-bold text-sm text-text-primary uppercase tracking-wider flex items-center mb-3">
+            <TrendingUp className="w-4 h-4 mr-1.5 text-lime-accent animate-bounce" /> Weekly review helper
           </h3>
 
           <div className="space-y-3">
-            <p className="text-xs text-calm-muted dark:text-slate-400">
-              You recorded <span className="font-bold text-calm-text dark:text-slate-200">{reviewData.checkInsThisWeek.length} check-ins</span> this week.
+            <p className="text-xs text-text-secondary">
+              You recorded <span className="font-bold text-text-primary">{reviewData.checkInsThisWeek.length} check-ins</span> this week.
             </p>
             {reviewData.longestParked.length > 0 && (
-              <p className="text-xs text-calm-muted dark:text-slate-400">
+              <p className="text-xs text-text-secondary">
                 📌 Longest parked without touches:{' '}
-                <span className="font-semibold text-calm-text dark:text-slate-200">
+                <span className="font-semibold text-text-primary">
                   "{reviewData.longestParked[0].title}"
                 </span>{' '}
                 (since {new Date(reviewData.longestParked[0].lastTouchedAt || reviewData.longestParked[0].updatedAt).toLocaleDateString()}).
               </p>
             )}
-            <div className="pt-2 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between">
-              <span className="text-xs font-medium text-calm-text dark:text-slate-200">
+            <div className="pt-2 border-t border-border-subtle flex items-center justify-between">
+              <span className="text-xs font-medium text-text-primary">
                 Still focused on the right 2 things, or swap?
               </span>
               <button
                 onClick={() => onViewChange('all-projects')}
-                className="text-xs font-semibold text-accent-blue hover:underline flex items-center"
+                className="text-xs font-semibold text-lime-accent hover:text-lime-accent-hover hover:underline flex items-center transition-colors"
               >
                 Manage Tracks <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
               </button>
@@ -377,13 +377,13 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
         
         {/* Parked list (2/3 width on desktop) */}
         <section className="md:col-span-2">
-          <h3 className="text-lg font-bold text-calm-text dark:text-slate-100 mb-4 flex items-center justify-between">
+          <h3 className="font-heading text-lg font-bold text-text-primary mb-4 flex items-center justify-between">
             <span>Parked ({parkedProjects.length})</span>
-            <span className="text-xs text-calm-muted dark:text-slate-400 font-normal">Visible, not nagged</span>
+            <span className="text-xs text-text-muted font-normal">Visible, not nagged</span>
           </h3>
 
           {parkedProjects.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 border border-dashed border-calm-border dark:border-slate-800 rounded-3xl p-6 text-center text-calm-muted dark:text-slate-400 text-xs">
+            <div className="bg-graphite-800 border border-dashed border-border-default rounded-2xl p-6 text-center text-text-muted text-xs">
               No parked Tracks.
             </div>
           ) : (
@@ -395,16 +395,16 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
                     onSelectProjectId(project._id);
                     onViewChange('project-detail', project._id);
                   }}
-                  className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl p-4 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer shadow-2xs hover:shadow-xs transition-all duration-300 flex justify-between items-center"
+                  className="bg-graphite-800 border border-border-default rounded-2xl p-4 hover:bg-graphite-700 hover:border-border-default cursor-pointer shadow-2xs hover:shadow-xs transition-all duration-300 flex justify-between items-center"
                 >
                   <div className="min-w-0 pr-4">
                     <span className={`inline-block text-[9px] font-bold border px-1.5 py-0.5 rounded uppercase tracking-wider mb-1.5 ${getCategoryColor(project.category)}`}>
                       {project.category}
                     </span>
-                    <h4 className="font-semibold text-sm text-calm-text dark:text-slate-100 truncate">{project.title}</h4>
-                    <p className="text-xs text-calm-muted dark:text-slate-400 truncate mt-0.5">Next step: {project.nextStep || 'Not set'}</p>
+                    <h4 className="font-semibold text-sm text-text-primary truncate">{project.title}</h4>
+                    <p className="text-xs text-text-muted truncate mt-0.5">Next step: {project.nextStep || 'Not set'}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-calm-muted dark:text-slate-500 flex-shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-text-muted flex-shrink-0" />
                 </div>
               ))}
             </div>
@@ -413,14 +413,14 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
 
         {/* Someday list (1/3 width on desktop) */}
         <section>
-          <h3 className="text-lg font-bold text-calm-text dark:text-slate-100 mb-4">Someday ({somedayProjects.length})</h3>
+          <h3 className="font-heading text-lg font-bold text-text-primary mb-4">Someday ({somedayProjects.length})</h3>
           
           {somedayProjects.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 border border-dashed border-calm-border dark:border-slate-800 rounded-3xl p-6 text-center text-calm-muted dark:text-slate-400 text-xs">
+            <div className="bg-graphite-800 border border-dashed border-border-default rounded-2xl p-6 text-center text-text-muted text-xs">
               No someday items.
             </div>
           ) : (
-            <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 rounded-2xl p-4 divide-y divide-slate-100 dark:divide-slate-800 max-h-96 overflow-y-auto custom-scrollbar">
+            <div className="bg-graphite-800 border border-border-default rounded-2xl p-4 divide-y divide-border-subtle max-h-96 overflow-y-auto custom-scrollbar">
               {somedayProjects.map((project) => (
                 <div
                   key={project._id}
@@ -428,12 +428,12 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
                     onSelectProjectId(project._id);
                     onViewChange('project-detail', project._id);
                   }}
-                  className="py-2.5 hover:text-accent-blue cursor-pointer transition-colors flex items-center justify-between group"
+                  className="py-2.5 hover:text-lime-accent cursor-pointer transition-colors flex items-center justify-between group"
                 >
-                  <span className="text-xs text-calm-text dark:text-slate-200 font-medium truncate group-hover:text-accent-blue transition-colors">
+                  <span className="text-xs text-text-primary font-medium truncate group-hover:text-lime-accent transition-colors">
                     {project.title}
                   </span>
-                  <span className="text-[9px] text-calm-muted dark:text-slate-500 font-normal capitalize">
+                  <span className="text-[9px] text-text-muted font-normal capitalize">
                     {project.category}
                   </span>
                 </div>
@@ -468,80 +468,80 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
       {/* New Project Dialog */}
       {isCreateOpen && createPortal(
         <div className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-calm-border dark:border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl animate-fade-in relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="bg-graphite-800 border border-border-default w-full max-w-md rounded-2xl p-6 shadow-2xl animate-fade-in relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             <button
               onClick={() => {
                 setIsCreateOpen(false);
                 resetCreateForm();
               }}
-              className="absolute top-5 right-5 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-calm-muted dark:text-slate-400 transition-colors"
+              className="absolute top-5 right-5 p-1 rounded-full hover:bg-graphite-700 text-text-muted transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="font-bold text-lg text-calm-text dark:text-slate-100 mb-4">Start New Track</h3>
-            {createError && <div className="mb-4 text-xs bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 p-3 rounded-xl">{createError}</div>}
+            <h3 className="font-heading font-bold text-lg text-text-primary mb-4">Start New Track</h3>
+            {createError && <div className="mb-4 text-xs bg-warning/10 border border-warning/20 text-warning p-3 rounded-xl">{createError}</div>}
 
             <form onSubmit={handleCreateProject} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Title</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Title</label>
                 <input
                   type="text"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g. Synth patch design"
                   required
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Category</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Category</label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 >
                   {PROJECT_CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat} className="bg-white dark:bg-slate-900">{cat}</option>
+                    <option key={cat} value={cat} className="bg-graphite-800">{cat}</option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Description</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Description</label>
                 <textarea
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder="Brief context or goals..."
                   rows="3"
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300 resize-none"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300 resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">Status</label>
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Status</label>
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 >
-                  <option value="Parked" className="bg-white dark:bg-slate-900">Parked (Keep visible but inactive)</option>
-                  <option value="Active" className="bg-white dark:bg-slate-900">Active (Bring to top of focus, max 2)</option>
-                  <option value="Someday" className="bg-white dark:bg-slate-900">Someday</option>
+                  <option value="Parked" className="bg-graphite-800">Parked (Keep visible but inactive)</option>
+                  <option value="Active" className="bg-graphite-800">Active (Bring to top of focus, max 2)</option>
+                  <option value="Someday" className="bg-graphite-800">Someday</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-calm-muted dark:text-slate-400 uppercase tracking-wider mb-2">
-                  Next Step {newStatus === 'Active' && <span className="text-accent-orange font-bold">*</span>}
+                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">
+                  Next Step {newStatus === 'Active' && <span className="text-warning font-bold">*</span>}
                 </label>
                 <input
                   type="text"
                   value={newNextStep}
                   onChange={(e) => setNewNextStep(e.target.value)}
                   placeholder="The single next concrete action"
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-calm-border dark:border-slate-700 rounded-xl text-calm-text dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-accent-blue transition-all duration-300"
+                  className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300"
                 />
               </div>
 
@@ -552,13 +552,13 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
                     setIsCreateOpen(false);
                     resetCreateForm();
                   }}
-                  className="px-4 py-2 text-sm font-medium text-calm-muted dark:text-slate-400 hover:text-calm-text dark:hover:text-slate-200"
+                  className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text-primary transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-calm-slate hover:bg-calm-slate/95 text-white text-sm font-medium rounded-xl shadow-sm transition-all duration-300"
+                  className="px-5 py-2 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-sm font-medium rounded-xl shadow-sm transition-all duration-300 cursor-pointer"
                 >
                   Create
                 </button>

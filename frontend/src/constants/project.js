@@ -1,6 +1,8 @@
 /**
  * Project domain constants — single source of truth for categories, statuses,
- * and their associated Tailwind colour classes used across the application.
+ * and their associated colour classes used across the application.
+ *
+ * Redesigned for the Graphite Dark design system.
  */
 
 // ---------------------------------------------------------------------------
@@ -30,25 +32,26 @@ export const PROJECT_STATUSES = [
 ];
 
 // ---------------------------------------------------------------------------
-// Colour helpers
+// Colour helpers – Graphite Dark palette
 // ---------------------------------------------------------------------------
 
 /**
  * Returns the Tailwind class string for a given project category badge.
+ * All variants use the graphite surface with accent-colored text.
  * @param {string} category
  * @returns {string}
  */
 export const getCategoryColor = (category) => {
   switch (category) {
-    case 'Code':      return 'bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border-blue-100 dark:border-blue-900/40';
-    case 'Content':   return 'bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 border-purple-100 dark:border-purple-900/40';
-    case 'Reading':   return 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900/40';
-    case 'Music':     return 'bg-pink-50 dark:bg-pink-950/30 text-pink-700 dark:text-pink-300 border-pink-100 dark:border-pink-900/40';
-    case 'Animation': return 'bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 border-indigo-100 dark:border-indigo-900/40';
-    case 'Writing':   return 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-100 dark:border-amber-900/40';
-    case 'Research':  return 'bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-300 border-teal-100 dark:border-teal-900/40';
-    case 'Course':    return 'bg-cyan-50 dark:bg-cyan-950/30 text-cyan-700 dark:text-cyan-300 border-cyan-100 dark:border-cyan-900/40';
-    default:          return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
+    case 'Code':      return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+    case 'Content':   return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+    case 'Reading':   return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+    case 'Music':     return 'bg-pink-500/10 text-pink-400 border-pink-500/20';
+    case 'Animation': return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
+    case 'Writing':   return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+    case 'Research':  return 'bg-teal-500/10 text-teal-400 border-teal-500/20';
+    case 'Course':    return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
+    default:          return 'bg-graphite-600/50 text-text-secondary border-graphite-500/50';
   }
 };
 
@@ -59,12 +62,11 @@ export const getCategoryColor = (category) => {
  */
 export const getStatusColor = (status) => {
   switch (status) {
-    case 'Active':    return 'bg-sky-50 dark:bg-sky-950/30 text-accent-blue dark:text-sky-300 border-sky-200 dark:border-sky-800/40';
-    case 'Parked':    return 'bg-amber-50 dark:bg-amber-950/30 text-accent-amber dark:text-amber-300 border-amber-200 dark:border-amber-800/40';
-    case 'Someday':   return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
-    case 'Done':      return 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40';
-    case 'Abandoned': return 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/40';
-    default:          return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
+    case 'Active':    return 'bg-lime-accent/10 text-lime-accent border-lime-accent/20';
+    case 'Parked':    return 'bg-warning/10 text-warning border-warning/20';
+    case 'Someday':   return 'bg-graphite-600/50 text-text-secondary border-graphite-500/50';
+    case 'Done':      return 'bg-success/10 text-success border-success/20';
+    case 'Abandoned': return 'bg-error/10 text-error border-error/20';
+    default:          return 'bg-graphite-600/50 text-text-secondary border-graphite-500/50';
   }
 };
-

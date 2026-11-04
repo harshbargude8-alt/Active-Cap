@@ -67,11 +67,12 @@ function MainAppContent() {
     }
   };
 
+  // LOADING STATE: dynamic app background + lime accent spinner
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 dark:bg-slate-950 space-y-3 transition-colors duration-200">
-        <RefreshCw className="w-8 h-8 animate-spin text-accent-blue" />
-        <span className="text-sm text-calm-muted dark:text-slate-400 font-medium">Connecting to active cap session...</span>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-app-bg space-y-3">
+        <RefreshCw className="w-8 h-8 animate-spin text-lime-accent" />
+        <span className="text-sm text-text-muted font-medium">Connecting to active cap session...</span>
       </div>
     );
   }
@@ -80,8 +81,9 @@ function MainAppContent() {
     return <Login />;
   }
 
+  // MAIN SHELL: dynamic app background, primary text, bottom padding for mobile nav
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-calm-text dark:text-slate-100 pb-20 md:pb-0 transition-colors duration-200">
+    <div className="min-h-screen bg-app-bg text-text-primary pb-20 md:pb-0 transition-colors duration-200">
       <Navbar currentView={view} onViewChange={navigate} />
       
       <main className="py-6">
