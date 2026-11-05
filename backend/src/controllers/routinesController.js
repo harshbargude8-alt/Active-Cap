@@ -41,10 +41,13 @@ export const createRoutine = async (req, res) => {
       frequency = 'daily',
       daysOfWeek,
       timeSlot = 'morning',
+      startTime = '',
+      endTime = '',
       estimatedMinutes = 30,
       priority = 'medium',
       isActive = true,
       order = 0,
+      checklist,
     } = req.body;
 
     if (!title || typeof title !== 'string' || title.trim() === '') {
@@ -77,10 +80,17 @@ export const createRoutine = async (req, res) => {
       frequency,
       daysOfWeek: calculatedDays,
       timeSlot,
+      startTime: typeof startTime === 'string' ? startTime.trim() : '',
+      endTime: typeof endTime === 'string' ? endTime.trim() : '',
       estimatedMinutes: Math.max(0, Number(estimatedMinutes) || 0),
       priority,
       isActive: Boolean(isActive),
       order: Number(order) || 0,
+      checklist: Array.isArray(checklist)
+        ? checklist
+            .filter((item) => item && typeof item.text === 'string' && item.text.trim())
+            .map((item) => ({ text: item.text.trim(), completed: false }))
+        : [],
     });
 
     await newRoutine.save();
@@ -114,11 +124,16 @@ export const updateRoutine = async (req, res) => {
       frequency,
       daysOfWeek,
       timeSlot,
+      startTime,
+      endTime,
       estimatedMinutes,
       priority,
       isActive,
       order,
+      checklist,
     } = req.body;
+
+    const previousTitle = routine.title;
 
     if (title !== undefined) {
       if (!title || typeof title !== 'string' || title.trim() === '') {
@@ -161,6 +176,14 @@ export const updateRoutine = async (req, res) => {
       routine.timeSlot = timeSlot;
     }
 
+    if (startTime !== undefined) {
+      routine.startTime = typeof startTime === 'string' ? startTime.trim() : '';
+    }
+
+    if (endTime !== undefined) {
+      routine.endTime = typeof endTime === 'string' ? endTime.trim() : '';
+    }
+
     if (estimatedMinutes !== undefined) {
       routine.estimatedMinutes = Math.max(0, Number(estimatedMinutes) || 0);
     }
@@ -177,30 +200,55 @@ export const updateRoutine = async (req, res) => {
       routine.order = Number(order) || 0;
     }
 
+    if (checklist !== undefined && Array.isArray(checklist)) {
+      routine.checklist = checklist
+        .filter((item) => item && typeof item.text === 'string' && item.text.trim())
+        .map((item) => ({ text: item.text.trim(), completed: false }));
+      routine.markModified('checklist');
+    }
+
     await routine.save();
     await routine.populate('projectId', 'title category status');
 
     // Also update pending synced daily tasks across all days
-    await DailyTask.updateMany(
-      {
-        userId: req.user._id,
-        $or: [
-          { routineId: routine._id },
-          { source: 'routine', title: routine.title },
-        ],
-        status: 'pending',
-      },
-      {
-        $set: {
-          title: routine.title,
-          description: routine.description,
-          timeSlot: routine.timeSlot,
-          estimatedMinutes: routine.estimatedMinutes,
-          priority: routine.priority,
-          projectId: routine.projectId,
-        },
+    const pendingTasks = await DailyTask.find({
+      userId: req.user._id,
+      $or: [
+        { routineId: routine._id },
+        { source: 'routine', title: routine.title },
+        ...(previousTitle ? [{ source: 'routine', title: previousTitle }] : []),
+      ],
+      status: 'pending',
+    });
+
+    for (const task of pendingTasks) {
+      task.title = routine.title;
+      task.description = routine.description;
+      task.timeSlot = routine.timeSlot;
+      task.startTime = routine.startTime;
+      task.endTime = routine.endTime;
+      task.estimatedMinutes = routine.estimatedMinutes;
+      task.priority = routine.priority;
+      task.projectId = routine.projectId;
+      task.routineId = routine._id;
+
+      if (checklist !== undefined) {
+        // Sync checklist items from routine: keep completion state for matching items, remove deleted items
+        const existingChecklist = Array.isArray(task.checklist) ? task.checklist : [];
+        task.checklist = (routine.checklist || []).map((rItem) => {
+          const match = existingChecklist.find(
+            (e) => e && e.text && e.text.trim().toLowerCase() === rItem.text.trim().toLowerCase()
+          );
+          return {
+            text: rItem.text,
+            completed: match ? Boolean(match.completed) : false,
+          };
+        });
+        task.markModified('checklist');
       }
-    );
+
+      await task.save();
+    }
 
     res.json(routine);
   } catch (err) {
@@ -305,16 +353,17 @@ export const syncRoutinesToDate = async (req, res) => {
     });
 
     const tasksToCreate = [];
+    let updatedExistingCount = 0;
 
     for (const routine of matchingRoutines) {
       // Check if already created by routineId or identical title
-      const alreadyExists = existingTasks.some((t) => {
+      const existingTask = existingTasks.find((t) => {
         if (t.routineId && t.routineId.toString() === routine._id.toString()) return true;
         if (t.title.trim().toLowerCase() === routine.title.trim().toLowerCase()) return true;
         return false;
       });
 
-      if (!alreadyExists) {
+      if (!existingTask) {
         tasksToCreate.push({
           userId: req.user._id,
           title: routine.title,
@@ -323,12 +372,44 @@ export const syncRoutinesToDate = async (req, res) => {
           projectId: routine.projectId,
           priority: routine.priority,
           timeSlot: routine.timeSlot,
+          startTime: routine.startTime || '',
+          endTime: routine.endTime || '',
           estimatedMinutes: routine.estimatedMinutes,
           source: 'routine',
           routineId: routine._id,
+          checklist: Array.isArray(routine.checklist)
+            ? routine.checklist.map((item) => ({ text: item.text, completed: false }))
+            : [],
           status: 'pending',
           order: routine.order || 0,
         });
+      } else if (existingTask.status === 'pending') {
+        // Sync latest routine details to existing pending task
+        existingTask.title = routine.title;
+        existingTask.description = routine.description || '';
+        existingTask.projectId = routine.projectId;
+        existingTask.priority = routine.priority;
+        existingTask.timeSlot = routine.timeSlot;
+        existingTask.startTime = routine.startTime || '';
+        existingTask.endTime = routine.endTime || '';
+        existingTask.estimatedMinutes = routine.estimatedMinutes;
+        existingTask.routineId = routine._id;
+
+        // Sync checklist: keep existing completion state if text matches, remove deleted subtasks
+        const existingChecklist = Array.isArray(existingTask.checklist) ? existingTask.checklist : [];
+        existingTask.checklist = (routine.checklist || []).map((rItem) => {
+          const match = existingChecklist.find(
+            (e) => e && e.text && e.text.trim().toLowerCase() === rItem.text.trim().toLowerCase()
+          );
+          return {
+            text: rItem.text,
+            completed: match ? Boolean(match.completed) : false,
+          };
+        });
+
+        existingTask.markModified('checklist');
+        await existingTask.save();
+        updatedExistingCount++;
       }
     }
 
@@ -340,8 +421,10 @@ export const syncRoutinesToDate = async (req, res) => {
     }
 
     res.json({
-      message: `Synced ${createdTasks.length} routine task(s) for ${dayAbbr} (${targetDate})`,
-      syncedCount: createdTasks.length,
+      message: `Synced routines for ${dayAbbr} (${targetDate}): ${createdTasks.length} created, ${updatedExistingCount} updated`,
+      syncedCount: createdTasks.length + updatedExistingCount,
+      createdCount: createdTasks.length,
+      updatedCount: updatedExistingCount,
       dayAbbr,
       date: targetDate,
       createdTasks,

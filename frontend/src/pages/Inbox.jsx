@@ -9,7 +9,8 @@ import {
   Trash2,
   Calendar,
   X,
-  RefreshCw
+  RefreshCw,
+  ArrowLeft
 } from 'lucide-react';
 
 export const Inbox = ({ onViewChange, onSelectProjectId }) => {
@@ -184,7 +185,14 @@ export const Inbox = ({ onViewChange, onSelectProjectId }) => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 pb-24 md:pb-12 animate-fade-in">
-      <div className="mb-8">
+      <div className="mb-6">
+        <button
+          onClick={() => onViewChange('all-projects')}
+          className="inline-flex items-center space-x-1.5 text-xs text-text-muted hover:text-text-primary mb-3 transition-colors duration-200 cursor-pointer group"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform duration-200 text-lime-accent" />
+          <span>Back to Tracks</span>
+        </button>
         <h2 className="font-heading text-xl font-bold text-text-primary tracking-tight flex items-center">
           Quick Capture Inbox
           <span className="ml-2 text-xs font-semibold px-2 py-0.5 bg-lime-accent/10 text-lime-accent border border-lime-accent/20 rounded-full">

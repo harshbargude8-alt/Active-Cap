@@ -44,6 +44,16 @@ const dailyTaskSchema = new mongoose.Schema({
     enum: ['morning', 'afternoon', 'evening', 'anytime'],
     default: 'anytime',
   },
+  startTime: {
+    type: String,
+    default: '',
+    trim: true,
+  },
+  endTime: {
+    type: String,
+    default: '',
+    trim: true,
+  },
   estimatedMinutes: {
     type: Number,
     default: 0,
@@ -72,6 +82,19 @@ const dailyTaskSchema = new mongoose.Schema({
     ref: 'Routine',
     default: null,
   },
+  checklist: [
+    {
+      text: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      completed: {
+        type: Boolean,
+        default: false,
+      },
+    },
+  ],
 }, {
   timestamps: true,
 });

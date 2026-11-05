@@ -11,10 +11,22 @@ import {
   AlertCircle,
   Sparkles,
   Power,
-  RotateCw
+  RotateCw,
+  Clock,
+  CheckSquare
 } from 'lucide-react';
 
 const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+// Calculate difference in minutes between HH:MM strings
+const calculateDiffMinutes = (start, end) => {
+  if (!start || !end) return null;
+  const [sH, sM] = start.split(':').map(Number);
+  const [eH, eM] = end.split(':').map(Number);
+  let diff = (eH * 60 + eM) - (sH * 60 + sM);
+  if (diff < 0) diff += 24 * 60;
+  return diff > 0 ? diff : null;
+};
 
 export const RoutinesModal = ({
   isOpen,
@@ -39,10 +51,30 @@ export const RoutinesModal = ({
   const [frequency, setFrequency] = useState('daily');
   const [daysOfWeek, setDaysOfWeek] = useState(DAYS_OF_WEEK);
   const [timeSlot, setTimeSlot] = useState('morning');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [estimatedMinutes, setEstimatedMinutes] = useState(30);
   const [priority, setPriority] = useState('medium');
+  const [routineChecklist, setRoutineChecklist] = useState([]);
+  const [routineNewSubtask, setRoutineNewSubtask] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleStartTimeChange = (newStart) => {
+    setStartTime(newStart);
+    const diff = calculateDiffMinutes(newStart, endTime);
+    if (diff) {
+      setEstimatedMinutes(diff);
+    }
+  };
+
+  const handleEndTimeChange = (newEnd) => {
+    setEndTime(newEnd);
+    const diff = calculateDiffMinutes(startTime, newEnd);
+    if (diff) {
+      setEstimatedMinutes(diff);
+    }
+  };
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -82,8 +114,12 @@ export const RoutinesModal = ({
     setFrequency('daily');
     setDaysOfWeek(DAYS_OF_WEEK);
     setTimeSlot('morning');
+    setStartTime('');
+    setEndTime('');
     setEstimatedMinutes(30);
     setPriority('medium');
+    setRoutineChecklist([]);
+    setRoutineNewSubtask('');
     setIsFormOpen(false);
   };
 
@@ -117,8 +153,12 @@ export const RoutinesModal = ({
     setFrequency(routine.frequency || 'daily');
     setDaysOfWeek(routine.daysOfWeek || DAYS_OF_WEEK);
     setTimeSlot(routine.timeSlot || 'morning');
+    setStartTime(routine.startTime || '');
+    setEndTime(routine.endTime || '');
     setEstimatedMinutes(routine.estimatedMinutes || 30);
     setPriority(routine.priority || 'medium');
+    setRoutineChecklist(routine.checklist ? routine.checklist.map((item) => ({ ...item })) : []);
+    setRoutineNewSubtask('');
     setIsFormOpen(true);
   };
 
@@ -135,8 +175,11 @@ export const RoutinesModal = ({
         frequency,
         daysOfWeek,
         timeSlot,
+        startTime: startTime || '',
+        endTime: endTime || '',
         estimatedMinutes: Number(estimatedMinutes) || 0,
         priority,
+        checklist: routineChecklist,
       };
 
       if (editingRoutineId) {
@@ -386,6 +429,39 @@ export const RoutinesModal = ({
                   </div>
                 </div>
 
+                {/* Start & End Time (Optional) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1">
+                      Start Time (Optional)
+                    </label>
+                    <div className="relative flex items-center">
+                      <Clock className="w-3.5 h-3.5 text-text-muted absolute left-3 pointer-events-none" />
+                      <input
+                        type="time"
+                        value={startTime}
+                        onChange={(e) => handleStartTimeChange(e.target.value)}
+                        className="w-full pl-9 pr-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-xs outline-none focus:border-lime-accent"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1">
+                      End Time (Optional)
+                    </label>
+                    <div className="relative flex items-center">
+                      <Clock className="w-3.5 h-3.5 text-text-muted absolute left-3 pointer-events-none" />
+                      <input
+                        type="time"
+                        value={endTime}
+                        onChange={(e) => handleEndTimeChange(e.target.value)}
+                        className="w-full pl-9 pr-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-xs outline-none focus:border-lime-accent"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Frequency Presets */}
                 <div>
                   <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1.5">
@@ -497,6 +573,95 @@ export const RoutinesModal = ({
                   />
                 </div>
 
+                {/* Subtask Checklist for Routine */}
+                <div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-1.5">
+                    <label className="text-[11px] font-semibold text-text-muted uppercase tracking-wider flex items-center gap-1.5">
+                      <CheckSquare className="w-3.5 h-3.5 text-lime-accent" />
+                      <span>Routine Subtask Checklist ({routineChecklist.length})</span>
+                    </label>
+                    {/* Preset quick chips */}
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span className="text-[10px] text-text-muted hidden sm:inline">Presets:</span>
+                      {[
+                        '15m Tutorial & Study',
+                        '15m Technical Drill',
+                        '25m Artwork Production',
+                        '5m Review & Notes',
+                      ].map((presetText) => (
+                        <button
+                          key={presetText}
+                          type="button"
+                          onClick={() => {
+                            setRoutineChecklist((prev) => [...prev, { text: presetText, completed: false }]);
+                          }}
+                          className="text-[9px] font-medium bg-graphite-700 hover:bg-lime-accent/20 hover:text-lime-accent border border-border-default px-1.5 py-0.5 rounded cursor-pointer transition-colors"
+                          title={`Add "${presetText}"`}
+                        >
+                          + {presetText.split(' ')[0]} {presetText.split(' ')[1]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Checklist items list */}
+                  {routineChecklist.length > 0 && (
+                    <div className="space-y-1.5 mb-2 max-h-36 overflow-y-auto pr-1 custom-scrollbar">
+                      {routineChecklist.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between gap-2 p-1.5 rounded-lg bg-graphite-700/60 border border-border-default/60"
+                        >
+                          <span className="text-xs text-text-primary truncate">{item.text}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setRoutineChecklist((prev) => prev.filter((_, i) => i !== idx));
+                            }}
+                            className="text-text-muted hover:text-error p-1 cursor-pointer transition-colors"
+                            title="Remove subtask"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add subtask input */}
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={routineNewSubtask}
+                      onChange={(e) => setRoutineNewSubtask(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (routineNewSubtask.trim()) {
+                            setRoutineChecklist((prev) => [...prev, { text: routineNewSubtask.trim(), completed: false }]);
+                            setRoutineNewSubtask('');
+                          }
+                        }
+                      }}
+                      placeholder="Add routine step (e.g. '15m Tutorial', press Enter)..."
+                      className="flex-1 px-3 py-1.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-xs outline-none focus:border-lime-accent"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (routineNewSubtask.trim()) {
+                          setRoutineChecklist((prev) => [...prev, { text: routineNewSubtask.trim(), completed: false }]);
+                          setRoutineNewSubtask('');
+                        }
+                      }}
+                      disabled={!routineNewSubtask.trim()}
+                      className="px-3 py-1.5 bg-graphite-700 hover:bg-lime-accent hover:text-graphite-950 text-text-secondary text-xs font-semibold rounded-xl border border-border-default transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+
                 {/* Form Buttons */}
                 <div className="flex justify-end space-x-2 pt-2 border-t border-border-subtle">
                   <button
@@ -588,6 +753,20 @@ export const RoutinesModal = ({
                           <span className="text-[9px] font-mono text-text-muted">
                             {routine.estimatedMinutes}m
                           </span>
+
+                          {routine.startTime && (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-mono font-medium text-lime-accent bg-lime-accent/10 border border-lime-accent/25 px-2 py-0.5 rounded-full">
+                              <Clock className="w-2.5 h-2.5" />
+                              <span>{routine.startTime}{routine.endTime ? ` - ${routine.endTime}` : ''}</span>
+                            </span>
+                          )}
+
+                          {routine.checklist?.length > 0 && (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-semibold text-text-secondary bg-graphite-700 px-2 py-0.5 rounded-full">
+                              <CheckSquare className="w-2.5 h-2.5 text-lime-accent" />
+                              <span>{routine.checklist.length} subtasks</span>
+                            </span>
+                          )}
                         </div>
 
                         {/* Title & Description */}

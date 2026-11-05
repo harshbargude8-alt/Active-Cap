@@ -10,7 +10,8 @@ import {
   ChevronRight,
   Folder,
   RefreshCw,
-  X
+  X,
+  Inbox
 } from 'lucide-react';
 
 export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
@@ -20,6 +21,7 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [categoryFilter, setCategoryFilter] = useState('All');
+  const [inboxCount, setInboxCount] = useState(0);
 
   // Create Project State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -50,8 +52,21 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
     }
   };
 
+  const loadInboxCount = async () => {
+    try {
+      const res = await apiFetch('/inbox');
+      if (res.ok) {
+        const data = await res.json();
+        setInboxCount(Array.isArray(data) ? data.length : 0);
+      }
+    } catch (err) {
+      console.error('Error loading inbox count:', err);
+    }
+  };
+
   useEffect(() => {
     loadProjects();
+    loadInboxCount();
   }, []);
 
   const handleCreateProject = async (e, swapId = null) => {
@@ -162,13 +177,30 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
           <h2 className="font-heading text-xl font-bold text-text-primary tracking-tight">Track Catalog</h2>
           <p className="text-xs text-text-muted mt-0.5">Explore, search, and manage your active and parked tracks.</p>
         </div>
-        <button
-          onClick={() => setIsCreateOpen(true)}
-          className="flex items-center space-x-1.5 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm self-start md:self-auto transition-all duration-300 cursor-pointer"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>New Track</span>
-        </button>
+        <div className="flex items-center gap-2.5 self-start md:self-auto">
+          {/* Quick Capture Inbox Navigation Button */}
+          <button
+            onClick={() => onViewChange('inbox')}
+            className="flex items-center space-x-2 bg-graphite-800 hover:bg-graphite-700 border border-border-default hover:border-lime-accent/40 text-text-primary text-xs font-semibold px-3.5 py-2.5 rounded-xl shadow-xs transition-all duration-200 cursor-pointer active:scale-95"
+            title="Open Quick Capture Inbox"
+          >
+            <Inbox className="w-4 h-4 text-lime-accent" />
+            <span>Inbox</span>
+            {inboxCount > 0 && (
+              <span className="text-[10px] bg-lime-accent/20 text-lime-accent px-1.5 py-0.5 rounded-full font-mono font-bold leading-none">
+                {inboxCount}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="flex items-center space-x-1.5 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all duration-300 cursor-pointer active:scale-95"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>New Track</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter and Search Bar Panel */}

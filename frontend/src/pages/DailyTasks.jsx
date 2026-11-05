@@ -25,7 +25,8 @@ import {
   RotateCw,
   Folder,
   LayoutDashboard,
-  Repeat
+  Repeat,
+  Check
 } from 'lucide-react';
 
 // Format date to local YYYY-MM-DD
@@ -63,6 +64,16 @@ const getRelativeDateLabel = (dateStr) => {
   if (dateStr === formatDateToISOString(tomorrowDate)) return 'Tomorrow';
 
   return null;
+};
+
+// Calculate difference in minutes between HH:MM strings
+const calculateDiffMinutes = (start, end) => {
+  if (!start || !end) return null;
+  const [sH, sM] = start.split(':').map(Number);
+  const [eH, eM] = end.split(':').map(Number);
+  let diff = (eH * 60 + eM) - (sH * 60 + sM);
+  if (diff < 0) diff += 24 * 60;
+  return diff > 0 ? diff : null;
 };
 
 export const DailyTasks = ({ onViewChange }) => {
@@ -104,9 +115,27 @@ export const DailyTasks = ({ onViewChange }) => {
   const [newTitle, setNewTitle] = useState('');
   const [newProjectId, setNewProjectId] = useState('');
   const [newTimeSlot, setNewTimeSlot] = useState('anytime');
+  const [newStartTime, setNewStartTime] = useState('');
+  const [newEndTime, setNewEndTime] = useState('');
   const [newPriority, setNewPriority] = useState('medium');
   const [newEstMinutes, setNewEstMinutes] = useState(25);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleNewStartTimeChange = (startVal) => {
+    setNewStartTime(startVal);
+    const diff = calculateDiffMinutes(startVal, newEndTime);
+    if (diff) {
+      setNewEstMinutes(diff);
+    }
+  };
+
+  const handleNewEndTimeChange = (endVal) => {
+    setNewEndTime(endVal);
+    const diff = calculateDiffMinutes(newStartTime, endVal);
+    if (diff) {
+      setNewEstMinutes(diff);
+    }
+  };
 
   // Edit Modal State
   const [editingTask, setEditingTask] = useState(null);
@@ -114,9 +143,13 @@ export const DailyTasks = ({ onViewChange }) => {
   const [editDescription, setEditDescription] = useState('');
   const [editProjectId, setEditProjectId] = useState('');
   const [editTimeSlot, setEditTimeSlot] = useState('anytime');
+  const [editStartTime, setEditStartTime] = useState('');
+  const [editEndTime, setEditEndTime] = useState('');
   const [editPriority, setEditPriority] = useState('medium');
   const [editEstMinutes, setEditEstMinutes] = useState(0);
   const [editDate, setEditDate] = useState('');
+  const [editChecklist, setEditChecklist] = useState([]);
+  const [editNewSubtask, setEditNewSubtask] = useState('');
 
   const dateInputRef = useRef(null);
 
@@ -272,6 +305,8 @@ export const DailyTasks = ({ onViewChange }) => {
         date: selectedDate,
         projectId: newProjectId ? newProjectId : null,
         timeSlot: newTimeSlot,
+        startTime: newStartTime || '',
+        endTime: newEndTime || '',
         priority: newPriority,
         estimatedMinutes: Number(newEstMinutes) || 0,
       };
@@ -299,6 +334,8 @@ export const DailyTasks = ({ onViewChange }) => {
 
       // Reset form
       setNewTitle('');
+      setNewStartTime('');
+      setNewEndTime('');
       showToast('Task added for ' + (getRelativeDateLabel(selectedDate) || selectedDate));
     } catch (err) {
       console.error('Create task error:', err);
@@ -350,6 +387,68 @@ export const DailyTasks = ({ onViewChange }) => {
       console.error('Toggle error:', err);
       showToast('Failed to update task. Reverting...', 'error');
       // Revert on failure
+      loadDailyTasks();
+    }
+  };
+
+  // Toggle Subtask Completion
+  const handleToggleSubtask = async (task, itemIndex, subtaskId) => {
+    const updatedChecklist = (task.checklist || []).map((item, idx) => {
+      if ((subtaskId && item._id === subtaskId) || idx === itemIndex) {
+        return { ...item, completed: !item.completed };
+      }
+      return item;
+    });
+
+    // Optimistically update
+    setTasks((prev) =>
+      prev.map((t) => (t._id === task._id ? { ...t, checklist: updatedChecklist } : t))
+    );
+
+    try {
+      const res = await apiFetch(`/daily-tasks/${task._id}/checklist-toggle`, {
+        method: 'PATCH',
+        body: JSON.stringify({ itemIndex, subtaskId }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setTasks((prev) => prev.map((t) => (t._id === task._id ? updated : t)));
+
+        // If all subtasks are now completed, notify user
+        if (updated.checklist && updated.checklist.length > 0 && updated.checklist.every((i) => i.completed)) {
+          showToast('All subtasks completed! Great job! 🎉');
+        }
+      }
+    } catch (err) {
+      console.error('Error toggling subtask:', err);
+      loadDailyTasks();
+    }
+  };
+
+  // Add Subtask to existing task
+  const handleAddSubtask = async (task, text) => {
+    if (!text.trim()) return;
+    const currentList = task.checklist || [];
+    const updatedChecklist = [...currentList, { text: text.trim(), completed: false }];
+
+    // Optimistically update
+    setTasks((prev) =>
+      prev.map((t) => (t._id === task._id ? { ...t, checklist: updatedChecklist } : t))
+    );
+
+    try {
+      const res = await apiFetch(`/daily-tasks/${task._id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ checklist: updatedChecklist }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setTasks((prev) => prev.map((t) => (t._id === task._id ? updated : t)));
+        showToast('Subtask added');
+      }
+    } catch (err) {
+      console.error('Error adding subtask:', err);
+      showToast('Failed to add subtask', 'error');
       loadDailyTasks();
     }
   };
@@ -423,9 +522,13 @@ export const DailyTasks = ({ onViewChange }) => {
     setEditDescription(task.description || '');
     setEditProjectId(task.projectId?._id || task.projectId || '');
     setEditTimeSlot(task.timeSlot || 'anytime');
+    setEditStartTime(task.startTime || '');
+    setEditEndTime(task.endTime || '');
     setEditPriority(task.priority || 'medium');
     setEditEstMinutes(task.estimatedMinutes || 0);
     setEditDate(task.date || selectedDate);
+    setEditChecklist(task.checklist ? task.checklist.map((item) => ({ ...item })) : []);
+    setEditNewSubtask('');
   };
 
   // Save Edited Task
@@ -439,9 +542,12 @@ export const DailyTasks = ({ onViewChange }) => {
         description: editDescription.trim(),
         projectId: editProjectId || null,
         timeSlot: editTimeSlot,
+        startTime: editStartTime || '',
+        endTime: editEndTime || '',
         priority: editPriority,
         estimatedMinutes: Number(editEstMinutes) || 0,
         date: editDate,
+        checklist: editChecklist,
       };
 
       const res = await apiFetch(`/daily-tasks/${editingTask._id}`, {
@@ -807,6 +913,28 @@ export const DailyTasks = ({ onViewChange }) => {
               </select>
             </div>
 
+            {/* Scheduled Time Window */}
+            <div className="flex items-center space-x-1.5 bg-graphite-800 border border-border-default px-2.5 py-1 rounded-xl">
+              <span className="text-[10px] text-text-muted uppercase font-bold flex items-center gap-1">
+                <Clock className="w-3 h-3 text-text-muted" /> Time:
+              </span>
+              <input
+                type="time"
+                value={newStartTime}
+                onChange={(e) => handleNewStartTimeChange(e.target.value)}
+                className="bg-transparent text-text-secondary text-xs outline-none hover:text-text-primary focus:text-text-primary cursor-pointer"
+                title="Start Time"
+              />
+              <span className="text-text-muted text-[10px]">-</span>
+              <input
+                type="time"
+                value={newEndTime}
+                onChange={(e) => handleNewEndTimeChange(e.target.value)}
+                className="bg-transparent text-text-secondary text-xs outline-none hover:text-text-primary focus:text-text-primary cursor-pointer"
+                title="End Time"
+              />
+            </div>
+
             {/* Priority Selector */}
             <div className="flex items-center space-x-1.5 bg-graphite-800 border border-border-default px-2.5 py-1 rounded-xl">
               <span className="text-[10px] text-text-muted uppercase font-bold">Priority:</span>
@@ -1002,6 +1130,8 @@ export const DailyTasks = ({ onViewChange }) => {
                       onDelete={handleDeleteTask}
                       onReschedule={handleRescheduleTask}
                       onStartFocus={handleStartFocus}
+                      onToggleSubtask={handleToggleSubtask}
+                      onAddSubtask={handleAddSubtask}
                       isTimerActive={activeTimer && (activeTimer.taskId === task._id || activeTimer.projectTitle?.includes(task.title))}
                     />
                   ))}
@@ -1047,6 +1177,8 @@ export const DailyTasks = ({ onViewChange }) => {
                       onDelete={handleDeleteTask}
                       onReschedule={handleRescheduleTask}
                       onStartFocus={handleStartFocus}
+                      onToggleSubtask={handleToggleSubtask}
+                      onAddSubtask={handleAddSubtask}
                       isTimerActive={activeTimer && (activeTimer.taskId === task._id || activeTimer.projectTitle?.includes(task.title))}
                     />
                   ))}
@@ -1138,6 +1270,41 @@ export const DailyTasks = ({ onViewChange }) => {
                 </div>
               </div>
 
+              {/* Start & End Time (Optional) */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1.5">
+                    Start Time (Optional)
+                  </label>
+                  <input
+                    type="time"
+                    value={editStartTime}
+                    onChange={(e) => {
+                      setEditStartTime(e.target.value);
+                      const diff = calculateDiffMinutes(e.target.value, editEndTime);
+                      if (diff) setEditEstMinutes(diff);
+                    }}
+                    className="w-full px-3 py-2 bg-graphite-800 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1.5">
+                    End Time (Optional)
+                  </label>
+                  <input
+                    type="time"
+                    value={editEndTime}
+                    onChange={(e) => {
+                      setEditEndTime(e.target.value);
+                      const diff = calculateDiffMinutes(editStartTime, e.target.value);
+                      if (diff) setEditEstMinutes(diff);
+                    }}
+                    className="w-full px-3 py-2 bg-graphite-800 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent"
+                  />
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-1.5">
@@ -1182,6 +1349,118 @@ export const DailyTasks = ({ onViewChange }) => {
                 />
               </div>
 
+              {/* Subtask Checklist Editor */}
+              <div className="pt-2 border-t border-border-subtle">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2">
+                  <label className="text-[11px] font-semibold text-text-muted uppercase tracking-wider flex items-center gap-1.5">
+                    <CheckSquare className="w-3.5 h-3.5 text-lime-accent" />
+                    <span>Subtask Checklist ({editChecklist.filter((i) => i.completed).length}/{editChecklist.length})</span>
+                  </label>
+                  {/* Preset Quick Chips for Agile Routines */}
+                  <div className="flex flex-wrap items-center gap-1">
+                    <span className="text-[10px] text-text-muted hidden sm:inline">Presets:</span>
+                    {[
+                      '15m Tutorial & Study',
+                      '15m Technical Drill',
+                      '25m Artwork Production',
+                      '5m Review & Notes',
+                    ].map((presetText) => (
+                      <button
+                        key={presetText}
+                        type="button"
+                        onClick={() => {
+                          setEditChecklist((prev) => [...prev, { text: presetText, completed: false }]);
+                        }}
+                        className="text-[9px] font-medium bg-graphite-700 hover:bg-lime-accent/20 hover:text-lime-accent border border-border-default px-1.5 py-0.5 rounded cursor-pointer transition-colors"
+                        title={`Add "${presetText}"`}
+                      >
+                        + {presetText.split(' ')[0]} {presetText.split(' ')[1]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Checklist items list */}
+                {editChecklist.length > 0 && (
+                  <div className="space-y-1.5 mb-2.5 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                    {editChecklist.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between gap-2 p-1.5 rounded-lg bg-graphite-700/60 border border-border-default/60"
+                      >
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditChecklist((prev) =>
+                                prev.map((it, i) => (i === idx ? { ...it, completed: !it.completed } : it))
+                              );
+                            }}
+                            className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors ${
+                              item.completed
+                                ? 'bg-lime-accent/25 border-lime-accent text-lime-accent'
+                                : 'border-border-default hover:border-lime-accent'
+                            }`}
+                          >
+                            {item.completed && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                          </button>
+                          <span
+                            className={`text-xs truncate ${
+                              item.completed ? 'line-through text-text-muted' : 'text-text-primary'
+                            }`}
+                          >
+                            {item.text}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditChecklist((prev) => prev.filter((_, i) => i !== idx));
+                          }}
+                          className="text-text-muted hover:text-error p-1 cursor-pointer transition-colors"
+                          title="Remove subtask"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add new subtask input */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={editNewSubtask}
+                    onChange={(e) => setEditNewSubtask(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (editNewSubtask.trim()) {
+                          setEditChecklist((prev) => [...prev, { text: editNewSubtask.trim(), completed: false }]);
+                          setEditNewSubtask('');
+                        }
+                      }
+                    }}
+                    placeholder="Add a subtask (e.g. '15m Gesture sketches', press Enter)..."
+                    className="flex-1 px-3 py-1.5 bg-graphite-800 border border-border-default rounded-xl text-text-primary text-xs outline-none focus:border-lime-accent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (editNewSubtask.trim()) {
+                        setEditChecklist((prev) => [...prev, { text: editNewSubtask.trim(), completed: false }]);
+                        setEditNewSubtask('');
+                      }
+                    }}
+                    disabled={!editNewSubtask.trim()}
+                    className="px-3 py-1.5 bg-graphite-700 hover:bg-lime-accent hover:text-graphite-950 text-text-secondary text-xs font-semibold rounded-xl border border-border-default transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
               <div className="flex justify-end space-x-2 pt-3 border-t border-border-subtle">
                 <button
                   type="button"
@@ -1207,6 +1486,7 @@ export const DailyTasks = ({ onViewChange }) => {
         isOpen={isRoutinesModalOpen}
         onClose={() => {
           setIsRoutinesModalOpen(false);
+          loadDailyTasks();
           loadRoutinesCount();
         }}
         projects={projects}

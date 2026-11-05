@@ -404,6 +404,11 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
                           {task.projectId.title}
                         </span>
                       )}
+                      {task.startTime && (
+                        <span className="font-mono text-lime-accent/90 flex items-center gap-0.5">
+                          <Clock className="w-2.5 h-2.5 text-lime-accent" /> {task.startTime}{task.endTime ? ` - ${task.endTime}` : ''}
+                        </span>
+                      )}
                       {task.estimatedMinutes > 0 && (
                         <span className="font-mono flex items-center gap-0.5">
                           <Clock className="w-2.5 h-2.5" /> {task.estimatedMinutes}m

@@ -9,6 +9,7 @@ import {
   getDailyTaskById,
   updateDailyTask,
   toggleDailyTask,
+  toggleDailyTaskSubtask,
   deleteDailyTask,
 } from '../controllers/dailyTasksController.js';
 
@@ -28,6 +29,7 @@ router.post('/', createDailyTask);
 router.get('/:id', getDailyTaskById);
 router.put('/:id', updateDailyTask);
 router.patch('/:id/toggle', toggleDailyTask);
+router.patch('/:id/checklist-toggle', toggleDailyTaskSubtask);
 router.delete('/:id', deleteDailyTask);
 
 export default router;

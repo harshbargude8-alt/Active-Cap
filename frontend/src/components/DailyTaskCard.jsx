@@ -11,7 +11,10 @@ import {
   Sun,
   Moon,
   Zap,
-  Repeat
+  Repeat,
+  Plus,
+  X,
+  CheckSquare
 } from 'lucide-react';
 import { getCategoryColor } from '../constants/project';
 
@@ -22,9 +25,13 @@ export const DailyTaskCard = ({
   onDelete,
   onReschedule,
   onStartFocus,
+  onToggleSubtask,
+  onAddSubtask,
   isTimerActive = false,
 }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isAddingSubtask, setIsAddingSubtask] = useState(false);
+  const [newSubtaskText, setNewSubtaskText] = useState('');
 
   const isCompleted = task.status === 'completed';
   const isRoutine = task.source === 'routine' || Boolean(task.routineId);
@@ -98,6 +105,15 @@ export const DailyTaskCard = ({
     }
   };
 
+  const handleAddSubtaskSubmit = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!newSubtaskText.trim() || !onAddSubtask) return;
+    onAddSubtask(task, newSubtaskText.trim());
+    setNewSubtaskText('');
+    setIsAddingSubtask(false);
+  };
+
   return (
     <div
       className={`group relative rounded-2xl border transition-all duration-200 p-4 ${
@@ -149,6 +165,14 @@ export const DailyTaskCard = ({
               <span>{timeSlotInfo.label}</span>
             </span>
 
+            {/* Scheduled Time Range Badge */}
+            {task.startTime && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-graphite-700/80 border border-border-default text-lime-accent">
+                <Clock className="w-3 h-3 text-lime-accent" />
+                <span>{task.startTime}{task.endTime ? ` - ${task.endTime}` : ''}</span>
+              </span>
+            )}
+
             {/* Priority Badge */}
             <span
               className={`inline-flex items-center gap-1 text-[10px] font-bold border px-2 py-0.5 rounded-full uppercase tracking-wider ${priorityInfo.classes}`}
@@ -191,6 +215,120 @@ export const DailyTaskCard = ({
             >
               {task.description}
             </p>
+          )}
+
+          {/* Interactive Subtask Checklist */}
+          {((task.checklist && task.checklist.length > 0) || isAddingSubtask) && (
+            <div className="mt-2.5 pt-2 border-t border-border-subtle/50 space-y-1.5">
+              {/* Progress Summary if items exist */}
+              {task.checklist && task.checklist.length > 0 && (
+                <div className="flex items-center justify-between text-[11px] text-text-muted">
+                  <span className="font-semibold flex items-center gap-1.5 text-text-secondary">
+                    <CheckSquare className="w-3 h-3 text-lime-accent" />
+                    <span>
+                      {task.checklist.filter((i) => i.completed).length} of {task.checklist.length} subtasks completed
+                    </span>
+                  </span>
+                  <span className="font-mono text-lime-accent text-[10px] font-bold">
+                    {Math.round((task.checklist.filter((i) => i.completed).length / task.checklist.length) * 100)}%
+                  </span>
+                </div>
+              )}
+
+              {/* Subtask Items */}
+              <div className="space-y-1">
+                {task.checklist?.map((item, idx) => (
+                  <div
+                    key={item._id || idx}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onToggleSubtask) {
+                        onToggleSubtask(task, idx, item._id);
+                      }
+                    }}
+                    className={`flex items-center gap-2 py-1 px-2 rounded-lg cursor-pointer transition-colors group/sub ${
+                      item.completed
+                        ? 'bg-graphite-900/40 text-text-muted'
+                        : 'hover:bg-graphite-700/50 text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    <div
+                      className={`w-3.5 h-3.5 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
+                        item.completed
+                          ? 'bg-lime-accent/25 border-lime-accent text-lime-accent'
+                          : 'border-border-default group-hover/sub:border-lime-accent/60 bg-graphite-800'
+                      }`}
+                    >
+                      {item.completed && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                    </div>
+                    <span className={`text-xs select-none break-words ${item.completed ? 'line-through text-text-muted/70' : ''}`}>
+                      {item.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Quick Inline Add Subtask Input or Button */}
+              {isAddingSubtask ? (
+                <form onSubmit={handleAddSubtaskSubmit} className="flex items-center gap-1.5 pt-1" onClick={(e) => e.stopPropagation()}>
+                  <input
+                    type="text"
+                    autoFocus
+                    value={newSubtaskText}
+                    onChange={(e) => setNewSubtaskText(e.target.value)}
+                    placeholder="e.g. 15m Tutorial / 25m Artwork..."
+                    className="flex-1 px-2.5 py-1 bg-graphite-700 border border-border-default rounded-lg text-text-primary text-xs outline-none focus:border-lime-accent"
+                  />
+                  <button
+                    type="submit"
+                    className="px-2.5 py-1 bg-lime-accent hover:bg-lime-accent-hover text-graphite-950 font-bold text-xs rounded-lg cursor-pointer transition-all"
+                  >
+                    Add
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAddingSubtask(false);
+                      setNewSubtaskText('');
+                    }}
+                    className="p-1 text-text-muted hover:text-text-primary cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </form>
+              ) : (
+                onAddSubtask && !isCompleted && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsAddingSubtask(true);
+                    }}
+                    className="inline-flex items-center gap-1 text-[11px] text-text-muted hover:text-lime-accent transition-colors pt-0.5 cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Add subtask</span>
+                  </button>
+                )
+              )}
+            </div>
+          )}
+
+          {/* Quick "Add Subtask" trigger if task doesn't have any subtasks yet */}
+          {!task.checklist?.length && !isAddingSubtask && onAddSubtask && !isCompleted && (
+            <div className="mt-1">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsAddingSubtask(true);
+                }}
+                className="inline-flex items-center gap-1 text-[11px] text-text-muted/60 hover:text-lime-accent transition-colors cursor-pointer"
+              >
+                <Plus className="w-2.5 h-2.5" />
+                <span>Add subtask checklist</span>
+              </button>
+            </div>
           )}
 
           {/* Bottom Metas: Time tracking info & Actions */}

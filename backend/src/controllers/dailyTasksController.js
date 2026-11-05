@@ -4,10 +4,15 @@ import Project from '../models/Project.js';
 
 const priorityWeight = { high: 3, medium: 2, low: 1 };
 
-// Helper to sort tasks: order ASC, priority DESC (high > medium > low), createdAt ASC
+// Helper to sort tasks: order ASC, startTime ASC (if set), priority DESC (high > medium > low), createdAt ASC
 const sortTasks = (tasks) => {
   return tasks.sort((a, b) => {
     if (a.order !== b.order) return a.order - b.order;
+    if (a.startTime && b.startTime && a.startTime !== b.startTime) {
+      return a.startTime.localeCompare(b.startTime);
+    }
+    if (a.startTime && !b.startTime) return -1;
+    if (!a.startTime && b.startTime) return 1;
     const pA = priorityWeight[a.priority] || 2;
     const pB = priorityWeight[b.priority] || 2;
     if (pB !== pA) return pB - pA;
@@ -340,11 +345,14 @@ export const createDailyTask = async (req, res) => {
       projectId,
       priority,
       timeSlot,
+      startTime = '',
+      endTime = '',
       estimatedMinutes,
       actualMinutes,
       status,
       order,
       source,
+      checklist,
     } = req.body;
 
     if (!title || typeof title !== 'string' || title.trim() === '') {
@@ -376,12 +384,19 @@ export const createDailyTask = async (req, res) => {
       projectId: validatedProjectId,
       priority: priority || 'medium',
       timeSlot: timeSlot || 'anytime',
+      startTime: typeof startTime === 'string' ? startTime.trim() : '',
+      endTime: typeof endTime === 'string' ? endTime.trim() : '',
       estimatedMinutes: Math.max(0, Number(estimatedMinutes) || 0),
       actualMinutes: Math.max(0, Number(actualMinutes) || 0),
       status: status || 'pending',
       order: Number(order) || 0,
       source: source || 'manual',
       completedAt: status === 'completed' ? new Date() : null,
+      checklist: Array.isArray(checklist)
+        ? checklist
+            .filter((item) => item && typeof item.text === 'string' && item.text.trim())
+            .map((item) => ({ text: item.text.trim(), completed: Boolean(item.completed) }))
+        : [],
     };
 
     const task = new DailyTask(taskData);
@@ -439,11 +454,14 @@ export const updateDailyTask = async (req, res) => {
       projectId,
       priority,
       timeSlot,
+      startTime = '',
+      endTime = '',
       estimatedMinutes,
       actualMinutes,
       status,
       order,
       source,
+      checklist,
     } = req.body;
 
     if (title !== undefined) {
@@ -493,6 +511,14 @@ export const updateDailyTask = async (req, res) => {
       task.timeSlot = timeSlot;
     }
 
+    if (startTime !== undefined) {
+      task.startTime = typeof startTime === 'string' ? startTime.trim() : '';
+    }
+
+    if (endTime !== undefined) {
+      task.endTime = typeof endTime === 'string' ? endTime.trim() : '';
+    }
+
     if (estimatedMinutes !== undefined) {
       task.estimatedMinutes = Math.max(0, Number(estimatedMinutes) || 0);
     }
@@ -509,6 +535,17 @@ export const updateDailyTask = async (req, res) => {
       if (['manual', 'project_next_step', 'routine', 'rollover'].includes(source)) {
         task.source = source;
       }
+    }
+
+    if (checklist !== undefined && Array.isArray(checklist)) {
+      task.checklist = checklist
+        .filter((item) => item && typeof item.text === 'string' && item.text.trim())
+        .map((item) => ({
+          text: item.text.trim(),
+          completed: Boolean(item.completed),
+          ...(item._id ? { _id: item._id } : {}),
+        }));
+      task.markModified('checklist');
     }
 
     if (status !== undefined) {
@@ -562,6 +599,44 @@ export const toggleDailyTask = async (req, res) => {
   } catch (err) {
     console.error('Error toggling daily task:', err);
     res.status(500).json({ error: 'Server error toggling daily task' });
+  }
+};
+
+// -----------------------------------------------------------------------------
+// PATCH /api/daily-tasks/:id/checklist-toggle - Toggle subtask item completion
+// -----------------------------------------------------------------------------
+export const toggleDailyTaskSubtask = async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    const task = await DailyTask.findOne({ _id: req.params.id, userId: req.user._id });
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    const { itemIndex, subtaskId, completed } = req.body;
+
+    let targetItem = null;
+    if (subtaskId && task.checklist) {
+      targetItem = task.checklist.id(subtaskId);
+    } else if (typeof itemIndex === 'number' && task.checklist && task.checklist[itemIndex]) {
+      targetItem = task.checklist[itemIndex];
+    }
+
+    if (!targetItem) {
+      return res.status(404).json({ error: 'Subtask item not found' });
+    }
+
+    targetItem.completed = completed !== undefined ? Boolean(completed) : !targetItem.completed;
+    await task.save();
+    await task.populate('projectId', 'title category status');
+
+    res.json(task);
+  } catch (err) {
+    console.error('Error toggling subtask:', err);
+    res.status(500).json({ error: 'Server error toggling subtask' });
   }
 };
 

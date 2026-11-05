@@ -1,6 +1,6 @@
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { LayoutDashboard, CheckSquare, Inbox, Folder, LogOut, Sparkles, Calendar, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, CheckSquare, Folder, LogOut, Sparkles, Calendar, Sun, Moon } from 'lucide-react';
 
 export const Navbar = ({ currentView, onViewChange }) => {
   const { user, logout } = useAuth();
@@ -11,7 +11,6 @@ export const Navbar = ({ currentView, onViewChange }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, hash: '#/dashboard' },
     { id: 'daily-tasks', label: 'Daily Tasks', icon: CheckSquare, hash: '#/tasks' },
-    { id: 'inbox', label: 'Inbox', icon: Inbox, hash: '#/inbox' },
     { id: 'all-projects', label: 'Tracks', icon: Folder, hash: '#/projects' },
     { id: 'timetable', label: 'Schedule', icon: Calendar, hash: '#/schedule' },
   ];
@@ -32,7 +31,7 @@ export const Navbar = ({ currentView, onViewChange }) => {
         <nav className="flex items-center space-x-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = currentView === item.id;
+            const isActive = currentView === item.id || (item.id === 'all-projects' && currentView === 'inbox');
             return (
               <button
                 key={item.id}
@@ -86,7 +85,7 @@ export const Navbar = ({ currentView, onViewChange }) => {
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-graphite-800/95 backdrop-blur-lg border-t border-border-default px-4 py-2 flex justify-around items-center pb-safe-bottom transition-colors duration-200">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = currentView === item.id;
+          const isActive = currentView === item.id || (item.id === 'all-projects' && currentView === 'inbox');
           return (
             <button
               key={item.id}
