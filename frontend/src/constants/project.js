@@ -43,14 +43,14 @@ export const PROJECT_STATUSES = [
  */
 export const getCategoryColor = (category) => {
   switch (category) {
-    case 'Code':      return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-    case 'Content':   return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
-    case 'Reading':   return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-    case 'Music':     return 'bg-pink-500/10 text-pink-400 border-pink-500/20';
-    case 'Animation': return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
-    case 'Writing':   return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-    case 'Research':  return 'bg-teal-500/10 text-teal-400 border-teal-500/20';
-    case 'Course':    return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20';
+    case 'Code':      return 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/25';
+    case 'Content':   return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/25';
+    case 'Reading':   return 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/25';
+    case 'Music':     return 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/25';
+    case 'Animation': return 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/25';
+    case 'Writing':   return 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/25';
+    case 'Research':  return 'bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-500/25';
+    case 'Course':    return 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-500/25';
     default:          return 'bg-graphite-600/50 text-text-secondary border-graphite-500/50';
   }
 };

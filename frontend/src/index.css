@@ -71,11 +71,9 @@
   --color-app-bg: var(--app-bg);
   --color-app-bg-secondary: var(--app-bg-secondary);
 
-  /* Fixed Obsidian/Graphite Black (always dark #101211 in both themes) */
+  /* Dynamic Surfaces & Graphite scale across themes */
   --color-graphite-950: #101211;
-  --color-graphite-900: #141815;
-
-  /* Dynamic Surfaces */
+  --color-graphite-900: var(--app-bg-secondary);
   --color-graphite-800: var(--app-surface);
   --color-graphite-700: var(--app-elevated);
   --color-graphite-600: var(--app-hover);
@@ -154,9 +152,12 @@
 }
 
 /* ==========================================================================
-   BUTTON CONTRAST RULES:
-   Ensures neon acid-lime buttons always have dark text (#101211)
-   in both Dark and Light themes without overriding translucent or hover variants.
+   BUTTON CONTRAST & ACCESSIBILITY RULES:
+   - Ensures solid neon acid-lime buttons always have dark text (#101211)
+     in both Dark and Light themes.
+   - Ensures text-lime-accent in light mode uses an accessible deep green (#3A6910)
+     with strong contrast (WCAG AA compliant) against white/light surfaces,
+     while keeping vibrant acid-lime in dark mode.
    ========================================================================== */
 .text-graphite-950 {
   color: #101211 !important;
@@ -165,6 +166,46 @@
 .text-graphite-950 svg {
   color: #101211 !important;
   stroke: #101211 !important;
+}
+
+.hover\:text-graphite-950:hover {
+  color: #101211 !important;
+}
+
+.hover\:text-graphite-950:hover svg {
+  color: #101211 !important;
+  stroke: #101211 !important;
+}
+
+.group:hover .group-hover\:text-graphite-950 {
+  color: #101211 !important;
+}
+
+button[class*="bg-lime-accent"]:not([class*="/"]),
+a[class*="bg-lime-accent"]:not([class*="/"]) {
+  color: #101211 !important;
+}
+
+/* Light Theme accessible green contrast for lime text & outlines */
+:root:not(.dark) .text-lime-accent {
+  color: #3A6910;
+}
+
+:root:not(.dark) svg.text-lime-accent {
+  color: #3A6910;
+  stroke: #3A6910;
+}
+
+:root:not(.dark) .fill-lime-accent {
+  fill: #3A6910;
+}
+
+:root:not(.dark) .hover\:text-lime-accent:hover {
+  color: #3A6910;
+}
+
+:root:not(.dark) .border-lime-accent {
+  border-color: #84CC16;
 }
 
 /* Custom scrollbars */

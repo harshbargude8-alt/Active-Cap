@@ -48,15 +48,15 @@ export const DailyTaskCard = ({
       case 'low':
         return {
           label: 'Low',
-          classes: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-          dot: 'bg-blue-400',
+          classes: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+          dot: 'bg-blue-500 dark:bg-blue-400',
         };
       case 'medium':
       default:
         return {
           label: 'Med',
-          classes: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-          dot: 'bg-amber-400',
+          classes: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
+          dot: 'bg-amber-500 dark:bg-amber-400',
         };
     }
   };
@@ -65,11 +65,11 @@ export const DailyTaskCard = ({
   const getTimeSlotBadge = (slot) => {
     switch (slot) {
       case 'morning':
-        return { label: 'Morning', icon: Sunrise, color: 'text-amber-400' };
+        return { label: 'Morning', icon: Sunrise, color: 'text-amber-600 dark:text-amber-400' };
       case 'afternoon':
-        return { label: 'Afternoon', icon: Sun, color: 'text-yellow-400' };
+        return { label: 'Afternoon', icon: Sun, color: 'text-amber-500 dark:text-yellow-400' };
       case 'evening':
-        return { label: 'Evening', icon: Moon, color: 'text-indigo-400' };
+        return { label: 'Evening', icon: Moon, color: 'text-indigo-600 dark:text-indigo-400' };
       case 'anytime':
       default:
         return { label: 'Anytime', icon: Zap, color: 'text-lime-accent' };
@@ -118,7 +118,7 @@ export const DailyTaskCard = ({
     <div
       className={`group relative rounded-2xl border transition-all duration-200 p-4 ${
         isCompleted
-          ? 'bg-graphite-900/60 border-border-default/50 opacity-75'
+          ? 'bg-graphite-700/50 border-border-subtle opacity-75'
           : isTimerActive
           ? 'bg-graphite-800 border-lime-accent/60 shadow-lg ring-1 ring-lime-accent/40'
           : 'bg-graphite-800/90 border-border-default hover:border-lime-accent/30 hover:bg-graphite-800 shadow-xs'
@@ -133,7 +133,7 @@ export const DailyTaskCard = ({
           className={`mt-0.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 cursor-pointer flex-shrink-0 ${
             isCompleted
               ? 'bg-lime-accent border-lime-accent text-graphite-950 scale-100 shadow-xs'
-              : 'border-border-default hover:border-lime-accent bg-graphite-800 hover:bg-lime-accent/10 text-transparent group-hover:border-lime-accent/60'
+              : 'border-border-default hover:border-lime-accent bg-graphite-700 hover:bg-lime-accent/10 text-transparent group-hover:border-lime-accent/60'
           }`}
         >
           <Check className={`w-3.5 h-3.5 stroke-[3] transition-transform duration-200 ${isCompleted ? 'scale-100' : 'scale-0'}`} />
@@ -248,7 +248,7 @@ export const DailyTaskCard = ({
                     }}
                     className={`flex items-center gap-2 py-1 px-2 rounded-lg cursor-pointer transition-colors group/sub ${
                       item.completed
-                        ? 'bg-graphite-900/40 text-text-muted'
+                        ? 'bg-graphite-700/50 text-text-muted'
                         : 'hover:bg-graphite-700/50 text-text-secondary hover:text-text-primary'
                     }`}
                   >
@@ -416,7 +416,7 @@ export const DailyTaskCard = ({
 
                   {/* Delete Confirmation prompt */}
                   {showDeleteConfirm && (
-                    <div className="flex items-center gap-1 bg-graphite-900 border border-error/40 px-2 py-0.5 rounded-lg animate-fade-in">
+                    <div className="flex items-center gap-1 bg-graphite-800 border border-error/40 px-2 py-0.5 rounded-lg animate-fade-in">
                       <span className="text-[10px] text-error font-medium">Delete?</span>
                       <button
                         type="button"

@@ -623,9 +623,9 @@ export const DailyTasks = ({ onViewChange }) => {
 
   // Group definitions
   const TIME_SLOTS = [
-    { id: 'morning', label: 'Morning Routine', icon: Sunrise, color: 'text-amber-400' },
-    { id: 'afternoon', label: 'Afternoon Deep Work', icon: Sun, color: 'text-yellow-400' },
-    { id: 'evening', label: 'Evening Review & Wrap-up', icon: Moon, color: 'text-indigo-400' },
+    { id: 'morning', label: 'Morning Routine', icon: Sunrise, color: 'text-amber-600 dark:text-amber-400' },
+    { id: 'afternoon', label: 'Afternoon Deep Work', icon: Sun, color: 'text-amber-500 dark:text-yellow-400' },
+    { id: 'evening', label: 'Evening Review & Wrap-up', icon: Moon, color: 'text-indigo-600 dark:text-indigo-400' },
     { id: 'anytime', label: 'Anytime / Flexible', icon: Zap, color: 'text-lime-accent' },
   ];
 
@@ -637,7 +637,7 @@ export const DailyTasks = ({ onViewChange }) => {
           className={`fixed top-20 right-4 z-50 flex items-center space-x-2 px-4 py-3 rounded-2xl shadow-xl text-xs font-semibold animate-slide-up border ${
             toast.type === 'error'
               ? 'bg-error/20 border-error/30 text-error'
-              : 'bg-lime-accent/20 border-lime-accent/40 text-lime-accent bg-graphite-900/90 backdrop-blur-md'
+              : 'bg-lime-accent/20 border-lime-accent/40 text-lime-accent bg-graphite-800/95 backdrop-blur-md'
           }`}
         >
           {toast.type === 'error' ? <AlertCircle className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
@@ -664,7 +664,7 @@ export const DailyTasks = ({ onViewChange }) => {
       {/* --------------------------------------------------------------------------- */}
       {/* 1. DATE SELECTOR & HEADER                                                   */}
       {/* --------------------------------------------------------------------------- */}
-      <section className="bg-graphite-900 border border-border-default rounded-2xl p-5 mb-6 shadow-sm transition-colors duration-200">
+      <section className="bg-graphite-800 border border-border-default rounded-2xl p-5 mb-6 shadow-sm transition-colors duration-200">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Left: Day & Relative Indicator */}
           <div className="flex items-center space-x-3">
@@ -693,7 +693,7 @@ export const DailyTasks = ({ onViewChange }) => {
             {/* Recurring Routines Manager Button */}
             <button
               onClick={() => setIsRoutinesModalOpen(true)}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-graphite-800 hover:bg-graphite-700 border border-border-default hover:border-lime-accent/40 text-text-primary text-xs font-semibold transition-all cursor-pointer shadow-xs"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-graphite-700 hover:bg-graphite-600 border border-border-default hover:border-lime-accent/40 text-text-primary text-xs font-semibold transition-all cursor-pointer shadow-xs"
               title="Manage Daily & Weekly Recurring Routines"
             >
               <Repeat className="w-3.5 h-3.5 text-lime-accent" />
@@ -721,7 +721,7 @@ export const DailyTasks = ({ onViewChange }) => {
             {onViewChange && (
               <button
                 onClick={() => onViewChange('dashboard')}
-                className="hidden lg:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-graphite-800 hover:bg-graphite-700 border border-border-default text-text-muted hover:text-text-primary text-xs font-medium transition-all cursor-pointer"
+                className="hidden lg:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-graphite-700 hover:bg-graphite-600 border border-border-default text-text-muted hover:text-text-primary text-xs font-medium transition-all cursor-pointer"
                 title="Back to Dashboard"
               >
                 <LayoutDashboard className="w-3.5 h-3.5" />
@@ -731,7 +731,7 @@ export const DailyTasks = ({ onViewChange }) => {
 
             <button
               onClick={handlePrevDay}
-              className="p-2 rounded-xl bg-graphite-800 hover:bg-graphite-700 border border-border-default text-text-muted hover:text-text-primary transition-all cursor-pointer"
+              className="p-2 rounded-xl bg-graphite-700 hover:bg-graphite-600 border border-border-default text-text-muted hover:text-text-primary transition-all cursor-pointer"
               title="Previous Day"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -740,7 +740,7 @@ export const DailyTasks = ({ onViewChange }) => {
             {selectedDate !== todayStr && (
               <button
                 onClick={handleJumpToday}
-                className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-graphite-800 hover:bg-lime-accent hover:text-graphite-950 border border-border-default transition-all text-text-primary cursor-pointer"
+                className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-graphite-700 hover:bg-lime-accent hover:text-graphite-950 border border-border-default transition-all text-text-primary cursor-pointer"
               >
                 Today
               </button>
@@ -748,7 +748,7 @@ export const DailyTasks = ({ onViewChange }) => {
 
             <button
               onClick={handleNextDay}
-              className="p-2 rounded-xl bg-graphite-800 hover:bg-graphite-700 border border-border-default text-text-muted hover:text-text-primary transition-all cursor-pointer"
+              className="p-2 rounded-xl bg-graphite-700 hover:bg-graphite-600 border border-border-default text-text-muted hover:text-text-primary transition-all cursor-pointer"
               title="Next Day"
             >
               <ChevronRight className="w-4 h-4" />
@@ -777,7 +777,7 @@ export const DailyTasks = ({ onViewChange }) => {
                     }
                   }
                 }}
-                className="p-2 rounded-xl bg-graphite-800 hover:bg-graphite-700 border border-border-default text-text-muted hover:text-lime-accent transition-all cursor-pointer"
+                className="p-2 rounded-xl bg-graphite-700 hover:bg-graphite-600 border border-border-default text-text-muted hover:text-lime-accent transition-all cursor-pointer"
                 title="Select Date"
               >
                 <Calendar className="w-4 h-4" />
@@ -802,7 +802,7 @@ export const DailyTasks = ({ onViewChange }) => {
               <span className="text-lime-accent font-mono">{completionPercentage}%</span>
             </div>
             {/* Animated Progress Bar */}
-            <div className="w-full h-2.5 bg-graphite-800 rounded-full overflow-hidden border border-border-default/60">
+            <div className="w-full h-2.5 bg-graphite-700 rounded-full overflow-hidden border border-border-default/60">
               <div
                 className="h-full bg-lime-accent transition-all duration-500 ease-out rounded-full shadow-[0_0_10px_rgba(132,204,22,0.4)]"
                 style={{ width: `${completionPercentage}%` }}
@@ -812,11 +812,11 @@ export const DailyTasks = ({ onViewChange }) => {
 
           {/* Time Summary */}
           <div className="flex items-center justify-start md:justify-end gap-3 text-xs text-text-muted">
-            <div className="flex items-center gap-1 font-mono bg-graphite-800 px-2.5 py-1.5 rounded-xl border border-border-default/60">
+            <div className="flex items-center gap-1 font-mono bg-graphite-700 px-2.5 py-1.5 rounded-xl border border-border-default/60 text-text-secondary">
               <Clock className="w-3.5 h-3.5 text-text-muted" />
               <span>{summary.totalEstimatedMinutes}m est</span>
             </div>
-            <div className="flex items-center gap-1 font-mono bg-graphite-800 px-2.5 py-1.5 rounded-xl border border-border-default/60 text-lime-accent">
+            <div className="flex items-center gap-1 font-mono bg-graphite-700 px-2.5 py-1.5 rounded-xl border border-border-default/60 text-lime-accent">
               <Flame className="w-3.5 h-3.5 fill-lime-accent text-lime-accent" />
               <span>{summary.totalActualMinutes}m logged</span>
             </div>
@@ -846,7 +846,7 @@ export const DailyTasks = ({ onViewChange }) => {
       {/* --------------------------------------------------------------------------- */}
       {/* 3. INLINE QUICK-ADD TASK BAR                                                */}
       {/* --------------------------------------------------------------------------- */}
-      <section className="bg-graphite-900 border border-border-default rounded-2xl p-4 sm:p-5 mb-6 shadow-sm">
+      <section className="bg-graphite-800 border border-border-default rounded-2xl p-4 sm:p-5 mb-6 shadow-sm">
         <form onSubmit={handleQuickAdd} className="space-y-3">
           <div className="flex flex-col sm:flex-row gap-2">
             <input
@@ -854,7 +854,7 @@ export const DailyTasks = ({ onViewChange }) => {
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="What needs to get done today? (e.g. '60m Krita silhouette study')"
-              className="flex-1 px-4 py-2.5 bg-graphite-800 border border-border-default rounded-xl text-text-primary placeholder-text-muted text-sm outline-none focus:border-lime-accent transition-all"
+              className="flex-1 px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary placeholder-text-muted text-sm outline-none focus:border-lime-accent transition-all"
             />
             <button
               type="submit"
@@ -869,16 +869,16 @@ export const DailyTasks = ({ onViewChange }) => {
           {/* Quick Config Pills: Track, TimeSlot, Priority, Estimated Minutes */}
           <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
             {/* Track Selector */}
-            <div className="flex items-center space-x-1.5 bg-graphite-800 border border-border-default px-2.5 py-1 rounded-xl">
+            <div className="flex items-center space-x-1.5 bg-graphite-700 border border-border-default px-2.5 py-1 rounded-xl">
               <Folder className="w-3.5 h-3.5 text-text-muted" />
               <select
                 value={newProjectId}
                 onChange={(e) => setNewProjectId(e.target.value)}
                 className="bg-transparent text-text-secondary text-xs outline-none cursor-pointer hover:text-text-primary"
               >
-                <option value="" className="bg-graphite-900 text-text-primary">General (No Track)</option>
+                <option value="" className="bg-graphite-800 text-text-primary">General (No Track)</option>
                 {projects.map((proj) => (
-                  <option key={proj._id} value={proj._id} className="bg-graphite-900 text-text-primary">
+                  <option key={proj._id} value={proj._id} className="bg-graphite-800 text-text-primary">
                     {proj.title} ({proj.status})
                   </option>
                 ))}
@@ -886,22 +886,22 @@ export const DailyTasks = ({ onViewChange }) => {
             </div>
 
             {/* Time Slot Selector */}
-            <div className="flex items-center space-x-1.5 bg-graphite-800 border border-border-default px-2.5 py-1 rounded-xl">
+            <div className="flex items-center space-x-1.5 bg-graphite-700 border border-border-default px-2.5 py-1 rounded-xl">
               <Clock className="w-3.5 h-3.5 text-text-muted" />
               <select
                 value={newTimeSlot}
                 onChange={(e) => setNewTimeSlot(e.target.value)}
                 className="bg-transparent text-text-secondary text-xs outline-none cursor-pointer hover:text-text-primary capitalize"
               >
-                <option value="morning" className="bg-graphite-900 text-text-primary">🌅 Morning</option>
-                <option value="afternoon" className="bg-graphite-900 text-text-primary">☀️ Afternoon</option>
-                <option value="evening" className="bg-graphite-900 text-text-primary">🌙 Evening</option>
-                <option value="anytime" className="bg-graphite-900 text-text-primary">⚡ Anytime</option>
+                <option value="morning" className="bg-graphite-800 text-text-primary">🌅 Morning</option>
+                <option value="afternoon" className="bg-graphite-800 text-text-primary">☀️ Afternoon</option>
+                <option value="evening" className="bg-graphite-800 text-text-primary">🌙 Evening</option>
+                <option value="anytime" className="bg-graphite-800 text-text-primary">⚡ Anytime</option>
               </select>
             </div>
 
             {/* Scheduled Time Window */}
-            <div className="flex items-center space-x-1.5 bg-graphite-800 border border-border-default px-2.5 py-1 rounded-xl">
+            <div className="flex items-center space-x-1.5 bg-graphite-700 border border-border-default px-2.5 py-1 rounded-xl">
               <span className="text-[10px] text-text-muted uppercase font-bold flex items-center gap-1">
                 <Clock className="w-3 h-3 text-text-muted" /> Time:
               </span>
@@ -923,16 +923,16 @@ export const DailyTasks = ({ onViewChange }) => {
             </div>
 
             {/* Priority Selector */}
-            <div className="flex items-center space-x-1.5 bg-graphite-800 border border-border-default px-2.5 py-1 rounded-xl">
+            <div className="flex items-center space-x-1.5 bg-graphite-700 border border-border-default px-2.5 py-1 rounded-xl">
               <span className="text-[10px] text-text-muted uppercase font-bold">Priority:</span>
               <select
                 value={newPriority}
                 onChange={(e) => setNewPriority(e.target.value)}
                 className="bg-transparent text-text-secondary text-xs outline-none cursor-pointer hover:text-text-primary capitalize"
               >
-                <option value="high" className="bg-graphite-900 text-error">High</option>
-                <option value="medium" className="bg-graphite-900 text-amber-400">Medium</option>
-                <option value="low" className="bg-graphite-900 text-blue-400">Low</option>
+                <option value="high" className="bg-graphite-800 text-error">High</option>
+                <option value="medium" className="bg-graphite-800 text-amber-600 dark:text-amber-400">Medium</option>
+                <option value="low" className="bg-graphite-800 text-blue-600 dark:text-blue-400">Low</option>
               </select>
             </div>
 
@@ -946,7 +946,7 @@ export const DailyTasks = ({ onViewChange }) => {
                   className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all cursor-pointer ${
                     newEstMinutes === mins
                       ? 'bg-lime-accent text-graphite-950 font-bold shadow-xs'
-                      : 'bg-graphite-800 text-text-muted hover:text-text-primary hover:bg-graphite-700 border border-border-default'
+                      : 'bg-graphite-700 text-text-muted hover:text-text-primary hover:bg-graphite-600 border border-border-default'
                   }`}
                 >
                   {mins}m
@@ -958,7 +958,7 @@ export const DailyTasks = ({ onViewChange }) => {
                 step="5"
                 value={newEstMinutes}
                 onChange={(e) => setNewEstMinutes(Math.max(0, parseInt(e.target.value, 10) || 0))}
-                className="w-16 px-2 py-1 bg-graphite-800 border border-border-default rounded-lg text-text-primary text-xs font-mono outline-none focus:border-lime-accent"
+                className="w-16 px-2 py-1 bg-graphite-700 border border-border-default rounded-lg text-text-primary text-xs font-mono outline-none focus:border-lime-accent"
                 title="Custom minutes"
               />
             </div>
@@ -973,7 +973,7 @@ export const DailyTasks = ({ onViewChange }) => {
         {/* Track & Status Filters */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Status filter pills */}
-          <div className="flex items-center p-1 bg-graphite-900 border border-border-default rounded-xl text-xs font-medium">
+          <div className="flex items-center p-1 bg-graphite-800 border border-border-default rounded-xl text-xs font-medium">
             <button
               onClick={() => setStatusFilter('all')}
               className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
@@ -1007,17 +1007,17 @@ export const DailyTasks = ({ onViewChange }) => {
           </div>
 
           {/* Project Track Dropdown Filter */}
-          <div className="flex items-center bg-graphite-900 border border-border-default rounded-xl px-3 py-1.5 text-xs">
+          <div className="flex items-center bg-graphite-800 border border-border-default rounded-xl px-3 py-1.5 text-xs">
             <Filter className="w-3.5 h-3.5 text-text-muted mr-1.5" />
             <select
               value={trackFilter}
               onChange={(e) => setTrackFilter(e.target.value)}
               className="bg-transparent text-text-secondary outline-none cursor-pointer hover:text-text-primary text-xs"
             >
-              <option value="all" className="bg-graphite-900">All Tracks</option>
-              <option value="general" className="bg-graphite-900">General Tasks</option>
+              <option value="all" className="bg-graphite-800 text-text-primary">All Tracks</option>
+              <option value="general" className="bg-graphite-800 text-text-primary">General Tasks</option>
               {projects.map((proj) => (
-                <option key={proj._id} value={proj._id} className="bg-graphite-900">
+                <option key={proj._id} value={proj._id} className="bg-graphite-800 text-text-primary">
                   {proj.title}
                 </option>
               ))}
@@ -1026,13 +1026,13 @@ export const DailyTasks = ({ onViewChange }) => {
         </div>
 
         {/* Grouping Toggle */}
-        <div className="flex items-center self-end sm:self-auto bg-graphite-900 border border-border-default rounded-xl p-1 text-xs">
+        <div className="flex items-center self-end sm:self-auto bg-graphite-800 border border-border-default rounded-xl p-1 text-xs">
           <span className="text-[10px] text-text-muted font-bold uppercase tracking-wider px-2">Group By:</span>
           <button
             onClick={() => setGroupBy('timeSlot')}
             className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
               groupBy === 'timeSlot'
-                ? 'bg-graphite-700 text-lime-accent font-semibold'
+                ? 'bg-graphite-700 text-text-primary font-semibold shadow-xs'
                 : 'text-text-muted hover:text-text-secondary'
             }`}
           >
@@ -1042,7 +1042,7 @@ export const DailyTasks = ({ onViewChange }) => {
             onClick={() => setGroupBy('track')}
             className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
               groupBy === 'track'
-                ? 'bg-graphite-700 text-lime-accent font-semibold'
+                ? 'bg-graphite-700 text-text-primary font-semibold shadow-xs'
                 : 'text-text-muted hover:text-text-secondary'
             }`}
           >
@@ -1060,7 +1060,7 @@ export const DailyTasks = ({ onViewChange }) => {
           <span className="text-xs text-text-muted font-medium">Gathering your daily schedule...</span>
         </div>
       ) : filteredTasks.length === 0 ? (
-        <div className="bg-graphite-900 border border-border-default rounded-2xl p-12 text-center max-w-lg mx-auto shadow-sm">
+        <div className="bg-graphite-800 border border-border-default rounded-2xl p-12 text-center max-w-lg mx-auto shadow-sm">
           <CheckSquare className="w-10 h-10 text-lime-accent/60 mx-auto mb-3" />
           <h3 className="font-heading font-semibold text-text-primary text-base">
             No tasks found for this view
@@ -1083,7 +1083,7 @@ export const DailyTasks = ({ onViewChange }) => {
               </button>
               <button
                 onClick={() => setIsRoutinesModalOpen(true)}
-                className="px-4 py-2 bg-graphite-800 hover:bg-graphite-700 text-text-primary text-xs font-semibold rounded-xl border border-border-default transition-all cursor-pointer"
+                className="px-4 py-2 bg-graphite-700 hover:bg-graphite-600 text-text-primary text-xs font-semibold rounded-xl border border-border-default transition-all cursor-pointer"
               >
                 Manage Routines
               </button>
@@ -1103,7 +1103,7 @@ export const DailyTasks = ({ onViewChange }) => {
                 <div className="flex items-center space-x-2 text-xs font-bold text-text-secondary uppercase tracking-wider">
                   <SlotIcon className={`w-4 h-4 ${slot.color}`} />
                   <span>{slot.label}</span>
-                  <span className="text-[10px] text-text-muted bg-graphite-800 border border-border-default px-2 py-0.5 rounded-full font-mono">
+                  <span className="text-[10px] text-text-muted bg-graphite-700 border border-border-default px-2 py-0.5 rounded-full font-mono">
                     {slotTasks.filter((t) => t.status === 'completed').length}/{slotTasks.length}
                   </span>
                 </div>
@@ -1181,10 +1181,10 @@ export const DailyTasks = ({ onViewChange }) => {
       {/* --------------------------------------------------------------------------- */}
       {editingTask && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-graphite-900 border border-border-default w-full max-w-md rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="bg-graphite-800 border border-border-default w-full max-w-md rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
             <button
               onClick={() => setEditingTask(null)}
-              className="absolute top-5 right-5 p-1 rounded-full hover:bg-graphite-800 text-text-muted transition-colors cursor-pointer"
+              className="absolute top-5 right-5 p-1 rounded-full hover:bg-graphite-700 text-text-muted transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -1204,7 +1204,7 @@ export const DailyTasks = ({ onViewChange }) => {
                   required
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-graphite-800 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all"
+                  className="w-full px-3.5 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all"
                 />
               </div>
 
@@ -1217,7 +1217,7 @@ export const DailyTasks = ({ onViewChange }) => {
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
                   placeholder="Optional details or checklists..."
-                  className="w-full px-3.5 py-2 bg-graphite-800 border border-border-default rounded-xl text-text-primary text-xs outline-none focus:border-lime-accent transition-all resize-none"
+                  className="w-full px-3.5 py-2 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-xs outline-none focus:border-lime-accent transition-all resize-none"
                 />
               </div>
 
@@ -1229,7 +1229,7 @@ export const DailyTasks = ({ onViewChange }) => {
                   <select
                     value={editProjectId}
                     onChange={(e) => setEditProjectId(e.target.value)}
-                    className="w-full px-3 py-2 bg-graphite-800 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent"
+                    className="w-full px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent"
                   >
                     <option value="">General (No Track)</option>
                     {projects.map((proj) => (
@@ -1247,7 +1247,7 @@ export const DailyTasks = ({ onViewChange }) => {
                   <select
                     value={editTimeSlot}
                     onChange={(e) => setEditTimeSlot(e.target.value)}
-                    className="w-full px-3 py-2 bg-graphite-800 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent capitalize"
+                    className="w-full px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent capitalize"
                   >
                     <option value="morning">🌅 Morning</option>
                     <option value="afternoon">☀️ Afternoon</option>
@@ -1271,7 +1271,7 @@ export const DailyTasks = ({ onViewChange }) => {
                       const diff = calculateDiffMinutes(e.target.value, editEndTime);
                       if (diff) setEditEstMinutes(diff);
                     }}
-                    className="w-full px-3 py-2 bg-graphite-800 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent"
+                    className="w-full px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent"
                   />
                 </div>
 
@@ -1287,7 +1287,7 @@ export const DailyTasks = ({ onViewChange }) => {
                       const diff = calculateDiffMinutes(editStartTime, e.target.value);
                       if (diff) setEditEstMinutes(diff);
                     }}
-                    className="w-full px-3 py-2 bg-graphite-800 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent"
+                    className="w-full px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent"
                   />
                 </div>
               </div>
@@ -1300,7 +1300,7 @@ export const DailyTasks = ({ onViewChange }) => {
                   <select
                     value={editPriority}
                     onChange={(e) => setEditPriority(e.target.value)}
-                    className="w-full px-3 py-2 bg-graphite-800 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent capitalize"
+                    className="w-full px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent capitalize"
                   >
                     <option value="high">High</option>
                     <option value="medium">Medium</option>
@@ -1318,7 +1318,7 @@ export const DailyTasks = ({ onViewChange }) => {
                     step="5"
                     value={editEstMinutes}
                     onChange={(e) => setEditEstMinutes(Math.max(0, parseInt(e.target.value, 10) || 0))}
-                    className="w-full px-3 py-2 bg-graphite-800 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent font-mono"
+                    className="w-full px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent font-mono"
                   />
                 </div>
               </div>
@@ -1332,7 +1332,7 @@ export const DailyTasks = ({ onViewChange }) => {
                   required
                   value={editDate}
                   onChange={(e) => setEditDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-graphite-800 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent"
+                  className="w-full px-3 py-2 bg-graphite-700 border border-border-default rounded-xl text-text-primary outline-none focus:border-lime-accent"
                 />
               </div>
 
@@ -1430,7 +1430,7 @@ export const DailyTasks = ({ onViewChange }) => {
                       }
                     }}
                     placeholder="Add a subtask (e.g. '15m Gesture sketches', press Enter)..."
-                    className="flex-1 px-3 py-1.5 bg-graphite-800 border border-border-default rounded-xl text-text-primary text-xs outline-none focus:border-lime-accent"
+                    className="flex-1 px-3 py-1.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-xs outline-none focus:border-lime-accent"
                   />
                   <button
                     type="button"

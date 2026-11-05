@@ -51,11 +51,11 @@ export const TimerBar = () => {
               className="bg-transparent text-text-secondary text-[10px] font-bold outline-none cursor-pointer hover:text-text-primary transition-colors"
               title="Alert Interval"
             >
-              <option value="10" className="bg-graphite-900 text-text-primary">10m</option>
-              <option value="15" className="bg-graphite-900 text-text-primary">15m</option>
-              <option value="20" className="bg-graphite-900 text-text-primary">20m</option>
-              <option value="30" className="bg-graphite-900 text-text-primary">30m</option>
-              <option value="60" className="bg-graphite-900 text-text-primary">1h</option>
+              <option value="10" className="bg-graphite-800 text-text-primary">10m</option>
+              <option value="15" className="bg-graphite-800 text-text-primary">15m</option>
+              <option value="20" className="bg-graphite-800 text-text-primary">20m</option>
+              <option value="30" className="bg-graphite-800 text-text-primary">30m</option>
+              <option value="60" className="bg-graphite-800 text-text-primary">1h</option>
             </select>
           </div>
 

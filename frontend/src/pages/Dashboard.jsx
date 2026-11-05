@@ -392,7 +392,7 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
                   onClick={() => handleToggleAgendaTask(task)}
                   className={`flex items-center space-x-3 p-3 rounded-xl border transition-all cursor-pointer ${
                     isDone
-                      ? 'bg-graphite-900/40 border-border-default/40 opacity-70'
+                      ? 'bg-graphite-700/50 border-border-default/40 opacity-70'
                       : 'bg-graphite-700/60 border-border-default hover:border-lime-accent/30 hover:bg-graphite-700'
                   }`}
                 >

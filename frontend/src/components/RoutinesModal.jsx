@@ -294,14 +294,14 @@ export const RoutinesModal = ({
 
   return createPortal(
     <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-graphite-900 border border-border-default w-full max-w-2xl rounded-2xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
+      <div className="bg-graphite-800 border border-border-default w-full max-w-2xl rounded-2xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
         {/* Toast */}
         {toast && (
           <div
             className={`absolute top-4 left-6 right-6 z-50 flex items-center space-x-2 px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold animate-slide-up border ${
               toast.type === 'error'
                 ? 'bg-error/20 border-error/30 text-error'
-                : 'bg-lime-accent/20 border-lime-accent/40 text-lime-accent bg-graphite-900'
+                : 'bg-lime-accent/20 border-lime-accent/40 text-lime-accent bg-graphite-800'
             }`}
           >
             {toast.type === 'error' ? <AlertCircle className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
@@ -326,7 +326,7 @@ export const RoutinesModal = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl hover:bg-graphite-800 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl hover:bg-graphite-700 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -362,7 +362,7 @@ export const RoutinesModal = ({
 
           {/* Form (Create / Edit Routine) */}
           {isFormOpen && (
-            <div className="bg-graphite-800 border border-lime-accent/30 rounded-2xl p-4 sm:p-5 shadow-sm animate-fade-in">
+            <div className="bg-graphite-700/60 border border-lime-accent/30 rounded-2xl p-4 sm:p-5 shadow-sm animate-fade-in">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-heading font-bold text-sm text-text-primary flex items-center space-x-2">
                   <Repeat className="w-4 h-4 text-lime-accent" />
@@ -689,7 +689,7 @@ export const RoutinesModal = ({
               Loading routines...
             </div>
           ) : routines.length === 0 ? (
-            <div className="p-8 bg-graphite-800 border border-dashed border-border-default rounded-2xl text-center">
+            <div className="p-8 bg-graphite-700/50 border border-dashed border-border-default rounded-2xl text-center">
               <Repeat className="w-8 h-8 text-lime-accent/50 mx-auto mb-2" />
               <p className="text-sm font-semibold text-text-primary">No recurring routines set up yet</p>
               <p className="text-xs text-text-muted mt-1 max-w-sm mx-auto">
@@ -714,8 +714,8 @@ export const RoutinesModal = ({
                     key={routine._id}
                     className={`p-3.5 rounded-2xl border transition-all ${
                       isActive
-                        ? 'bg-graphite-800 border-border-default hover:border-lime-accent/30'
-                        : 'bg-graphite-800/40 border-border-default/40 opacity-60'
+                        ? 'bg-graphite-700/50 border-border-default hover:border-lime-accent/30'
+                        : 'bg-graphite-700/25 border-border-default/40 opacity-60'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -857,7 +857,7 @@ export const RoutinesModal = ({
 
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-graphite-800 hover:bg-graphite-700 text-text-primary text-xs font-semibold rounded-xl border border-border-default transition-colors cursor-pointer"
+            className="px-4 py-2 bg-graphite-700 hover:bg-graphite-600 text-text-primary text-xs font-semibold rounded-xl border border-border-default transition-colors cursor-pointer"
           >
             Done
           </button>
