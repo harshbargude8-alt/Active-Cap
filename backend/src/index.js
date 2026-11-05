@@ -5,6 +5,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import 'dotenv/config'; 
+import { connectRedis } from './config/redis.js'; 
 
 // Import Routes
 import authRouter from './routes/auth.js';
@@ -49,7 +50,10 @@ app.get('/api/health', (req, res) => {
 });
 
 // Connect Database & Start Server
-mongoose.connect(MONGODB_URI)
+Promise.all([
+  mongoose.connect(MONGODB_URI),
+  connectRedis(),
+])
   .then(() => {
     console.log('📦 Connected to MongoDB successfully.');
     app.listen(PORT, () => {

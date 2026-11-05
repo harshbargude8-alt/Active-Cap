@@ -2,8 +2,20 @@ import express from 'express';
 import Project from '../models/Project.js';
 import CheckIn from '../models/CheckIn.js';
 import { auth } from '../middleware/auth.js';
+import { getOrSetCache, invalidateCache, invalidatePattern } from '../utils/cache.js';
 
 const router = express.Router();
+
+// Helper to bust project and related caches
+export const bustProjectCaches = async (userId, projectId = null) => {
+  const keys = [`activecap:projects:${userId}`, `activecap:review:${userId}`];
+  if (projectId) {
+    keys.push(`activecap:project:${userId}:${projectId}`);
+    keys.push(`activecap:checkins:${userId}:${projectId}`);
+  }
+  await invalidateCache(...keys);
+  await invalidatePattern(`activecap:tasks:${userId}:*`);
+};
 
 // Helper to check Active Projects Count and handle Swaps
 const handleActiveCap = async (userId, targetProjectId = null, swapProjectId = null) => {
@@ -38,7 +50,10 @@ const handleActiveCap = async (userId, targetProjectId = null, swapProjectId = n
 // GET all projects
 router.get('/', auth, async (req, res) => {
   try {
-    const projects = await Project.find({ userId: req.user._id }).sort({ updatedAt: -1 });
+    const cacheKey = `activecap:projects:${req.user._id}`;
+    const projects = await getOrSetCache(cacheKey, 600, async () => {
+      return await Project.find({ userId: req.user._id }).sort({ updatedAt: -1 }).lean();
+    });
     res.json(projects);
   } catch (err) {
     res.status(500).json({ error: 'Server error retrieving projects' });
@@ -48,7 +63,10 @@ router.get('/', auth, async (req, res) => {
 // GET single project details
 router.get('/:id', auth, async (req, res) => {
   try {
-    const project = await Project.findOne({ _id: req.params.id, userId: req.user._id });
+    const cacheKey = `activecap:project:${req.user._id}:${req.params.id}`;
+    const project = await getOrSetCache(cacheKey, 600, async () => {
+      return await Project.findOne({ _id: req.params.id, userId: req.user._id }).lean();
+    });
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
@@ -91,6 +109,9 @@ router.post('/', auth, async (req, res) => {
 
     const project = new Project(projectData);
     await project.save();
+
+    await bustProjectCaches(req.user._id, project._id);
+
     res.status(201).json(project);
   } catch (err) {
     res.status(400).json({ error: err.message || 'Error creating project' });
@@ -128,6 +149,7 @@ router.put('/:id', auth, async (req, res) => {
     if (nextStep !== undefined) project.nextStep = nextStep;
 
     await project.save();
+    await bustProjectCaches(req.user._id, project._id);
     res.json(project);
   } catch (err) {
     res.status(400).json({ error: err.message || 'Error updating project' });
@@ -164,6 +186,7 @@ router.put('/:id/status', auth, async (req, res) => {
 
     project.status = status;
     await project.save();
+    await bustProjectCaches(req.user._id, project._id);
     res.json(project);
   } catch (err) {
     res.status(400).json({ error: err.message || 'Error updating status' });
@@ -179,6 +202,7 @@ router.delete('/:id', auth, async (req, res) => {
     }
     // Delete associated check-ins
     await CheckIn.deleteMany({ projectId: project._id });
+    await bustProjectCaches(req.user._id, project._id);
     res.json({ message: 'Project and all check-ins deleted successfully.' });
   } catch (err) {
     res.status(500).json({ error: 'Server error deleting project' });
@@ -251,6 +275,7 @@ router.post('/:id/checkin', auth, async (req, res) => {
     project.lastTouchedAt = checkInDate;
 
     await project.save();
+    await bustProjectCaches(req.user._id, project._id);
     res.status(201).json({ checkIn, project });
   } catch (err) {
     res.status(400).json({ error: err.message || 'Error logging check-in' });
@@ -260,10 +285,13 @@ router.post('/:id/checkin', auth, async (req, res) => {
 // GET all check-ins for a project
 router.get('/:id/checkins', auth, async (req, res) => {
   try {
-    const checkIns = await CheckIn.find({
-      projectId: req.params.id,
-      userId: req.user._id
-    }).sort({ date: -1 });
+    const cacheKey = `activecap:checkins:${req.user._id}:${req.params.id}`;
+    const checkIns = await getOrSetCache(cacheKey, 600, async () => {
+      return await CheckIn.find({
+        projectId: req.params.id,
+        userId: req.user._id
+      }).sort({ date: -1 }).lean();
+    });
     res.json(checkIns);
   } catch (err) {
     res.status(500).json({ error: 'Server error retrieving check-ins' });

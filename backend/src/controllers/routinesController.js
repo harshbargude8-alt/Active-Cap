@@ -2,6 +2,16 @@ import mongoose from 'mongoose';
 import Routine from '../models/Routine.js';
 import DailyTask from '../models/DailyTask.js';
 import Project from '../models/Project.js';
+import { getOrSetCache, invalidateCache, invalidatePattern } from '../utils/cache.js';
+
+// Helper to bust routine and synced daily tasks caches
+const bustRoutineCaches = async (userId) => {
+  await Promise.all([
+    invalidateCache(`activecap:routines:${userId}`),
+    invalidatePattern(`activecap:tasks:${userId}:*`),
+    invalidatePattern(`activecap:tasks:stats:${userId}:*`),
+  ]);
+};
 
 // Helper day mapping
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -18,9 +28,13 @@ const FREQUENCY_DAYS = {
 // -----------------------------------------------------------------------------
 export const getRoutines = async (req, res) => {
   try {
-    const routines = await Routine.find({ userId: req.user._id })
-      .populate('projectId', 'title category status')
-      .sort({ order: 1, createdAt: 1 });
+    const cacheKey = `activecap:routines:${req.user._id}`;
+    const routines = await getOrSetCache(cacheKey, 600, async () => {
+      return await Routine.find({ userId: req.user._id })
+        .populate('projectId', 'title category status')
+        .sort({ order: 1, createdAt: 1 })
+        .lean();
+    });
 
     res.json(routines);
   } catch (err) {
@@ -95,6 +109,8 @@ export const createRoutine = async (req, res) => {
 
     await newRoutine.save();
     await newRoutine.populate('projectId', 'title category status');
+
+    await bustRoutineCaches(req.user._id);
 
     res.status(201).json(newRoutine);
   } catch (err) {
@@ -250,6 +266,8 @@ export const updateRoutine = async (req, res) => {
       await task.save();
     }
 
+    await bustRoutineCaches(req.user._id);
+
     res.json(routine);
   } catch (err) {
     console.error('Error updating routine:', err);
@@ -274,6 +292,8 @@ export const toggleRoutine = async (req, res) => {
     routine.isActive = !routine.isActive;
     await routine.save();
     await routine.populate('projectId', 'title category status');
+
+    await bustRoutineCaches(req.user._id);
 
     res.json(routine);
   } catch (err) {
@@ -304,6 +324,8 @@ export const deleteRoutine = async (req, res) => {
         { source: 'routine', title: routine.title },
       ],
     });
+
+    await bustRoutineCaches(req.user._id);
 
     res.json({
       message: `Routine deleted and removed from all synced days (${taskDeleteResult.deletedCount} task instances deleted)`,
@@ -418,6 +440,10 @@ export const syncRoutinesToDate = async (req, res) => {
       createdTasks = await DailyTask.insertMany(tasksToCreate);
       // Populate project information
       await DailyTask.populate(createdTasks, { path: 'projectId', select: 'title category status' });
+    }
+
+    if (tasksToCreate.length > 0 || updatedExistingCount > 0) {
+      await bustRoutineCaches(req.user._id);
     }
 
     res.json({

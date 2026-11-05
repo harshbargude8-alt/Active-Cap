@@ -1,6 +1,15 @@
 import mongoose from 'mongoose';
 import DailyTask from '../models/DailyTask.js';
 import Project from '../models/Project.js';
+import { getOrSetCache, invalidatePattern } from '../utils/cache.js';
+
+// Helper to bust all daily task and stats caches for a user
+export const invalidateUserTaskCaches = async (userId) => {
+  await Promise.all([
+    invalidatePattern(`activecap:tasks:${userId}:*`),
+    invalidatePattern(`activecap:tasks:stats:${userId}:*`),
+  ]);
+};
 
 const priorityWeight = { high: 3, medium: 2, low: 1 };
 
@@ -26,171 +35,176 @@ const sortTasks = (tasks) => {
 export const getDailyTaskStats = async (req, res) => {
   try {
     const daysCount = Math.max(1, parseInt(req.query.days, 10) || 7);
+    const cacheKey = `activecap:tasks:stats:${req.user._id}:${daysCount}`;
 
-    // Build array of past N date strings: [earliest, ..., today]
-    const dates = [];
-    const today = new Date();
-    for (let i = daysCount - 1; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(today.getDate() - i);
-      dates.push(d.toISOString().split('T')[0]);
-    }
+    const statsData = await getOrSetCache(cacheKey, 600, async () => {
+      // Build array of past N date strings: [earliest, ..., today]
+      const dates = [];
+      const today = new Date();
+      for (let i = daysCount - 1; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(today.getDate() - i);
+        dates.push(d.toISOString().split('T')[0]);
+      }
 
-    const startDateStr = dates[0];
-    const endDateStr = dates[dates.length - 1];
+      const startDateStr = dates[0];
+      const endDateStr = dates[dates.length - 1];
 
-    const tasks = await DailyTask.find({
-      userId: req.user._id,
-      date: { $gte: startDateStr, $lte: endDateStr },
-    }).populate('projectId', 'title category status');
+      const tasks = await DailyTask.find({
+        userId: req.user._id,
+        date: { $gte: startDateStr, $lte: endDateStr },
+      }).populate('projectId', 'title category status');
 
-    // Aggregate by date
-    const dailyStats = dates.map((dStr) => {
-      const tasksOnDate = tasks.filter((t) => t.date === dStr);
-      const total = tasksOnDate.length;
-      const completed = tasksOnDate.filter((t) => t.status === 'completed').length;
-      const pending = tasksOnDate.filter((t) => t.status === 'pending').length;
-      const inProgress = tasksOnDate.filter((t) => t.status === 'in-progress').length;
-      const totalEstimatedMinutes = tasksOnDate.reduce((sum, t) => sum + (t.estimatedMinutes || 0), 0);
-      const totalActualMinutes = tasksOnDate.reduce((sum, t) => sum + (t.actualMinutes || 0), 0);
-      const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+      // Aggregate by date
+      const dailyStats = dates.map((dStr) => {
+        const tasksOnDate = tasks.filter((t) => t.date === dStr);
+        const total = tasksOnDate.length;
+        const completed = tasksOnDate.filter((t) => t.status === 'completed').length;
+        const pending = tasksOnDate.filter((t) => t.status === 'pending').length;
+        const inProgress = tasksOnDate.filter((t) => t.status === 'in-progress').length;
+        const totalEstimatedMinutes = tasksOnDate.reduce((sum, t) => sum + (t.estimatedMinutes || 0), 0);
+        const totalActualMinutes = tasksOnDate.reduce((sum, t) => sum + (t.actualMinutes || 0), 0);
+        const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-      return {
-        date: dStr,
-        total,
-        completed,
-        pending,
-        inProgress,
-        completionRate,
+        return {
+          date: dStr,
+          total,
+          completed,
+          pending,
+          inProgress,
+          completionRate,
+          totalEstimatedMinutes,
+          totalActualMinutes,
+        };
+      });
+
+      // Group tasks by project track
+      const projectMap = {};
+      tasks.forEach((task) => {
+        const projIdKey = task.projectId ? task.projectId._id.toString() : 'general';
+        if (!projectMap[projIdKey]) {
+          projectMap[projIdKey] = {
+            projectId: task.projectId ? task.projectId._id : null,
+            projectTitle: task.projectId ? task.projectId.title : 'General Tasks',
+            projectCategory: task.projectId ? task.projectId.category : null,
+            totalTasks: 0,
+            completedTasks: 0,
+            pendingTasks: 0,
+            totalEstimatedMinutes: 0,
+            totalActualMinutes: 0,
+          };
+        }
+        projectMap[projIdKey].totalTasks += 1;
+        if (task.status === 'completed') {
+          projectMap[projIdKey].completedTasks += 1;
+        } else if (task.status === 'pending') {
+          projectMap[projIdKey].pendingTasks += 1;
+        }
+        projectMap[projIdKey].totalEstimatedMinutes += task.estimatedMinutes || 0;
+        projectMap[projIdKey].totalActualMinutes += task.actualMinutes || 0;
+      });
+
+      const projectStats = Object.values(projectMap);
+
+      // Compute streak across all completed tasks for user
+      const completedTasksAll = await DailyTask.find({
+        userId: req.user._id,
+        status: 'completed',
+      }).select('date').lean();
+
+      const completedDatesSet = new Set(completedTasksAll.map((t) => t.date));
+
+      // Calculate current streak
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      const yesterdayDate = new Date(now);
+      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+      const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+      let currentStreak = 0;
+      let checkDate = null;
+
+      if (completedDatesSet.has(todayStr)) {
+        checkDate = new Date(now);
+      } else if (completedDatesSet.has(yesterdayStr)) {
+        checkDate = yesterdayDate;
+      }
+
+      if (checkDate) {
+        while (true) {
+          const dStr = checkDate.toISOString().split('T')[0];
+          if (completedDatesSet.has(dStr)) {
+            currentStreak++;
+            checkDate.setDate(checkDate.getDate() - 1);
+          } else {
+            break;
+          }
+        }
+      }
+
+      // Longest streak
+      const sortedCompletedDates = Array.from(completedDatesSet).sort();
+      let longestStreak = 0;
+      let runningStreak = 0;
+      let previousDateObj = null;
+
+      for (const dStr of sortedCompletedDates) {
+        const [year, month, day] = dStr.split('-').map(Number);
+        const currDateObj = new Date(year, month - 1, day);
+        if (!previousDateObj) {
+          runningStreak = 1;
+        } else {
+          const diffMs = currDateObj.getTime() - previousDateObj.getTime();
+          const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+          if (diffDays === 1) {
+            runningStreak++;
+          } else if (diffDays > 1) {
+            runningStreak = 1;
+          }
+        }
+        if (runningStreak > longestStreak) {
+          longestStreak = runningStreak;
+        }
+        previousDateObj = currDateObj;
+      }
+
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter((t) => t.status === 'completed').length;
+      const pendingTasks = tasks.filter((t) => t.status === 'pending').length;
+      const overallCompletionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+      const totalEstimatedMinutes = tasks.reduce((sum, t) => sum + (t.estimatedMinutes || 0), 0);
+      const totalActualMinutes = tasks.reduce((sum, t) => sum + (t.actualMinutes || 0), 0);
+
+      const summary = {
+        totalTasks,
+        completedTasks,
+        pendingTasks,
+        completionRate: overallCompletionRate,
         totalEstimatedMinutes,
         totalActualMinutes,
+        currentStreak,
+        longestStreak,
+      };
+
+      return {
+        days: daysCount,
+        startDate: startDateStr,
+        endDate: endDateStr,
+        totalTasks,
+        completedTasks,
+        pendingTasks,
+        overallCompletionRate,
+        totalEstimatedMinutes,
+        totalActualMinutes,
+        currentStreak,
+        longestStreak,
+        summary,
+        dailyStats,
+        projectStats,
       };
     });
 
-    // Group tasks by project track
-    const projectMap = {};
-    tasks.forEach((task) => {
-      const projIdKey = task.projectId ? task.projectId._id.toString() : 'general';
-      if (!projectMap[projIdKey]) {
-        projectMap[projIdKey] = {
-          projectId: task.projectId ? task.projectId._id : null,
-          projectTitle: task.projectId ? task.projectId.title : 'General Tasks',
-          projectCategory: task.projectId ? task.projectId.category : null,
-          totalTasks: 0,
-          completedTasks: 0,
-          pendingTasks: 0,
-          totalEstimatedMinutes: 0,
-          totalActualMinutes: 0,
-        };
-      }
-      projectMap[projIdKey].totalTasks += 1;
-      if (task.status === 'completed') {
-        projectMap[projIdKey].completedTasks += 1;
-      } else if (task.status === 'pending') {
-        projectMap[projIdKey].pendingTasks += 1;
-      }
-      projectMap[projIdKey].totalEstimatedMinutes += task.estimatedMinutes || 0;
-      projectMap[projIdKey].totalActualMinutes += task.actualMinutes || 0;
-    });
-
-    const projectStats = Object.values(projectMap);
-
-    // Compute streak across all completed tasks for user
-    const completedTasksAll = await DailyTask.find({
-      userId: req.user._id,
-      status: 'completed',
-    }).select('date').lean();
-
-    const completedDatesSet = new Set(completedTasksAll.map((t) => t.date));
-
-    // Calculate current streak
-    const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
-    const yesterdayDate = new Date(now);
-    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-    const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
-
-    let currentStreak = 0;
-    let checkDate = null;
-
-    if (completedDatesSet.has(todayStr)) {
-      checkDate = new Date(now);
-    } else if (completedDatesSet.has(yesterdayStr)) {
-      checkDate = yesterdayDate;
-    }
-
-    if (checkDate) {
-      while (true) {
-        const dStr = checkDate.toISOString().split('T')[0];
-        if (completedDatesSet.has(dStr)) {
-          currentStreak++;
-          checkDate.setDate(checkDate.getDate() - 1);
-        } else {
-          break;
-        }
-      }
-    }
-
-    // Longest streak
-    const sortedCompletedDates = Array.from(completedDatesSet).sort();
-    let longestStreak = 0;
-    let runningStreak = 0;
-    let previousDateObj = null;
-
-    for (const dStr of sortedCompletedDates) {
-      const [year, month, day] = dStr.split('-').map(Number);
-      const currDateObj = new Date(year, month - 1, day);
-      if (!previousDateObj) {
-        runningStreak = 1;
-      } else {
-        const diffMs = currDateObj.getTime() - previousDateObj.getTime();
-        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-        if (diffDays === 1) {
-          runningStreak++;
-        } else if (diffDays > 1) {
-          runningStreak = 1;
-        }
-      }
-      if (runningStreak > longestStreak) {
-        longestStreak = runningStreak;
-      }
-      previousDateObj = currDateObj;
-    }
-
-    const totalTasks = tasks.length;
-    const completedTasks = tasks.filter((t) => t.status === 'completed').length;
-    const pendingTasks = tasks.filter((t) => t.status === 'pending').length;
-    const overallCompletionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-    const totalEstimatedMinutes = tasks.reduce((sum, t) => sum + (t.estimatedMinutes || 0), 0);
-    const totalActualMinutes = tasks.reduce((sum, t) => sum + (t.actualMinutes || 0), 0);
-
-    const summary = {
-      totalTasks,
-      completedTasks,
-      pendingTasks,
-      completionRate: overallCompletionRate,
-      totalEstimatedMinutes,
-      totalActualMinutes,
-      currentStreak,
-      longestStreak,
-    };
-
-    res.json({
-      days: daysCount,
-      startDate: startDateStr,
-      endDate: endDateStr,
-      totalTasks,
-      completedTasks,
-      pendingTasks,
-      overallCompletionRate,
-      totalEstimatedMinutes,
-      totalActualMinutes,
-      currentStreak,
-      longestStreak,
-      summary,
-      dailyStats,
-      projectStats,
-    });
+    res.json(statsData);
   } catch (err) {
     console.error('Error fetching daily task stats:', err);
     res.status(500).json({ error: 'Server error retrieving stats' });
@@ -225,6 +239,8 @@ export const rolloverTasks = async (req, res) => {
         source: 'rollover',
       },
     });
+
+    await invalidateUserTaskCaches(req.user._id);
 
     res.json({
       message: 'Rollover successful',
@@ -262,6 +278,7 @@ export const reorderTasks = async (req, res) => {
 
     if (validOperations.length > 0) {
       await DailyTask.bulkWrite(validOperations);
+      await invalidateUserTaskCaches(req.user._id);
     }
 
     res.json({
@@ -279,54 +296,59 @@ export const reorderTasks = async (req, res) => {
 // -----------------------------------------------------------------------------
 export const getDailyTasks = async (req, res) => {
   try {
-    const filter = { userId: req.user._id };
+    const targetDate = req.query.date ? (req.query.date !== 'all' ? req.query.date : 'all') : new Date().toISOString().split('T')[0];
+    const projectId = req.query.projectId || 'all';
+    const status = req.query.status || 'all';
 
-    // Date filtering: defaults to today (YYYY-MM-DD) if not specified
-    if (req.query.date) {
-      if (req.query.date !== 'all') {
-        filter.date = req.query.date;
+    const cacheKey = `activecap:tasks:${req.user._id}:${targetDate}:${projectId}:${status}`;
+
+    const result = await getOrSetCache(cacheKey, 300, async () => {
+      const filter = { userId: req.user._id };
+
+      if (targetDate !== 'all') {
+        filter.date = targetDate;
       }
-    } else {
-      filter.date = new Date().toISOString().split('T')[0];
-    }
 
-    // Project filtering
-    if (req.query.projectId) {
-      if (req.query.projectId === 'null' || req.query.projectId === 'none') {
-        filter.projectId = null;
-      } else {
-        filter.projectId = req.query.projectId;
+      if (projectId !== 'all') {
+        if (projectId === 'null' || projectId === 'none') {
+          filter.projectId = null;
+        } else {
+          filter.projectId = projectId;
+        }
       }
-    }
 
-    // Status filtering
-    if (req.query.status) {
-      filter.status = req.query.status;
-    }
+      if (status !== 'all') {
+        filter.status = status;
+      }
 
-    const tasks = await DailyTask.find(filter).populate('projectId', 'title category status');
+      const tasks = await DailyTask.find(filter)
+        .populate('projectId', 'title category status')
+        .lean();
 
-    // Sort order ASC, priority DESC, createdAt ASC
-    sortTasks(tasks);
+      // Sort order ASC, priority DESC, createdAt ASC
+      sortTasks(tasks);
 
-    // Compute summary
-    const total = tasks.length;
-    const completed = tasks.filter((t) => t.status === 'completed').length;
-    const pending = tasks.filter((t) => t.status === 'pending').length;
-    const inProgress = tasks.filter((t) => t.status === 'in-progress').length;
-    const totalEstimatedMinutes = tasks.reduce((sum, t) => sum + (t.estimatedMinutes || 0), 0);
-    const totalActualMinutes = tasks.reduce((sum, t) => sum + (t.actualMinutes || 0), 0);
+      // Compute summary
+      const total = tasks.length;
+      const completed = tasks.filter((t) => t.status === 'completed').length;
+      const pending = tasks.filter((t) => t.status === 'pending').length;
+      const inProgress = tasks.filter((t) => t.status === 'in-progress').length;
+      const totalEstimatedMinutes = tasks.reduce((sum, t) => sum + (t.estimatedMinutes || 0), 0);
+      const totalActualMinutes = tasks.reduce((sum, t) => sum + (t.actualMinutes || 0), 0);
 
-    const summary = {
-      total,
-      completed,
-      pending,
-      inProgress,
-      totalEstimatedMinutes,
-      totalActualMinutes,
-    };
+      const summary = {
+        total,
+        completed,
+        pending,
+        inProgress,
+        totalEstimatedMinutes,
+        totalActualMinutes,
+      };
 
-    res.json({ tasks, summary });
+      return { tasks, summary };
+    });
+
+    res.json(result);
   } catch (err) {
     console.error('Error retrieving daily tasks:', err);
     res.status(500).json({ error: 'Server error retrieving daily tasks' });
@@ -402,6 +424,9 @@ export const createDailyTask = async (req, res) => {
     const task = new DailyTask(taskData);
     await task.save();
     await task.populate('projectId', 'title category status');
+
+    // Invalidate user task and stats caches on create
+    await invalidateUserTaskCaches(req.user._id);
 
     res.status(201).json(task);
   } catch (err) {
@@ -563,6 +588,8 @@ export const updateDailyTask = async (req, res) => {
     await task.save();
     await task.populate('projectId', 'title category status');
 
+    await invalidateUserTaskCaches(req.user._id);
+
     res.json(task);
   } catch (err) {
     console.error('Error updating daily task:', err);
@@ -594,6 +621,8 @@ export const toggleDailyTask = async (req, res) => {
 
     await task.save();
     await task.populate('projectId', 'title category status');
+
+    await invalidateUserTaskCaches(req.user._id);
 
     res.json(task);
   } catch (err) {
@@ -633,6 +662,8 @@ export const toggleDailyTaskSubtask = async (req, res) => {
     await task.save();
     await task.populate('projectId', 'title category status');
 
+    await invalidateUserTaskCaches(req.user._id);
+
     res.json(task);
   } catch (err) {
     console.error('Error toggling subtask:', err);
@@ -653,6 +684,8 @@ export const deleteDailyTask = async (req, res) => {
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
     }
+
+    await invalidateUserTaskCaches(req.user._id);
 
     res.json({ message: 'Task deleted successfully' });
   } catch (err) {

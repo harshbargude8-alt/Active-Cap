@@ -1,21 +1,27 @@
 import express from 'express';
 import { auth } from '../middleware/auth.js';
 import Timetable, { defaultDays, defaultNotes, defaultRule } from '../models/Timetable.js';
+import { getOrSetCache, invalidateCache } from '../utils/cache.js';
 
 const router = express.Router();
 
 // GET /api/timetable - Get user's timetable (or create default)
 router.get('/', auth, async (req, res) => {
   try {
-    let timetable = await Timetable.findOne({ userId: req.user._id });
-    if (!timetable) {
-      timetable = await Timetable.create({
-        userId: req.user._id,
-        schedule: defaultDays,
-        notes: defaultNotes,
-        goldenRule: defaultRule,
-      });
-    }
+    const cacheKey = `activecap:timetable:${req.user._id}`;
+    const timetable = await getOrSetCache(cacheKey, 86400, async () => {
+      let doc = await Timetable.findOne({ userId: req.user._id }).lean();
+      if (!doc) {
+        doc = await Timetable.create({
+          userId: req.user._id,
+          schedule: defaultDays,
+          notes: defaultNotes,
+          goldenRule: defaultRule,
+        });
+        doc = doc.toObject ? doc.toObject() : doc;
+      }
+      return doc;
+    });
     res.json(timetable);
   } catch (err) {
     console.error('Error fetching timetable:', err);
@@ -39,6 +45,9 @@ router.put('/', auth, async (req, res) => {
       { new: true, upsert: true, runValidators: true }
     );
 
+    // Invalidate timetable cache
+    await invalidateCache(`activecap:timetable:${req.user._id}`);
+
     res.json(timetable);
   } catch (err) {
     console.error('Error updating timetable:', err);
@@ -60,6 +69,9 @@ router.post('/reset', auth, async (req, res) => {
       },
       { new: true, upsert: true }
     );
+
+    // Invalidate timetable cache
+    await invalidateCache(`activecap:timetable:${req.user._id}`);
 
     res.json(timetable);
   } catch (err) {
