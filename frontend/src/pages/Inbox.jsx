@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { SwapModal } from '../components/SwapModal';
 import { PROJECT_CATEGORIES } from '../constants/project';
+import { clientCache } from '../utils/clientCache';
 import {
   Lightbulb,
   ArrowUpRight,
@@ -15,8 +16,11 @@ import {
 
 export const Inbox = ({ onViewChange, onSelectProjectId }) => {
   const { apiFetch } = useAuth();
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  const cachedInbox = clientCache.get('/inbox');
+
+  const [items, setItems] = useState(cachedInbox || []);
+  const [loading, setLoading] = useState(!cachedInbox);
 
   // Promotion Form State
   const [promotingItem, setPromotingItem] = useState(null);
@@ -34,12 +38,15 @@ export const Inbox = ({ onViewChange, onSelectProjectId }) => {
   const [activeProjectsList, setActiveProjectsList] = useState([]);
 
   const loadInboxItems = async () => {
-    setLoading(true);
+    if (!clientCache.get('/inbox')) {
+      setLoading(true);
+    }
     try {
       const res = await apiFetch('/inbox');
       if (res.ok) {
         const data = await res.json();
         setItems(data);
+        clientCache.set('/inbox', data, 60);
       }
     } catch (err) {
       console.error('Error loading inbox items:', err);

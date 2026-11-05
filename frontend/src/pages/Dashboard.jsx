@@ -6,6 +6,7 @@ import { QuickCapture } from '../components/QuickCapture';
 import { CheckInModal } from '../components/CheckInModal';
 import { SwapModal } from '../components/SwapModal';
 import { PROJECT_CATEGORIES, getCategoryColor } from '../constants/project';
+import { clientCache } from '../utils/clientCache';
 import {
   X,
   Flame,
@@ -27,15 +28,29 @@ import {
 export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
   const { apiFetch } = useAuth();
   const { activeTimer, secondsElapsed, formatTime, startTimer, stopTimer } = useTimer();
-  const [projects, setProjects] = useState([]);
-  const [reviewData, setReviewData] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  const getTodayISO = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const initialTodayStr = getTodayISO();
+  const cachedProjects = clientCache.get('/projects');
+  const cachedReview = clientCache.get('/review');
+  const cachedTasks = clientCache.get(`/daily-tasks?date=${initialTodayStr}`);
+
+  const [projects, setProjects] = useState(cachedProjects || []);
+  const [reviewData, setReviewData] = useState(cachedReview || null);
+  const [loading, setLoading] = useState(!cachedProjects && !cachedReview);
   const [isCheckInOpen, setIsCheckInOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
   // Today's Agenda State
-  const [todayTasks, setTodayTasks] = useState([]);
-  const [todaySummary, setTodaySummary] = useState({ total: 0, completed: 0, pending: 0 });
+  const [todayTasks, setTodayTasks] = useState(cachedTasks?.tasks || []);
+  const [todaySummary, setTodaySummary] = useState(cachedTasks?.summary || { total: 0, completed: 0, pending: 0 });
   const [agendaNewTitle, setAgendaNewTitle] = useState('');
   const [isAddingAgendaTask, setIsAddingAgendaTask] = useState(false);
 
@@ -53,35 +68,37 @@ export const Dashboard = ({ onViewChange, onSelectProjectId }) => {
   const [newStatus, setNewStatus] = useState('Parked');
   const [createError, setCreateError] = useState('');
 
-  const getTodayISO = () => {
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
   const loadData = useCallback(async () => {
-    setLoading(true);
+    // Only show full loading spinner if there is no cached data to display
+    if (!clientCache.get('/projects')) {
+      setLoading(true);
+    }
     try {
-      const projRes = await apiFetch('/projects');
+      const todayStr = getTodayISO();
+      // Fetch all dashboard data concurrently (removes sequential waterfall)
+      const [projRes, revRes, taskRes] = await Promise.all([
+        apiFetch('/projects'),
+        apiFetch('/review'),
+        apiFetch(`/daily-tasks?date=${todayStr}`),
+      ]);
+
       if (projRes.ok) {
         const projData = await projRes.json();
         setProjects(projData);
+        clientCache.set('/projects', projData, 60);
       }
 
-      const revRes = await apiFetch('/review');
       if (revRes.ok) {
         const revData = await revRes.json();
         setReviewData(revData);
+        clientCache.set('/review', revData, 60);
       }
 
-      const todayStr = getTodayISO();
-      const taskRes = await apiFetch(`/daily-tasks?date=${todayStr}`);
       if (taskRes.ok) {
         const taskData = await taskRes.json();
         setTodayTasks(taskData.tasks || []);
         setTodaySummary(taskData.summary || { total: 0, completed: 0, pending: 0 });
+        clientCache.set(`/daily-tasks?date=${todayStr}`, taskData, 60);
       }
     } catch (err) {
       console.error('Error loading dashboard data:', err);

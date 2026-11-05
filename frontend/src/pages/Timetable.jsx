@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { clientCache } from '../utils/clientCache';
 import {
   Calendar,
   Clock,
@@ -27,15 +28,17 @@ const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 export const Timetable = () => {
   const { apiFetch } = useAuth();
 
-  const [timetable, setTimetable] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const cachedTimetable = clientCache.get('/timetable');
+
+  const [timetable, setTimetable] = useState(cachedTimetable || null);
+  const [loading, setLoading] = useState(!cachedTimetable);
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   // Form edit state
-  const [editedSchedule, setEditedSchedule] = useState([]);
-  const [editedNotes, setEditedNotes] = useState([]);
-  const [editedGoldenRule, setEditedGoldenRule] = useState('');
+  const [editedSchedule, setEditedSchedule] = useState(cachedTimetable?.schedule || []);
+  const [editedNotes, setEditedNotes] = useState(cachedTimetable?.notes || []);
+  const [editedGoldenRule, setEditedGoldenRule] = useState(cachedTimetable?.goldenRule || '');
   const [toast, setToast] = useState(null);
 
   // Determine current day abbreviation
@@ -64,7 +67,9 @@ export const Timetable = () => {
   };
 
   const loadTimetable = async () => {
-    setLoading(true);
+    if (!clientCache.get('/timetable')) {
+      setLoading(true);
+    }
     try {
       const res = await apiFetch('/timetable');
       if (res.ok) {
@@ -73,6 +78,7 @@ export const Timetable = () => {
         setEditedSchedule(data.schedule || []);
         setEditedNotes(data.notes || []);
         setEditedGoldenRule(data.goldenRule || '');
+        clientCache.set('/timetable', data, 300);
       }
     } catch (err) {
       console.error('Failed to load timetable:', err);

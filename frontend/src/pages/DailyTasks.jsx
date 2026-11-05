@@ -4,6 +4,7 @@ import { useTimer } from '../context/TimerContext';
 import { DailyTaskCard } from '../components/DailyTaskCard';
 import { RoutinesModal } from '../components/RoutinesModal';
 import { getCategoryColor } from '../constants/project';
+import { clientCache } from '../utils/clientCache';
 import {
   Calendar,
   ChevronLeft,
@@ -83,8 +84,12 @@ export const DailyTasks = ({ onViewChange }) => {
   const todayStr = formatDateToISOString(new Date());
   const [selectedDate, setSelectedDate] = useState(todayStr);
 
-  const [tasks, setTasks] = useState([]);
-  const [summary, setSummary] = useState({
+  const cachedDaily = clientCache.get(`/daily-tasks?date=${todayStr}`);
+  const cachedProjects = clientCache.get('/projects');
+  const cachedRoutines = clientCache.get('/routines');
+
+  const [tasks, setTasks] = useState(cachedDaily?.tasks || []);
+  const [summary, setSummary] = useState(cachedDaily?.summary || {
     total: 0,
     completed: 0,
     pending: 0,
@@ -92,8 +97,8 @@ export const DailyTasks = ({ onViewChange }) => {
     totalActualMinutes: 0,
   });
 
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState(cachedProjects || []);
+  const [loading, setLoading] = useState(!cachedDaily);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null);
 
@@ -103,7 +108,9 @@ export const DailyTasks = ({ onViewChange }) => {
 
   // Recurring Routines state
   const [isRoutinesModalOpen, setIsRoutinesModalOpen] = useState(false);
-  const [routinesCount, setRoutinesCount] = useState(0);
+  const [routinesCount, setRoutinesCount] = useState(
+    cachedRoutines ? cachedRoutines.filter((r) => r.isActive).length : 0
+  );
   const [isSyncingRoutines, setIsSyncingRoutines] = useState(false);
 
   // Filters & Grouping
@@ -160,32 +167,6 @@ export const DailyTasks = ({ onViewChange }) => {
     }, 3500);
   };
 
-  // Load active projects for selection
-  const loadProjects = useCallback(async () => {
-    try {
-      const res = await apiFetch('/projects');
-      if (res.ok) {
-        const data = await res.json();
-        setProjects(data);
-      }
-    } catch (err) {
-      console.error('Failed to load projects:', err);
-    }
-  }, [apiFetch]);
-
-  // Load routines count for header indicator
-  const loadRoutinesCount = useCallback(async () => {
-    try {
-      const res = await apiFetch('/routines');
-      if (res.ok) {
-        const data = await res.json();
-        setRoutinesCount(data.filter((r) => r.isActive).length);
-      }
-    } catch (err) {
-      console.error('Failed to load routines count:', err);
-    }
-  }, [apiFetch]);
-
   // Quick sync active routines to currently selected date
   const handleSyncRoutinesNow = async () => {
     setIsSyncingRoutines(true);
@@ -199,6 +180,7 @@ export const DailyTasks = ({ onViewChange }) => {
         throw new Error(errData.error || 'Failed to sync routines');
       }
       const data = await res.json();
+      clientCache.invalidate('/daily-tasks');
       showToast(data.message || `Routines synced to ${selectedDate}`);
       loadDailyTasks();
     } catch (err) {
@@ -209,70 +191,75 @@ export const DailyTasks = ({ onViewChange }) => {
     }
   };
 
-  // Check for unfinished tasks from previous days when viewing Today
-  const checkPreviousUnfinished = useCallback(async () => {
-    if (selectedDate !== todayStr) {
-      setUnresolvedPastCount(0);
-      return;
+  // Load Daily Tasks and auxiliary data in parallel
+  const loadDailyTasks = useCallback(async (targetDate = selectedDate) => {
+    const cached = clientCache.get(`/daily-tasks?date=${targetDate}`);
+    if (!cached) {
+      setLoading(true);
     }
-
+    setError(null);
     try {
-      // Calculate yesterday date
+      const isToday = targetDate === todayStr;
       const yDate = new Date();
       yDate.setDate(yDate.getDate() - 1);
       const yesterdayStr = formatDateToISOString(yDate);
 
-      const res = await apiFetch(`/daily-tasks?date=${yesterdayStr}&status=pending`);
-      if (res.ok) {
-        const data = await res.json();
-        setUnresolvedPastCount(data.tasks?.length || 0);
-      }
-    } catch (err) {
-      console.error('Failed to check unfinished tasks:', err);
-    }
-  }, [apiFetch, selectedDate, todayStr]);
+      // Execute all needed requests concurrently in parallel
+      const [taskRes, projRes, routRes, unfinRes] = await Promise.all([
+        apiFetch(`/daily-tasks?date=${targetDate}`),
+        !clientCache.get('/projects') ? apiFetch('/projects') : Promise.resolve(null),
+        !clientCache.get('/routines') ? apiFetch('/routines') : Promise.resolve(null),
+        isToday ? apiFetch(`/daily-tasks?date=${yesterdayStr}&status=pending`) : Promise.resolve(null),
+      ]);
 
-  // Load Daily Tasks for the selected date
-  const loadDailyTasks = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await apiFetch(`/daily-tasks?date=${selectedDate}`);
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || 'Failed to load tasks');
+      if (taskRes && taskRes.ok) {
+        const data = await taskRes.json();
+        setTasks(data.tasks || []);
+        setSummary(data.summary || {
+          total: 0,
+          completed: 0,
+          pending: 0,
+          totalEstimatedMinutes: 0,
+          totalActualMinutes: 0,
+        });
+        clientCache.set(`/daily-tasks?date=${targetDate}`, data, 60);
       }
-      const data = await res.json();
-      setTasks(data.tasks || []);
-      setSummary(data.summary || {
-        total: 0,
-        completed: 0,
-        pending: 0,
-        totalEstimatedMinutes: 0,
-        totalActualMinutes: 0,
-      });
+
+      if (projRes && projRes.ok) {
+        const projData = await projRes.json();
+        setProjects(projData);
+        clientCache.set('/projects', projData, 60);
+      }
+
+      if (routRes && routRes.ok) {
+        const routData = await routRes.json();
+        setRoutinesCount(routData.filter((r) => r.isActive).length);
+        clientCache.set('/routines', routData, 60);
+      }
+
+      if (unfinRes && unfinRes.ok) {
+        const unfinData = await unfinRes.json();
+        setUnresolvedPastCount(unfinData.tasks?.length || 0);
+      } else if (!isToday) {
+        setUnresolvedPastCount(0);
+      }
     } catch (err) {
       console.error('Error fetching tasks:', err);
       setError(err.message || 'Error fetching tasks');
     } finally {
       setLoading(false);
     }
-  }, [apiFetch, selectedDate]);
+  }, [apiFetch, selectedDate, todayStr]);
 
   useEffect(() => {
-    loadProjects();
-    loadRoutinesCount();
+    loadDailyTasks(selectedDate);
     const handleCheckinLogged = () => {
-      loadDailyTasks();
+      clientCache.invalidate('/daily-tasks');
+      loadDailyTasks(selectedDate);
     };
     window.addEventListener('project-checkin-logged', handleCheckinLogged);
     return () => window.removeEventListener('project-checkin-logged', handleCheckinLogged);
-  }, [loadProjects, loadRoutinesCount, loadDailyTasks]);
-
-  useEffect(() => {
-    loadDailyTasks();
-    checkPreviousUnfinished();
-  }, [loadDailyTasks, checkPreviousUnfinished]);
+  }, [loadDailyTasks, selectedDate]);
 
   // Date Navigation handlers
   const handlePrevDay = () => {

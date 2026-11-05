@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { SwapModal } from '../components/SwapModal';
 import { PROJECT_CATEGORIES, PROJECT_STATUSES, getCategoryColor, getStatusColor } from '../constants/project';
+import { clientCache } from '../utils/clientCache';
 import {
   Search,
   Filter,
@@ -16,12 +17,16 @@ import {
 
 export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
   const { apiFetch } = useAuth();
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  const cachedProjects = clientCache.get('/projects');
+  const cachedInbox = clientCache.get('/inbox');
+
+  const [projects, setProjects] = useState(cachedProjects || []);
+  const [loading, setLoading] = useState(!cachedProjects);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [categoryFilter, setCategoryFilter] = useState('All');
-  const [inboxCount, setInboxCount] = useState(0);
+  const [inboxCount, setInboxCount] = useState(Array.isArray(cachedInbox) ? cachedInbox.length : 0);
 
   // Create Project State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -37,13 +42,27 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
   const [swapTargetProject, setSwapTargetProject] = useState(null);
   const [activeProjectsList, setActiveProjectsList] = useState([]);
 
-  const loadProjects = async () => {
-    setLoading(true);
+  const loadData = async () => {
+    if (!clientCache.get('/projects')) {
+      setLoading(true);
+    }
     try {
-      const res = await apiFetch('/projects');
-      if (res.ok) {
-        const data = await res.json();
+      // Parallel fetch for projects and inbox count
+      const [projRes, inboxRes] = await Promise.all([
+        apiFetch('/projects'),
+        apiFetch('/inbox'),
+      ]);
+
+      if (projRes.ok) {
+        const data = await projRes.json();
         setProjects(data);
+        clientCache.set('/projects', data, 60);
+      }
+
+      if (inboxRes.ok) {
+        const inData = await inboxRes.json();
+        setInboxCount(Array.isArray(inData) ? inData.length : 0);
+        clientCache.set('/inbox', inData, 60);
       }
     } catch (err) {
       console.error('Error loading projects list:', err);
@@ -52,21 +71,8 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
     }
   };
 
-  const loadInboxCount = async () => {
-    try {
-      const res = await apiFetch('/inbox');
-      if (res.ok) {
-        const data = await res.json();
-        setInboxCount(Array.isArray(data) ? data.length : 0);
-      }
-    } catch (err) {
-      console.error('Error loading inbox count:', err);
-    }
-  };
-
   useEffect(() => {
-    loadProjects();
-    loadInboxCount();
+    loadData();
   }, []);
 
   const handleCreateProject = async (e, swapId = null) => {
@@ -134,7 +140,8 @@ export const AllProjects = ({ onViewChange, onSelectProjectId }) => {
 
       setIsCreateOpen(false);
       resetCreateForm();
-      loadProjects();
+      clientCache.invalidate('/projects');
+      loadData();
     } catch (err) {
       setCreateError('Connection error. Please try again.');
     }
