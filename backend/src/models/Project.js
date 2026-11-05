@@ -17,8 +17,8 @@ const projectSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ["Code", "Content", "Reading", "Music", "Animation", "Writing", "Research", "Course", "Other"],
     required: true,
+    trim: true,
   },
   status: {
     type: String,

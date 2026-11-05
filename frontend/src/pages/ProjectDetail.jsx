@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCategories } from '../context/CategoriesContext';
 import { SwapModal } from '../components/SwapModal';
-import { PROJECT_CATEGORIES, getCategoryColor } from '../constants/project';
+import { getCategoryColor } from '../constants/project';
 import {
   ArrowLeft,
   Calendar,
@@ -19,6 +20,7 @@ import {
 
 export const ProjectDetail = ({ projectId, onViewChange }) => {
   const { apiFetch } = useAuth();
+  const { categoryNames, openManageModal } = useCategories();
   const [project, setProject] = useState(null);
   const [checkIns, setCheckIns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -259,15 +261,32 @@ export const ProjectDetail = ({ projectId, onViewChange }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-2">Category</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-[11px] font-semibold text-text-muted uppercase tracking-wider">Category</label>
+                  <button
+                    type="button"
+                    onClick={openManageModal}
+                    className="text-[10px] font-semibold text-lime-accent hover:text-lime-accent-hover transition-colors cursor-pointer"
+                  >
+                    + Manage
+                  </button>
+                </div>
                 <select
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value === '__manage__') {
+                      openManageModal();
+                      return;
+                    }
+                    setCategory(e.target.value);
+                  }}
                   className="w-full px-4 py-2.5 bg-graphite-700 border border-border-default rounded-xl text-text-primary text-sm outline-none focus:border-lime-accent transition-all duration-300 cursor-pointer"
                 >
-                  {PROJECT_CATEGORIES.map((cat) => (
+                  {categoryNames.map((cat) => (
                     <option key={cat} value={cat} className="bg-graphite-800">{cat}</option>
                   ))}
+                  <option disabled className="bg-graphite-800">──────────</option>
+                  <option value="__manage__" className="bg-graphite-800 text-lime-accent font-semibold">⚙️ Manage Categories...</option>
                 </select>
               </div>
 

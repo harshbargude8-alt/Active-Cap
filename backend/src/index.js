@@ -15,6 +15,7 @@ import reviewRouter from './routes/review.js';
 import timetableRouter from './routes/timetable.js';
 import dailyTasksRouter from './routes/dailyTasks.js';
 import routinesRouter from './routes/routines.js';
+import categoriesRouter from './routes/categories.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -43,6 +44,7 @@ app.use('/api/review', reviewRouter);
 app.use('/api/timetable', timetableRouter);
 app.use('/api/daily-tasks', dailyTasksRouter);
 app.use('/api/routines', routinesRouter);
+app.use('/api/categories', categoriesRouter);
 
 // Health Check
 app.get('/api/health', (req, res) => {

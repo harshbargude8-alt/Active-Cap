@@ -27,6 +27,7 @@ export const DailyTaskCard = ({
   onStartFocus,
   onToggleSubtask,
   onAddSubtask,
+  onOpenDetail,
   isTimerActive = false,
 }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -116,12 +117,15 @@ export const DailyTaskCard = ({
 
   return (
     <div
+      onClick={() => onOpenDetail && onOpenDetail(task)}
       className={`group relative rounded-2xl border transition-all duration-200 p-4 ${
+        onOpenDetail ? 'cursor-pointer' : ''
+      } ${
         isCompleted
-          ? 'bg-graphite-700/50 border-border-subtle opacity-75'
+          ? 'bg-graphite-700/50 border-border-subtle opacity-75 hover:opacity-100 hover:border-lime-accent/40'
           : isTimerActive
           ? 'bg-graphite-800 border-lime-accent/60 shadow-lg ring-1 ring-lime-accent/40'
-          : 'bg-graphite-800/90 border-border-default hover:border-lime-accent/30 hover:bg-graphite-800 shadow-xs'
+          : 'bg-graphite-800/90 border-border-default hover:border-lime-accent/40 hover:bg-graphite-800 hover:shadow-md'
       }`}
     >
       <div className="flex items-start gap-3.5">
@@ -198,13 +202,21 @@ export const DailyTaskCard = ({
           </div>
 
           {/* Title */}
-          <h4
-            className={`text-sm font-semibold text-text-primary leading-snug break-words transition-all duration-200 ${
-              isCompleted ? 'line-through text-text-muted' : ''
-            }`}
-          >
-            {task.title}
-          </h4>
+          <div className="flex items-center justify-between gap-2">
+            <h4
+              className={`text-sm font-semibold text-text-primary leading-snug break-words transition-all duration-200 group-hover:text-lime-accent ${
+                isCompleted ? 'line-through text-text-muted group-hover:text-text-muted' : ''
+              }`}
+            >
+              {task.title}
+            </h4>
+            {onOpenDetail && (
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[11px] text-lime-accent font-medium flex items-center space-x-0.5 flex-shrink-0">
+                <span>Details</span>
+                <ArrowRight className="w-3 h-3" />
+              </span>
+            )}
+          </div>
 
           {/* Optional Description */}
           {task.description && (
@@ -362,7 +374,10 @@ export const DailyTaskCard = ({
               {!isCompleted && onStartFocus && (
                 <button
                   type="button"
-                  onClick={() => onStartFocus(task)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onStartFocus(task);
+                  }}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
                     isTimerActive
                       ? 'bg-lime-accent text-graphite-950 shadow-sm animate-pulse ring-2 ring-lime-accent/40'
@@ -394,7 +409,10 @@ export const DailyTaskCard = ({
                   {onEdit && (
                     <button
                       type="button"
-                      onClick={() => onEdit(task)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(task);
+                      }}
                       className="p-1.5 rounded-xl bg-graphite-700 hover:bg-graphite-600 border border-border-default/70 text-text-secondary hover:text-text-primary transition-all duration-200 cursor-pointer shadow-2xs"
                       title="Edit task"
                     >
@@ -406,7 +424,10 @@ export const DailyTaskCard = ({
                   {onDelete && !showDeleteConfirm && (
                     <button
                       type="button"
-                      onClick={() => setShowDeleteConfirm(true)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowDeleteConfirm(true);
+                      }}
                       className="p-1.5 rounded-xl bg-graphite-700 hover:bg-error/20 border border-border-default/70 text-text-secondary hover:text-error hover:border-error/30 transition-all duration-200 cursor-pointer shadow-2xs"
                       title="Delete task"
                     >
@@ -416,11 +437,15 @@ export const DailyTaskCard = ({
 
                   {/* Delete Confirmation prompt */}
                   {showDeleteConfirm && (
-                    <div className="flex items-center gap-1 bg-graphite-800 border border-error/40 px-2 py-0.5 rounded-lg animate-fade-in">
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-1 bg-graphite-800 border border-error/40 px-2 py-0.5 rounded-lg animate-fade-in"
+                    >
                       <span className="text-[10px] text-error font-medium">Delete?</span>
                       <button
                         type="button"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setShowDeleteConfirm(false);
                           onDelete(task._id);
                         }}
@@ -430,7 +455,10 @@ export const DailyTaskCard = ({
                       </button>
                       <button
                         type="button"
-                        onClick={() => setShowDeleteConfirm(false)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowDeleteConfirm(false);
+                        }}
                         className="text-[10px] text-text-muted hover:text-text-primary px-1 cursor-pointer"
                       >
                         No

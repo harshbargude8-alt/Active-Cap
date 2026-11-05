@@ -31,7 +31,7 @@ export const Navbar = ({ currentView, onViewChange }) => {
         <nav className="flex items-center space-x-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = currentView === item.id || (item.id === 'all-projects' && currentView === 'inbox');
+            const isActive = currentView === item.id || (item.id === 'all-projects' && currentView === 'inbox') || (item.id === 'daily-tasks' && currentView === 'task-detail');
             return (
               <button
                 key={item.id}
@@ -85,7 +85,7 @@ export const Navbar = ({ currentView, onViewChange }) => {
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-graphite-800/95 backdrop-blur-lg border-t border-border-default px-4 py-2 flex justify-around items-center pb-safe-bottom transition-colors duration-200">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = currentView === item.id || (item.id === 'all-projects' && currentView === 'inbox');
+          const isActive = currentView === item.id || (item.id === 'all-projects' && currentView === 'inbox') || (item.id === 'daily-tasks' && currentView === 'task-detail');
           return (
             <button
               key={item.id}

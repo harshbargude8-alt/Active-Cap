@@ -77,14 +77,20 @@ const calculateDiffMinutes = (start, end) => {
   return diff > 0 ? diff : null;
 };
 
-export const DailyTasks = ({ onViewChange }) => {
+export const DailyTasks = ({ onViewChange, initialDate }) => {
   const { apiFetch } = useAuth();
   const { activeTimer, startTimer } = useTimer();
 
   const todayStr = formatDateToISOString(new Date());
-  const [selectedDate, setSelectedDate] = useState(todayStr);
+  const [selectedDate, setSelectedDate] = useState(initialDate || todayStr);
 
-  const cachedDaily = clientCache.get(`/daily-tasks?date=${todayStr}`);
+  useEffect(() => {
+    if (initialDate && initialDate !== selectedDate) {
+      setSelectedDate(initialDate);
+    }
+  }, [initialDate]);
+
+  const cachedDaily = clientCache.get(`/daily-tasks?date=${selectedDate}`);
   const cachedProjects = clientCache.get('/projects');
   const cachedRoutines = clientCache.get('/routines');
 
@@ -1119,6 +1125,11 @@ export const DailyTasks = ({ onViewChange }) => {
                       onStartFocus={handleStartFocus}
                       onToggleSubtask={handleToggleSubtask}
                       onAddSubtask={handleAddSubtask}
+                      onOpenDetail={(task) => {
+                        if (onViewChange) {
+                          onViewChange('task-detail', task._id, selectedDate);
+                        }
+                      }}
                       isTimerActive={activeTimer && (activeTimer.taskId === task._id || activeTimer.projectTitle?.includes(task.title))}
                     />
                   ))}
@@ -1166,6 +1177,11 @@ export const DailyTasks = ({ onViewChange }) => {
                       onStartFocus={handleStartFocus}
                       onToggleSubtask={handleToggleSubtask}
                       onAddSubtask={handleAddSubtask}
+                      onOpenDetail={(task) => {
+                        if (onViewChange) {
+                          onViewChange('task-detail', task._id, selectedDate);
+                        }
+                      }}
                       isTimerActive={activeTimer && (activeTimer.taskId === task._id || activeTimer.projectTitle?.includes(task.title))}
                     />
                   ))}
